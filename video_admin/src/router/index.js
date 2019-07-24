@@ -46,14 +46,18 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
+    redirect: 'dashboard',
     children: [{
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'icon-Dashboard' }
-    }]
-  }
+      meta: { title: '视频加密终端' }
+    },]
+  },
+
+
+  
+
 
   // {
   //   path: '/example',
@@ -96,18 +100,6 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
-  {
-    path: '/users',
-    component: Layout,
-    children: [
-      {
-        path: 'tables',
-        name: 'user_tables',
-        component: () => import('@/views/UserManager/index.vue'),
-        meta: { title: '用户管理', icon: 'icon-icon-username' }
-      }
-    ]
-  },
 
   // {
   //   path: 'external-link',
@@ -119,6 +111,69 @@ export const asyncRoutes = [
   //     }
   //   ]
   // },
+
+  {
+    path: '/video',
+    component: Layout,
+    // redirect: 'upload',
+    meta: { title: '视频管理'},
+    children: [{
+      path: 'upload',
+      name: 'video_upload',
+      component: () => import('@/views/VideoUpload/index'),
+      meta: { title: "视频上传"}
+    },
+  
+    {
+      path: 'manager',
+      name: 'video_manager',
+      component: () => import('@/views/VideoList/index'),
+      meta: { title: '视频列表' }
+    },{
+      path: 'check',
+      name: 'video_check',
+      component: () => import('@/views/VideoCheck/index'),
+      meta: { title: '视频解水印'}
+    },
+    {
+      path: 'water_mark',
+      name: 'water_mark',
+      component: () => import('@/views/WaterMarkList/index'),
+      meta: { title: '水印记录'}
+    }]
+  },
+
+
+  {
+    path: '/watcher',
+    component: Layout,
+    redirect: '',
+    children: [{
+      path: '',
+      name: 'video_watcher',
+      component: () => import('@/views/VideoPlayer/index'),
+      meta: { title: '视频播放'}
+    }]
+  },
+
+  {
+    path: '/unit',
+    component: Layout,
+    redirect: 'list',
+    meta: { title: '单位管理'},
+    children: [{
+      path: 'list',
+      name: 'unit_list',
+      component: () => import('@/views/dashboard/index'),
+      meta: { title: "单位列表"}
+    },
+    {
+      path: 'pople',
+      name: 'unit_people',
+      component: () => import('@/views/dashboard/index'),
+      meta: { title: "人员列表"}
+    }]
+  },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
