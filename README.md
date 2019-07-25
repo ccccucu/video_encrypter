@@ -24,5 +24,13 @@ yarn run electron:serve
 基于 electron 
 
 
+## video_sdk 
+
+* python的加水印客户端
+* python 封装后的加密解密的客户端
+* 提供 json-rpc 调用
+
+
+
 
 

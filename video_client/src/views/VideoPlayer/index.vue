@@ -66,7 +66,7 @@
 <script>
   import 'video.js/dist/video-js.css'
   import './style.css'
-  import { videoPlayer } from 'vue-video-player'
+  import { videoPlayer } from 'v  '
   export default {
     components:{videoPlayer},
     name: "index",

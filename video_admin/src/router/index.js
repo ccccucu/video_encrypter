@@ -129,30 +129,12 @@ export const asyncRoutes = [
       name: 'video_manager',
       component: () => import('@/views/VideoList/index'),
       meta: { title: '视频列表' }
-    },{
-      path: 'check',
-      name: 'video_check',
-      component: () => import('@/views/VideoCheck/index'),
-      meta: { title: '视频解水印'}
     },
     {
       path: 'water_mark',
       name: 'water_mark',
       component: () => import('@/views/WaterMarkList/index'),
       meta: { title: '水印记录'}
-    }]
-  },
-
-
-  {
-    path: '/watcher',
-    component: Layout,
-    redirect: '',
-    children: [{
-      path: '',
-      name: 'video_watcher',
-      component: () => import('@/views/VideoPlayer/index'),
-      meta: { title: '视频播放'}
     }]
   },
 
