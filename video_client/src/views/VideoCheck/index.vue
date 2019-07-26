@@ -67,6 +67,7 @@
     },
     methods: {
       handleUpload(file, fileList) {
+        // 上传新的文件的回调
         console.log(file)
         this.curent_file = file.raw.path
       },
