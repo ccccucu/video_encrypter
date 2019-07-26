@@ -6,10 +6,11 @@ jsonrpc = JSONRPC(app, '/rpc')
 
 
 @jsonrpc.method('EnWaterMakerByPath')
-def en_water_mark_by_path(path, outpath):
+def en_water_mark_by_path(path,conent, outpath):
     """
     加水印
     :param path: 输入路径
+    :param conent: 水印内容
     :param outpath: 输出路径
     :return: 是否成功
     """
