@@ -31,6 +31,10 @@ yarn run electron:serve
 * 提供 json-rpc 调用
 
 
+* 基于浏览器native的跨平台客户端开发技术
+* 基于协程的高并发服务器开发技术
+* 基于mvvc的前端用户界面开发技术
+* 基于本地rpc的跨语言调用技术
 
 
 

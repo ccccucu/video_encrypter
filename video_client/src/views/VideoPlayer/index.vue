@@ -66,7 +66,7 @@
 <script>
   import 'video.js/dist/video-js.css'
   import './style.css'
-  import { videoPlayer } from 'v  '
+  import { videoPlayer } from 'vue-video-player'
   export default {
     components:{videoPlayer},
     name: "index",
@@ -125,25 +125,25 @@
     methods: {
       // listen event
       onPlayerPlay(player) {
-        // console.log('player play!', player)
+         console.log('player play!', player)
       },
       onPlayerPause(player) {
-        // console.log('player pause!', player)
+         console.log('player pause!', player)
       },
       onPlayerEnded(player) {
-        // console.log('player ended!', player)
+         console.log('player ended!', player)
       },
       onPlayerLoadeddata(player) {
         // console.log('player Loadeddata!', player)
       },
       onPlayerWaiting(player) {
-        // console.log('player Waiting!', player)
+        console.log('player Waiting!', player)
       },
       onPlayerPlaying(player) {
-        // console.log('player Playing!', player)
+         console.log('player Playing!', player)
       },
       onPlayerTimeupdate(player) {
-        // console.log('player Timeupdate!', player.currentTime())
+         console.log('player Timeupdate!', player.currentTime())
       },
       onPlayerCanplay(player) {
         // console.log('player Canplay!', player)

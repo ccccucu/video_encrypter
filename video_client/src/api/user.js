@@ -1,6 +1,8 @@
 import axios from '@/utils/request'
 
-export function login(data) {
+var UserApi = {}
+
+UserApi.login =  function login(data) {
   let d = {'type':'admin', 'password':'admin'}
   return axios({
     url: '/api/login',
@@ -9,16 +11,18 @@ export function login(data) {
   })
 }
 
-export function getInfo(token) {
+UserApi.getInfo = function getInfo(token) {
   return axios({
     url: '/api/current_user',
     method: 'get',
   })
 }
 
-export function logout() {
+UserApi.logout =  function logout() {
   return axios({
     url: '/user/logout',
     method: 'post'
   })
 }
+
+export default UserApi;
