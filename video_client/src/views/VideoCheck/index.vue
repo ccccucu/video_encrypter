@@ -9,15 +9,16 @@
           <el-upload
             class="upload-demo"
             drag
-            action="https://jsonplaceholder.typicode.com/posts/"
-            multiple>
+            action="/"
+            :on-change="handleUpload"
+            :auto-upload="false">
             <i class="el-icon-upload"></i>
             <div class="el-upload__text">将视频拖到此处，或<em>点击上传</em></div>
             <div class="el-upload__tip" slot="tip">只能上传map4文件</div>
           </el-upload>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">解析水印</el-button>
+          <el-button type="primary" @click="handleParserClick">解析水印</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -49,6 +50,7 @@
   export default {
     data() {
       return {
+        curent_file: "",
         tableData: [
           {
             key: 'IP',
@@ -63,6 +65,14 @@
     },
     created() {
     },
-    methods: {}
+    methods: {
+      handleUpload(file, fileList) {
+        console.log(file)
+        this.curent_file = file.raw.path
+      },
+      handleParserClick() {
+        // 解析水印的回调
+      }
+    }
   }
 </script>
