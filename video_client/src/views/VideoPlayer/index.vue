@@ -55,7 +55,9 @@
           <template slot-scope="scope">
             <el-button
               size="mini"
-              type="primary">播放</el-button>
+              type="primary"
+              @click="handleListPlayClick(scope.row)"
+              >播放</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -161,6 +163,10 @@
         console.log('example player 1 readied', player)
         player.currentTime(10)
         // console.log('example 01: the player is readied', player)
+      },
+      handleListPlayClick(row) {
+          // 点击播放按钮的回调
+          console.log(row)
       }
     }
 
