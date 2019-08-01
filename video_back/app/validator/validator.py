@@ -1,6 +1,6 @@
 from marshmallow import Schema, fields, validates, ValidationError, post_load, validates_schema
 import easyapi
-
+import asyncio
 
 def validate(validator, data):
     result_data, errs = validator().load(data)

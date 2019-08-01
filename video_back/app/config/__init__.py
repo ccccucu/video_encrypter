@@ -5,10 +5,10 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'super-secret'
 
     MYSQL_USER = 'root'
-    MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD') or 'Root!!2018'
+    MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD') or ''  #Root!!2018
     MYSQL_HOST = 'localhost'
     MYSQL_PORT = 3306
-    MYSQL_DATABASE = 'tracker'
+    MYSQL_DATABASE = 'video_encrypter'
 
     JWT_AUTH_URL_RULE = '/login'
     JWT_ALGORITHM = 'HS256'
