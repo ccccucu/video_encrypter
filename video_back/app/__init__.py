@@ -13,20 +13,17 @@ app = Flask(__name__, template_folder=os.path.join(os.getcwd(), 'templates'),
             static_folder=os.path.join(os.getcwd(), 'static'))
 app.config.from_object(Config)
 
-app.register_blueprint(handler.news_bp)
-app.register_blueprint(handler.position_bp)
-app.register_blueprint(handler.task_bp)
-app.register_blueprint(handler.sender_bp)
-app.register_blueprint(handler.administrator_bp)
-app.register_blueprint(handler.conf_bp)
-app.register_blueprint(handler.token_bp)
-app.register_blueprint(handler.file_bp)
-app.register_blueprint(handler.render_bp)
-app.register_blueprint(handler.group_bp)
-app.register_blueprint(handler.template_bp)
-app.register_blueprint(handler.home_page_bp)
-app.register_blueprint(handler.report_history_bp)
-app.register_blueprint(handler.captcha_bp)
+app.register_blueprint(handler.admin_bp)
+app.register_blueprint(handler.user_bp)
+app.register_blueprint(handler.login_log_bp)
+
+
+app.register_blueprint(handler.organization_bp)
+app.register_blueprint(handler.distribut_video_bp)
+
+app.register_blueprint(handler.video_bp)
+app.register_blueprint(handler.watermark_log_bp)
+app.register_blueprint(handler.download_log_bp)
 
 CORS(app, supports_credentials=True)
 jwt = jwt_init()
