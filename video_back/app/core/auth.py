@@ -18,7 +18,7 @@ def jwt_init():
 
         if login_type == 'admin':
             #管理员登录
-            if kwargs.get('passward') == "123456":   # 默认用户名admin 密码admin
+            if kwargs.get('password') == "123456":   # 默认用户名admin 密码admin
                 user = dao.AdminDao.get(query = {'id' : 1})
                 return dict(user)
             else:
