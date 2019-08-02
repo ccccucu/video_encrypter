@@ -1,17 +1,11 @@
 /*
 程序采用字节流的形式进行加解密，将输入的密钥，明文或者密文都看作是流的形式进行操作
 */
-
-#define DLLEXPORT extern "C" __declspec(dllexport)
-
 extern "C" {
-
-
 #include <stdio.h>
-#include <time.h>   
-#include<string.h>    
-#define Nr 14                 //定义256比特对应轮数
-#define sizeofblock 16        //定义分块字节数
+#include <time.h>       
+#define Num_OF_AES_Round 14          //定义256比特对应轮数
+#define Size_OF_AES_Block 16        //定义分块字节数
 
 /*定义S盒,操作方式：只读*/
 const unsigned char Sbox[256] = {
@@ -174,7 +168,7 @@ const unsigned char Multable_e[256] = {
 };
 
 /*定义轮常数，操作方式：只读*/
-const unsigned char Rc[30] = {
+const unsigned char AES_Round_Constant[30] = {
 	0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b,
 	0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63,
 	0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5
@@ -184,30 +178,21 @@ const unsigned char Rc[30] = {
 const unsigned char initvec[16] = {
 	0x39, 0xef, 0x8b, 0xc9, 0xdb, 0x5f, 0xea, 0xb7, 0xa6, 0x68, 0x19, 0x21, 0xaf, 0xb1, 0x3d, 0x17,
 };
- void PrintfBytes(unsigned char * in);
- void SubBytes(unsigned char *state, const unsigned char box[256]);                                         /*字节代换函数原型*/
- void ShiftRows(unsigned char *state);                                                                      /*行移位函数原型*/
- void InvShiftRows(unsigned char *state);                                                                   /*逆行移位函数原型*/
- void AddRoundKey(unsigned char *state, unsigned char *RndKey, int round);                                  /*轮密钥加函数原型*/
- void MixColumn(unsigned char *state);                                                                      /*列混淆函数原型*/
- void InvMixColumn(unsigned char *state);                                                                   /*逆向列混淆函数原型*/
- void KeyExpansion(unsigned char *key, unsigned char *RndKey);                                              /*密钥扩展函数原型*/
- void Encrypt(unsigned char *datain, unsigned char *RndKey, unsigned char *dataout);                        /*加密函数原型*/
- void Decrypt(unsigned char *datain, unsigned char *RndKey, unsigned char *dataout);                        /*解密函数原型*/
- int AESCBCEnc(unsigned char *datain, unsigned long int length, unsigned char *key, unsigned char *dataout);/*CBC加密函数原型*/
- int AESCBCDec(unsigned char *datain, unsigned long int length, unsigned char *key, unsigned char *dataout);/*CBC加密函数原型*/
- int SelfCheck();    
+
+void SubBytes(unsigned char *state, const unsigned char box[256]);                                         /*字节代换函数原型*/
+void ShiftRows(unsigned char *state);                                                                      /*行移位函数原型*/
+void InvShiftRows(unsigned char *state);                                                                   /*逆行移位函数原型*/
+void AddRoundKey(unsigned char *state, unsigned char *RndKey, int round);                                  /*轮密钥加函数原型*/
+void MixColumn(unsigned char *state);                                                                      /*列混淆函数原型*/
+void InvMixColumn(unsigned char *state);                                                                   /*逆向列混淆函数原型*/
+void KeyExpansion(unsigned char *key, unsigned char *RndKey);                                              /*密钥扩展函数原型*/
+void Encrypt(unsigned char *datain, unsigned char *RndKey, unsigned char *dataout);                        /*加密函数原型*/
+void Decrypt(unsigned char *datain, unsigned char *RndKey, unsigned char *dataout);                        /*解密函数原型*/
+int AESCBCEnc(unsigned char *datain, unsigned long int length, unsigned char *key, unsigned char *dataout);/*CBC加密函数原型*/
+int AESCBCDec(unsigned char *datain, unsigned long int length, unsigned char *key, unsigned char *dataout);/*CBC加密函数原型*/
+int SelfCheck();    
 
 
- void PrintfBytes(unsigned char * in) {
-	for (int i =0;;i++){
-		if (in[i]==0){
-			printf("\n");
-			return;
-		}
-		printf("%i ",in[i]);
-	}
- }
 /********************************************************************/
 /*                        字节代换函数实现                          */
 /*
@@ -220,7 +205,7 @@ const unsigned char initvec[16] = {
 void SubBytes(unsigned char *state, const unsigned char box[256])
 {
 	int cnt;
-	for(cnt = 0; cnt < sizeofblock; cnt++)
+	for(cnt = 0; cnt < Size_OF_AES_Block; cnt++)
 		state[cnt] = box[state[cnt]];
 }
 
@@ -307,7 +292,7 @@ void AddRoundKey(unsigned char *state, unsigned char *RndKey, int round)
 {
 	int cnt;
 
-	for(cnt = 0; cnt < sizeofblock; cnt++)
+	for(cnt = 0; cnt < Size_OF_AES_Block; cnt++)
 		state[cnt] = state[cnt] ^ RndKey[(round << 4) + cnt];
 }
 
@@ -325,7 +310,7 @@ void MixColumn(unsigned char *state)
 	unsigned char result[16] = {0x00};              //保存中间结果，完成一列的计算后回送至state中
 	int temp1, temp2, temp3;
 
-		for(cnt = 0; cnt < sizeofblock; cnt = cnt + 4)
+		for(cnt = 0; cnt < Size_OF_AES_Block; cnt = cnt + 4)
 		{			
 			temp1 = cnt + 1;
 			temp2 = cnt + 2;
@@ -355,7 +340,7 @@ void InvMixColumn(unsigned char *state)
 	unsigned char result[16] = {0x00};              //保存中间结果，完成一列的计算后回送至state中
 	int temp1, temp2, temp3;
 	
-	for(cnt = 0; cnt < sizeofblock; cnt = cnt + 4)
+	for(cnt = 0; cnt < Size_OF_AES_Block; cnt = cnt + 4)
 	{
 		temp1 = cnt + 1;
 		temp2 = cnt + 2;
@@ -388,7 +373,6 @@ void KeyExpansion(unsigned char *key, unsigned char *RndKey)
 	for(cnt = 0; cnt < 32; cnt++)
 	{
 		RndKey[cnt] = key[cnt];
-		key[cnt] = 0x00;                                //清空原始密钥
 	}
 	
 	for(cnt = 32; cnt < 240; cnt = cnt + 4)
@@ -403,7 +387,7 @@ void KeyExpansion(unsigned char *key, unsigned char *RndKey)
 			temp[3] = bytemp;
 			for(cur = 0; cur < 4; cur++)
 				temp[cur] = Sbox[temp[cur]];             //字节代换
-			temp[0] = temp[0] ^ Rc[cnt / 32];
+			temp[0] = temp[0] ^ AES_Round_Constant[cnt / 32];
 		}
 
 		else if((cnt & 0x1f) == 16)
@@ -429,11 +413,11 @@ void Encrypt(unsigned char *datain,unsigned char *RndKey, unsigned char *dataout
 {
 	int cnt;
 
-	for(cnt = 0; cnt < sizeofblock; cnt++)
+	for(cnt = 0; cnt < Size_OF_AES_Block; cnt++)
 		dataout[cnt] = datain[cnt];
 
 	AddRoundKey(dataout, RndKey, 0);
-	for(cnt = 1; cnt < Nr; cnt++)
+	for(cnt = 1; cnt < Num_OF_AES_Round; cnt++)
 	{
 		SubBytes(dataout, Sbox);
 		ShiftRows(dataout);
@@ -442,7 +426,7 @@ void Encrypt(unsigned char *datain,unsigned char *RndKey, unsigned char *dataout
 	}
 	SubBytes(dataout, Sbox);
 	ShiftRows(dataout);
-	AddRoundKey(dataout, RndKey, Nr);
+	AddRoundKey(dataout, RndKey, Num_OF_AES_Round);
 }
 
 
@@ -457,11 +441,12 @@ void Encrypt(unsigned char *datain,unsigned char *RndKey, unsigned char *dataout
 void Decrypt(unsigned char *datain,unsigned char *RndKey, unsigned char *dataout)
 {
 	int cnt;
-	for(cnt = 0; cnt < sizeofblock; cnt++)
+
+	for(cnt = 0; cnt < Size_OF_AES_Block; cnt++)
 		dataout[cnt] = datain[cnt];
 
-	AddRoundKey(dataout, RndKey, Nr);
-	for(cnt = Nr - 1; cnt > 0; cnt--)
+	AddRoundKey(dataout, RndKey, Num_OF_AES_Round);
+	for(cnt = Num_OF_AES_Round - 1; cnt > 0; cnt--)
 	{
 		InvShiftRows(dataout);
 		SubBytes(dataout, InvSbox);
@@ -497,17 +482,17 @@ int AESCBCEnc(unsigned char *datain, unsigned long int length, unsigned char *ke
 
 	KeyExpansion(key, RndKey);
 
-	for(cnt = 0; cnt < sizeofblock; cnt++)
+	for(cnt = 0; cnt < Size_OF_AES_Block; cnt++)
 		dataout[cnt] = datain[cnt] ^ initvec[cnt]; 
 
-	for(cnt = 0; cnt < length; cnt = cnt + sizeofblock)
+	for(cnt = 0; cnt < length; cnt = cnt + Size_OF_AES_Block)
 	{
 		Encrypt(dataout + cnt, RndKey, dataout + cnt);
 
-		if(cnt < length - sizeofblock)
+		if(cnt < length - Size_OF_AES_Block)
 		{
-			for(cur = 0; cur < sizeofblock; cur++)
-				dataout[cnt + cur + sizeofblock] = dataout[cnt + cur] ^ datain[cnt + cur + sizeofblock];
+			for(cur = 0; cur < Size_OF_AES_Block; cur++)
+				dataout[cnt + cur + Size_OF_AES_Block] = dataout[cnt + cur] ^ datain[cnt + cur + Size_OF_AES_Block];
 		}
 	}
 	
@@ -540,20 +525,20 @@ int AESCBCDec(unsigned char *datain, unsigned long int length, unsigned char *ke
 
 	KeyExpansion(key, RndKey);
 	
-	for(cnt = 0; cnt < length; cnt = cnt + sizeofblock)
+	for(cnt = 0; cnt < length; cnt = cnt + Size_OF_AES_Block)
 	{
 		Decrypt(datain + cnt, RndKey, dataout + cnt);
 
 		if(cnt == 0)
 		{
-			for(cur = 0; cur < sizeofblock; cur++)
+			for(cur = 0; cur < Size_OF_AES_Block; cur++)
 				dataout[cur] = dataout[cur] ^ initvec[cur];
 		}
 		else
 		{
-			for(cur = 0; cur < sizeofblock; cur++)
+			for(cur = 0; cur < Size_OF_AES_Block; cur++)
 			{
-				dataout[cnt + cur] = datain[cnt + cur - sizeofblock] ^ dataout[cnt + cur];
+				dataout[cnt + cur] = datain[cnt + cur - Size_OF_AES_Block] ^ dataout[cnt + cur];
 			}
 		}
 	}
@@ -562,6 +547,7 @@ int AESCBCDec(unsigned char *datain, unsigned long int length, unsigned char *ke
 
 	return 0; 
 }
+
 
 /********************************************************************/
 /*                        自检函数实现                              */
@@ -610,8 +596,8 @@ int SelfCheck()
 }
 
 
-// /********************************************************************/
-// /*                       测试用函数                                 */
+/********************************************************************/
+/*                       测试用函数                                 */
 // int main()
 // {
 // 	int cnt, flag;
@@ -683,6 +669,40 @@ int SelfCheck()
 // 	delete [] test_speed;	
 // 	delete [] test_speed_out;
 	
+// 	printf("\n加解密测试数据打印：\n");
+// 	printf("\n原始明文：\n");
+// 	for(cnt = 0; cnt < 32; cnt++)
+// 	{
+// 		printf("0x%02x, ", test_plain[cnt]);
+// 		if((cnt & 0x07) == 0x07)
+// 			printf("\n");
+// 	}
+// 	printf("\n");
+ 
+
+// 	flag = AESCBCEnc(test_plain, 32, key, test_cipher);	
+// 	if(flag == 0x55555555)
+// 	{
+// 		printf("处理数据长度错误！\n");
+// 		return flag;
+// 	}
+// 	else if(flag == 0xffffffff)
+// 	{
+// 		printf("地址分配错误：\n");
+// 		return flag;
+// 	}
+
+
+	
+// 	printf("加密生成密文：\n");
+// 	for(cnt = 0; cnt < 32; cnt++)
+// 	{
+// 		printf("0x%02x, ", test_cipher[cnt]);
+// 		if((cnt & 0x07) == 0x07)
+// 			printf("\n");
+// 	}
+// 	printf("\n");
+
 // 	printf("\n加解密测试数据打印：\n");
 // 	printf("\n原始明文：\n");
 // 	for(cnt = 0; cnt < 32; cnt++)
