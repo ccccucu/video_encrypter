@@ -7,11 +7,9 @@ class OrganizationHandler(easyapi.FlaskBaseHandler):
     __controller__ = controller.OrganizationController
 
 
-user_bp = Blueprint(name='organizations', import_name='organizations', url_prefix='')
+organization_bp = Blueprint(name='organizations', import_name='organizations', url_prefix='')
 
-easyapi.register_api(app=user_bp, view=OrganizationHandler, endpoint='organization_api', url='/organizations')
-
-
+easyapi.register_api(app=organization_bp, view=OrganizationHandler, endpoint='organization_api', url='/organizations')
 
 
 
@@ -19,6 +17,6 @@ easyapi.register_api(app=user_bp, view=OrganizationHandler, endpoint='organizati
 class DistributVideoHandler(easyapi.FlaskBaseHandler):
     __controller__ = controller.DistributVideoController
 
-user_bp = Blueprint(name='distribut_videos', import_name='distribut_videos', url_prefix='')
+distribut_video_bp = Blueprint(name='distribut_videos', import_name='distribut_videos', url_prefix='')
 
-easyapi.register_api(app=user_bp, view=OrganizationHandler, endpoint='distribut_video_api', url='/distribut_videos')
+easyapi.register_api(app=distribut_video_bp, view=OrganizationHandler, endpoint='distribut_video_api', url='/distribut_videos')

@@ -13,7 +13,17 @@ app = Flask(__name__, template_folder=os.path.join(os.getcwd(), 'templates'),
             static_folder=os.path.join(os.getcwd(), 'static'))
 app.config.from_object(Config)
 
+app.register_blueprint(handler.admin_bp)
 app.register_blueprint(handler.user_bp)
+app.register_blueprint(handler.login_log_bp)
+
+
+app.register_blueprint(handler.organization_bp)
+app.register_blueprint(handler.distribut_video_bp)
+
+app.register_blueprint(handler.video_bp)
+app.register_blueprint(handler.watermark_log_bp)
+app.register_blueprint(handler.download_log_bp)
 
 CORS(app, supports_credentials=True)
 jwt = jwt_init()

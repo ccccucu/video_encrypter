@@ -27,3 +27,7 @@ class UserController(easyapi.BaseController):
 
 class AdminController(easyapi.BaseController):
     __dao__ = dao.AdminDao
+
+
+class LoginLogController(easyapi.BaseController):
+    __dao__ = dao.LoginLogDao
