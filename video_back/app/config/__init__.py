@@ -17,7 +17,7 @@ class Config:
     JWT_NOT_BEFORE_DELTA = timedelta(seconds=0)
     JWT_EXPIRATION_DELTA = timedelta(seconds=7200)
     JWT_REQUIRED_CLAIMS = ['exp', 'iat', 'nbf']
-    JWT_AUTH_HEADER_PREFIX = ''
+    JWT_AUTH_HEADER_PREFIX = 'bearer'
 
 
     CAPTCHA_EXPIRE = 300

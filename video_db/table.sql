@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50714
 File Encoding         : 65001
 
-Date: 2019-08-02 15:52:20
+Date: 2019-08-02 16:40:50
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -176,10 +176,10 @@ CREATE TABLE `videos` (
   `original_file_size` bigint(20) NOT NULL DEFAULT '0' COMMENT '原始文件大小；字节为单位',
   `encrypt_file_size` bigint(20) NOT NULL DEFAULT '0' COMMENT '加密后文件大小；字节为单位，与原始文件相同文件名',
   `release_allow` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否发布',
-  `release_admin_user_id` int(11) NOT NULL COMMENT '发布管理员id；对应管理员id',
+  `release_admin_user_id` int(11) DEFAULT NULL COMMENT '发布管理员id；对应管理员id',
   `release_admin_user_account` varchar(255) NOT NULL DEFAULT '' COMMENT '发布管理员；对应管理员用户名',
   `release_time` timestamp NOT NULL COMMENT '发布时间',
-  `delete_admin_user_id` int(11) NOT NULL COMMENT '删除管理员id；对应管理员id',
+  `delete_admin_user_id` int(11) DEFAULT NULL COMMENT '删除管理员id；对应管理员id',
   `secret_key` varchar(255) NOT NULL DEFAULT '' COMMENT '密钥',
   `created_at` timestamp NULL DEFAULT NULL COMMENT '上传时间',
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -187,11 +187,12 @@ CREATE TABLE `videos` (
   `updated_by` varchar(255) NOT NULL DEFAULT '' COMMENT '删除管理员；对应管理员用户名',
   `created_by` varchar(255) NOT NULL DEFAULT '' COMMENT '上传管理员；对应管理员用户名',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of videos
 -- ----------------------------
+INSERT INTO `videos` VALUES ('1', '13213213', '视频1', '0', '00', '0', '2019-08-02 16:37:45', '0', '0', '0', '1', '00', '2019-08-02 16:37:26', '0', '132132132', null, null, null, '', '');
 
 -- ----------------------------
 -- Table structure for watermark_logs

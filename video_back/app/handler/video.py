@@ -1,6 +1,7 @@
-from flask import Flask, Blueprint, jsonify, send_file
+from flask import Flask, Blueprint, jsonify, send_file, request
 import easyapi
 import app.core as controller
+import app.service as service
 from flask_jwt import jwt_required, current_identity
 
 
@@ -16,7 +17,9 @@ easyapi.register_api(app=video_bp, view=VideoHandler, endpoint='video_api', url=
 @video_bp.route('/videos/upload',methods=['POST']) #不写,methods=['GET','POST'] 默认是get
 def video_upload():
     try:
-        pass
+        uuid, title, original_file_size = service.upload_file("files/origin/")
+        #request.args.get('')
+
     except easyapi.BusinessError as e:
         return jsonify(**{
             'msg': e.err_info,
@@ -29,13 +32,17 @@ def video_upload():
 def video_download(id):
     try:
         video = controller.VideoController.get(id)
-        print(video)
+
+        video_uuid = video['uuid']
+        print(video_uuid)
     except easyapi.BusinessError as e:
         return jsonify(**{
             'msg': e.err_info,
             'code': e.code,
         }), e.http_code
-    return jsonify(code=200, msg='视频下载成功', data={id:id} ,video = video)
+    # return jsonify(code=200, msg='视频下载成功', data={id:id} ,video = video)
+
+    return send_file('files/origin/'+str(video_uuid) )
 
 
 
