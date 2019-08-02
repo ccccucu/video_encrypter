@@ -429,8 +429,6 @@ void Encrypt(unsigned char *datain,unsigned char *RndKey, unsigned char *dataout
 {
 	int cnt;
 
-	printf("EN FROM C: ");
-	PrintfBytes(datain);
 	for(cnt = 0; cnt < sizeofblock; cnt++)
 		dataout[cnt] = datain[cnt];
 
@@ -445,8 +443,6 @@ void Encrypt(unsigned char *datain,unsigned char *RndKey, unsigned char *dataout
 	SubBytes(dataout, Sbox);
 	ShiftRows(dataout);
 	AddRoundKey(dataout, RndKey, Nr);
-	printf("EN FROM C: ");
-	PrintfBytes(dataout);
 }
 
 
@@ -461,8 +457,6 @@ void Encrypt(unsigned char *datain,unsigned char *RndKey, unsigned char *dataout
 void Decrypt(unsigned char *datain,unsigned char *RndKey, unsigned char *dataout)
 {
 	int cnt;
-	printf("DE FROM C: ");
-	PrintfBytes(datain);
 	for(cnt = 0; cnt < sizeofblock; cnt++)
 		dataout[cnt] = datain[cnt];
 
@@ -477,8 +471,6 @@ void Decrypt(unsigned char *datain,unsigned char *RndKey, unsigned char *dataout
 	InvShiftRows(dataout);
 	SubBytes(dataout, InvSbox);
 	AddRoundKey(dataout, RndKey, 0);
-	printf("DE FROM C: ");
-	PrintfBytes(dataout);
 }
 
 
