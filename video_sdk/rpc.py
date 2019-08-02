@@ -1,10 +1,11 @@
 from flask import Flask, request, jsonify, send_file
 from flask_jsonrpc import JSONRPC
+from flask_cors import CORS
 import os
 
 app = Flask(__name__)
 jsonrpc = JSONRPC(app, '/rpc')
-
+CORS(app)
 
 @jsonrpc.method('EnWaterMakerByPath')
 def en_water_mark_by_path(path,conent, outpath):
