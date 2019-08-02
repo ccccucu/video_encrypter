@@ -79,4 +79,4 @@ def read_file():
     return send_file(path)
 
 if __name__ == "__main__":
-    app.run(port=5005)
+    app.run(port=10086)
