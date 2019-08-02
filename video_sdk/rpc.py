@@ -1,5 +1,6 @@
-from flask import Flask
+from flask import Flask, request, jsonify, send_file
 from flask_jsonrpc import JSONRPC
+import os
 
 app = Flask(__name__)
 jsonrpc = JSONRPC(app, '/rpc')
@@ -69,3 +70,13 @@ def de_tbumbnail_by_path(path, outpath):
     :return:
     """
     pass
+
+@app.route('/api/read_file', methods=['GET'])
+def read_file():
+    path=request.args.get('path')
+    if not path or not os.path.isabs(path):
+        return jsonify(code=404, msg='没有对应的文件'), 200
+    return send_file(path)
+
+if __name__ == "__main__":
+    app.run(port=5005)
