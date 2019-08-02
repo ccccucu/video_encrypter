@@ -24,6 +24,7 @@ app.register_blueprint(handler.distribut_video_bp)
 app.register_blueprint(handler.video_bp)
 app.register_blueprint(handler.watermark_log_bp)
 app.register_blueprint(handler.download_log_bp)
+app.register_blueprint(handler.token_bp)
 
 CORS(app, supports_credentials=True)
 jwt = jwt_init()
