@@ -17,3 +17,9 @@ g++ -shared -fPIC -o target/对应的平台/libmyaes.so AES.cpp
 ```
 python aes.py
 ```
+
+## 运行本地服务
+
+```
+python rpc.py
+```

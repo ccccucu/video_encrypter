@@ -1,1 +1,3 @@
 Flask-JSONRPC
+flask
+flask-cors

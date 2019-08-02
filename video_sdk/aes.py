@@ -21,14 +21,14 @@ def aes_encrypt(raw, key):
     datain = ctypes.create_string_buffer(raw)
     keyin = ctypes.create_string_buffer(key)
     buffer = ctypes.create_string_buffer(len(raw))
-    LIB_MYAES.Encrypt(datain, keyin, buffer)
+    LIB_MYAES.AESCBCEnc(datain,len(raw) , keyin, buffer)
     return buffer.value
 
 def aes_decrypt(en, key): 
     datain = ctypes.create_string_buffer(en)
     keyin = ctypes.create_string_buffer(key)
     buffer = ctypes.create_string_buffer(len(en))
-    LIB_MYAES.Encrypt(datain, keyin, buffer)
+    LIB_MYAES.AESCBCDec(datain, len(en), keyin, buffer)
     return buffer.value
 
 if __name__ == "__main__":
