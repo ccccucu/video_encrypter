@@ -14,7 +14,7 @@ def jwt_init():
 
     @custom_jwt.authentication_handler
     def authenticate(**kwargs):
-        login_type = kwargs.get('type', 'user')
+        login_type = kwargs.get('type', 'admin')
 
         if login_type == 'admin':
             #管理员登录
@@ -23,13 +23,15 @@ def jwt_init():
                 return dict(user)
             else:
                 raise JWTError('Bad Request','密码错误')
-
         else:
             # 用户登录
             try:
                 account = kwargs.get('account', None)
                 password = kwargs.get('password', None)
                 user = dao.UserDao.get(query = {'account': account, 'password': password})
+                if not user:
+                    return None
+                return dict(user)
             except (OperationalError, IntegrityError ) as e:
                 raise JWTError('Bad Request', str(e))
 

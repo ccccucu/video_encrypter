@@ -36,10 +36,7 @@ def video_download(id):
             'code': e.code,
         }), e.http_code
     return jsonify(code=200, msg='视频下载成功', data={id:id} ,video = video)
-
-
-
-
+    
 
 
 class WatermarkLogHandler(easyapi.FlaskBaseHandler):
