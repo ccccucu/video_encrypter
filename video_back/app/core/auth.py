@@ -72,7 +72,6 @@ def jwt_init():
         else:
             raise JWTError('Bad Request', '用户或密码错误')
 
-
     return custom_jwt
 
 
