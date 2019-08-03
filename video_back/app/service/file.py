@@ -24,7 +24,7 @@ return
     title,  源文件名
     original_file_size  原始文件大小；字节为单位
 '''
-def upload_file(file_dir):  #file_dir = "files/origin/"
+def upload_file(file_dir):  #file_dir = "app/files/origin/"
     f = request.files['file']
     title, tag = allowed_file(f.filename)
     original_file_size = 0

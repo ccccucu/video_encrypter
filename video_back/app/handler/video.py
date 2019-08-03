@@ -17,12 +17,13 @@ easyapi.register_api(app=video_bp, view=VideoHandler, endpoint='video_api', url=
 @video_bp.route('/videos/upload',methods=['POST']) #不写,methods=['GET','POST'] 默认是get
 def video_upload():
     try:
-        uuid, title, original_file_size = service.upload_file("files/origin/")
+        uuid, title, original_file_size = service.upload_file("app/files/origin/")
         #request.args.get('')
 
         controller.VideoController.insert(data={"title": title, "uuid": uuid, "original_file_size": original_file_size,\
                                                 "allow_play_time": "2019-08-02 16:37:45",\
-                                                "release_time": "2019-08-02 16:37:45",
+                                                "delete_admin_user_id":1,"release_time": "2019-08-02 16:37:45","release_admin_user_id":1,\
+                                                "upload_admin_user_id":1, "upload_organization_id":1
                                                 })
 
     except easyapi.BusinessError as e:
