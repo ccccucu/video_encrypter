@@ -22,7 +22,8 @@ def video_upload():
 
         controller.VideoController.insert(data={"title": title, "uuid": uuid, "original_file_size": original_file_size,\
                                                 "allow_play_time": "2019-08-02 16:37:45",\
-                                                "release_time": "2019-08-02 16:37:45"})
+                                                "release_time": "2019-08-02 16:37:45",
+                                                })
 
     except easyapi.BusinessError as e:
         return jsonify(**{
@@ -36,7 +37,6 @@ def video_upload():
 def video_download(id):
     try:
         video = controller.VideoController.get(id)
-
         video_uuid = video['uuid']
         print(video_uuid)
     except easyapi.BusinessError as e:
