@@ -48,6 +48,6 @@ def upload_file(file_dir):  #file_dir = "files/origin/"
             original_file_size +=  os.path.getsize(file_path)
         except Exception as e:
             raise easyapi.BusinessError(code=500, http_code=200, err_info=str(e))
-        return uuid, title, original_file_size
+        return uuid_1, title, original_file_size
     else:
         raise easyapi.BusinessError(code=500, http_code=200, err_info="不支持的视频文件格式")
