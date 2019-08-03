@@ -20,6 +20,7 @@ easyapi.register_api(app=video_bp, view=VideoHandler, endpoint='video_api', url=
 @video_bp.route('/videos/upload',methods=['POST']) #不写,methods=['GET','POST'] 默认是get
 def video_upload():
     try:
+        #from-data表单中，文件上传的表单name是“file”
         upload_file_path = os.path.join('app/', Config.FILE_UPLOAD_PATH) # app/ + files/origin/
         uuid, title, original_file_size = service.upload_file(upload_file_path)
         #request.args.get('')
