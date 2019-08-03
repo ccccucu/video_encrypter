@@ -1,7 +1,9 @@
 from flask import Flask, Blueprint, jsonify, send_file, request
 import easyapi
+from easyapi_tools.errors import BusinessError
 import app.core as controller
 import app.service as service
+import os
 from flask_jwt import jwt_required, current_identity
 
 
@@ -46,8 +48,15 @@ def video_download(id):
             'code': e.code,
         }), e.http_code
     # return jsonify(code=200, msg='视频下载成功', data={id:id} ,video = video)
+    file_path = os.path.join('files/origin/', str(video_uuid) )
 
-    return send_file('files/origin/'+str(video_uuid) )
+    try:
+        return send_file( file_path )
+    except easyapi.BusinessError as e:
+        return jsonify(**{
+            'msg': e.err_info,
+            'code': e.code,
+        }), e.http_code
 
 
 
