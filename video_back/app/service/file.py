@@ -20,11 +20,11 @@ def allowed_file(filename: str):
 
 '''
 return 
-    uuid,   文件生成的uuid，同时也是存储文件名，使用  uuid1()
+    save_file_name,   文件生成的uuid  + tag，同时也是存储文件名，使用  uuid1(), 存入数据库也是联通uuid + 文件后缀（tag）  一起存储
     title,  源文件名
     original_file_size  原始文件大小；字节为单位
 '''
-def upload_file(file_dir):  #file_dir = "files/origin/"
+def upload_file(file_dir):  #file_dir = "app/files/origin/"
     f = request.files['file']
     title, tag = allowed_file(f.filename)
     original_file_size = 0
@@ -48,6 +48,6 @@ def upload_file(file_dir):  #file_dir = "files/origin/"
             original_file_size +=  os.path.getsize(file_path)
         except Exception as e:
             raise easyapi.BusinessError(code=500, http_code=200, err_info=str(e))
-        return uuid_1, title, original_file_size
+        return save_file_name, title, original_file_size
     else:
         raise easyapi.BusinessError(code=500, http_code=200, err_info="不支持的视频文件格式")

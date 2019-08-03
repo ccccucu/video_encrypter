@@ -1,7 +1,10 @@
 from flask import Flask, Blueprint, jsonify, send_file, request
 import easyapi
+from easyapi_tools.errors import BusinessError
 import app.core as controller
 import app.service as service
+import os
+from app.config import Config
 from flask_jwt import jwt_required, current_identity
 
 
@@ -17,12 +20,15 @@ easyapi.register_api(app=video_bp, view=VideoHandler, endpoint='video_api', url=
 @video_bp.route('/videos/upload',methods=['POST']) #不写,methods=['GET','POST'] 默认是get
 def video_upload():
     try:
-        uuid, title, original_file_size = service.upload_file("files/origin/")
+        #from-data表单中，文件上传的表单name是“file”
+        upload_file_path = os.path.join('app/', Config.FILE_UPLOAD_PATH) # app/ + files/origin/
+        uuid, title, original_file_size = service.upload_file(upload_file_path)
         #request.args.get('')
 
         controller.VideoController.insert(data={"title": title, "uuid": uuid, "original_file_size": original_file_size,\
                                                 "allow_play_time": "2019-08-02 16:37:45",\
-                                                "release_time": "2019-08-02 16:37:45",
+                                                "delete_admin_user_id":1,"release_time": "2019-08-02 16:37:45","release_admin_user_id":1,\
+                                                "upload_admin_user_id":1, "upload_organization_id":1
                                                 })
 
     except easyapi.BusinessError as e:
@@ -45,8 +51,15 @@ def video_download(id):
             'code': e.code,
         }), e.http_code
     # return jsonify(code=200, msg='视频下载成功', data={id:id} ,video = video)
+    file_path = os.path.join(Config.FILE_UPLOAD_PATH, str(video_uuid) )   # 'files/origin/',  str(video_uuid)
 
-    return send_file('files/origin/'+str(video_uuid) )
+    try:
+        return send_file( file_path )
+    except easyapi.BusinessError as e:
+        return jsonify(**{
+            'msg': e.err_info,
+            'code': e.code,
+        }), e.http_code
 
 
 
