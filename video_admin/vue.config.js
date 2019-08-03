@@ -30,25 +30,24 @@ module.exports = {
       warnings: false,
       errors: true
     },
-    proxy: null
-    // proxy: {
-    //   // change xxx-api/login => mock/login
-    //   // detail: https://cli.vuejs.org/config/#devserver-proxy
-    //   '/api': {
-    //     target: 'https://shenjack.cn/', // 接口的域名  //http://47.92.110.74:8085/
-    //     secure: false, // 如果是https接口，需要配置这个参数
-    //     changeOrigin: true, // 如果接口跨域，需要进行这个参数配置
-    //     pathRewrite: { '^/api': '' },
-    //   },
-    //   [process.env.VUE_APP_BASE_API]: {
-    //     target: `http://localhost:${port}/mock`,
-    //     changeOrigin: true,
-    //     pathRewrite: {
-    //       ['^' + process.env.VUE_APP_BASE_API]: ''
-    //     }
-    //   },
-    // },
-    // after: require('./mock/mock-server.js')
+    proxy: {
+      // change xxx-api/login => mock/login
+      // detail: https://cli.vuejs.org/config/#devserver-proxy
+      '/api': {
+        target: 'https://shenjack.cn/', // 接口的域名  //http://47.92.110.74:8085/
+        secure: false, // 如果是https接口，需要配置这个参数
+        changeOrigin: true, // 如果接口跨域，需要进行这个参数配置
+        pathRewrite: { '^/api': '' },
+      },
+      [process.env.VUE_APP_BASE_API]: {
+        target: `http://localhost:${port}/mock`,
+        changeOrigin: true,
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_API]: ''
+        }
+      },
+    },
+    after: require('./mock/mock-server.js')
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that

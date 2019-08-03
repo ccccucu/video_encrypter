@@ -4,6 +4,7 @@ from easyapi_tools.errors import BusinessError
 import app.core as controller
 import app.service as service
 import os
+from app.config import Config
 from flask_jwt import jwt_required, current_identity
 
 
@@ -19,7 +20,8 @@ easyapi.register_api(app=video_bp, view=VideoHandler, endpoint='video_api', url=
 @video_bp.route('/videos/upload',methods=['POST']) #不写,methods=['GET','POST'] 默认是get
 def video_upload():
     try:
-        uuid, title, original_file_size = service.upload_file("app/files/origin/")
+        upload_file_path = os.path.join('app/', Config.FILE_UPLOAD_PATH) # app/ + files/origin/
+        uuid, title, original_file_size = service.upload_file(upload_file_path)
         #request.args.get('')
 
         controller.VideoController.insert(data={"title": title, "uuid": uuid, "original_file_size": original_file_size,\
@@ -48,7 +50,7 @@ def video_download(id):
             'code': e.code,
         }), e.http_code
     # return jsonify(code=200, msg='视频下载成功', data={id:id} ,video = video)
-    file_path = os.path.join('files/origin/', str(video_uuid) )
+    file_path = os.path.join(Config.FILE_UPLOAD_PATH, str(video_uuid) )   # 'files/origin/',  str(video_uuid)
 
     try:
         return send_file( file_path )

@@ -21,3 +21,6 @@ class Config:
 
 
     CAPTCHA_EXPIRE = 300
+
+    #文件路径
+    FILE_UPLOAD_PATH = 'files/origin/'
