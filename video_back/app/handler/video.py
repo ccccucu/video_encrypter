@@ -20,6 +20,10 @@ def video_upload():
         uuid, title, original_file_size = service.upload_file("files/origin/")
         #request.args.get('')
 
+        controller.VideoController.insert(data={"title": title, "uuid": uuid, "original_file_size": original_file_size,\
+                                                "allow_play_time": "2019-08-02 16:37:45",\
+                                                "release_time": "2019-08-02 16:37:45"})
+
     except easyapi.BusinessError as e:
         return jsonify(**{
             'msg': e.err_info,
