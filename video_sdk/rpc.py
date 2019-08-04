@@ -80,8 +80,8 @@ def de_file_by_path(path, key, outpath):
     """
     aes.aes_encrypt_by_path(path, key, outpath)
 
-@jsonrpc.method('DeFileByPath')
-def de_tbumbnail_by_path(path, outpath):
+@jsonrpc.method('GetThumbnailByPath')
+def get_thumbnail_by_path(path, outpath):
     """
     解密
     :param path:
