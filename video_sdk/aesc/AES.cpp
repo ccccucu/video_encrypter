@@ -617,7 +617,7 @@ int SelfCheck()
 		unsigned long int sizeofbytes = sizeofopen + bytes;
 		unsigned char * np = new unsigned char[sizeofbytes +16];
 		int isCBC = AESCBCEnc(p, sizeofbytes, key, np);
-		ofstream ofile(outpath,  fstream::out);
+		ofstream ofile(outpath,  ios::binary|ios::out);
 		printf("en %i", isCBC);
 		if (!ofile)
 		{
@@ -651,7 +651,7 @@ int SelfCheck()
 
 	int DeFileByPath(char* path, unsigned char* key, char* outpath)
 	{
-		ifstream ifile(path,  ios::in);
+		ifstream ifile(path,  ios::binary |ios::in);
 		if (!ifile)
 		{
 			return 1;

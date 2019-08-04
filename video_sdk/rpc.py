@@ -66,7 +66,7 @@ def en_file_by_path(path, key, outpath):
     :param outpath:
     :return:
     """
-    aes.aes_encrypt_by_path(path, key, outpath)
+    return aes.aes_encrypt_by_path(path, key, outpath)
 
 
 @jsonrpc.method('DeFileByPath')
@@ -78,7 +78,7 @@ def de_file_by_path(path, key, outpath):
     :param outpath:
     :return:
     """
-    aes.aes_encrypt_by_path(path, key, outpath)
+    return aes.aes_encrypt_by_path(path, key, outpath)
 
 @jsonrpc.method('GetThumbnailByPath')
 def get_thumbnail_by_path(path, outpath):
