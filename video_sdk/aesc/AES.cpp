@@ -603,7 +603,7 @@ int SelfCheck()
 	输出：输出路径path
 	返回：0，输出文件；1，读文件错误；2，写文件错误
 	*/
-	/*                         CBC解密函数实现                          */
+	/*                         用CBC加密函数实现                          */
 	/********************************************************************/
 	int EN_FILE_BY_PATH(char* path, unsigned char* key, char* outpath)
 	{
@@ -615,31 +615,85 @@ int SelfCheck()
 		ifile.seekg(0, ios::end);
 		unsigned long int sizeofopen = ifile.tellg();//读取文件的位数
 		ifile.seekg(0, ios::beg);
-		unsigned char * p = new unsigned char[sizeofopen];
+		unsigned char * p = new unsigned char[sizeofopen+16];
 		for (int i = 0; i < sizeofopen; i++)
 		{
 			ifile.read((char*)&p[i], sizeof(unsigned char));
 		}
 		ifile.close();
 		unsigned long int bytes = 16 - sizeofopen % 16;
-		for (int i = sizeofopen; i < sizeofopen + bytes -1; i++)
+		for (int i = sizeofopen; i < sizeofopen + bytes - 1; i++)
 		{
 			p[i] = 0x00;
 		}
 		p[sizeofopen + bytes - 1] = bytes;
 		unsigned long int sizeofbytes = sizeofopen + bytes;
-		unsigned char * np = new unsigned char[sizeofbytes];
+		unsigned char * np = new unsigned char[sizeofbytes +16];
 		int isCBC = AESCBCEnc(p, sizeofbytes, key, np);
 		ofstream ofile(outpath, ios::binary | ios::out);
 		if (!ofile)
 		{
+			delete p;
+			delete np;
 			return 2;
 		}
 		for (int i = 0; i < sizeofbytes; i++)
 		{
-			ofile.write((char*)&p[i], sizeof(unsigned char));
+			ofile.write((char*)&np[i], sizeof(unsigned char));
+		}
+		
+		ofile.close();
+		delete p;
+		delete np;
+		return 0;
+		
+		
+	}
+
+	/********************************************************************/
+	/*                 读文件，解密，反填充，写入文件                 */
+	/*
+	输入：加密的本地路径path，秘钥key
+	输出：输出路径path
+	返回：0，输出文件；1，读文件错误；2，写文件错误
+	*/
+	/*                         用CBC解密函数实现                          */
+	/********************************************************************/
+
+	int DE_FILE_BY_PATH(char* path, unsigned char* key, char* outpath)
+	{
+		ifstream ifile(path, ios::binary | ios::in | ios::_Nocreate);
+		if (!ifile)
+		{
+			return 1;
+		}
+		ifile.seekg(0, ios::end);
+		unsigned long int sizeofopen = ifile.tellg();//读取文件的位数
+		ifile.seekg(0, ios::beg);//返回开头
+		unsigned char * p = new unsigned char[sizeofopen];
+		for (int i = 0; i < sizeofopen; i++)
+		{
+			ifile.read((char*)&p[i], sizeof(unsigned char));
+		}
+		ifile.close();
+		unsigned char * np = new unsigned char[sizeofopen];
+		int isCBC = AESCBCDec(p, sizeofopen, key, np);//np存储解密数据
+		int fillcount = np[sizeofopen - 1];
+		int sizeofwrite = sizeofopen - fillcount; //写文件的大小
+		ofstream ofile(outpath, ios::binary | ios::out);
+		if (!ofile)
+		{
+			delete p;
+			delete np;
+			return 2;
+		}
+		for (int i = 0; i < sizeofwrite; i++)
+		{
+			ofile.write((char*)&np[i], sizeof(unsigned char));
 		}
 		ofile.close();
+		delete p;
+		delete np;
 		return 0;
 	}
 
