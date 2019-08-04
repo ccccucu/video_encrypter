@@ -3,9 +3,11 @@
 */
 extern "C" {
 #include <stdio.h>
-#include <time.h>       
+#include <time.h>     
+#include <fstream>  
 #define Num_OF_AES_Round 14          //定义256比特对应轮数
 #define Size_OF_AES_Block 16        //定义分块字节数
+using namespace std;
 
 /*定义S盒,操作方式：只读*/
 const unsigned char Sbox[256] = {
@@ -594,6 +596,52 @@ int SelfCheck()
 
 	return 0;
 }
+/********************************************************************/
+	/*                 读文件，填充位数，加密，写入文件                 */
+	/*
+	输入：视频文件的本地路径path，秘钥key
+	输出：输出路径path
+	返回：0，输出文件；1，读文件错误；2，写文件错误
+	*/
+	/*                         CBC解密函数实现                          */
+	/********************************************************************/
+	int EN_FILE_BY_PATH(char* path, unsigned char* key, char* outpath)
+	{
+		ifstream ifile(path, ios::binary | ios::in | ios::_Nocreate);
+		if (!ifile)
+		{
+			return 1;
+		}
+		ifile.seekg(0, ios::end);
+		unsigned long int sizeofopen = ifile.tellg();//读取文件的位数
+		ifile.seekg(0, ios::beg);
+		unsigned char * p = new unsigned char[sizeofopen];
+		for (int i = 0; i < sizeofopen; i++)
+		{
+			ifile.read((char*)&p[i], sizeof(unsigned char));
+		}
+		ifile.close();
+		unsigned long int bytes = 16 - sizeofopen % 16;
+		for (int i = sizeofopen; i < sizeofopen + bytes -1; i++)
+		{
+			p[i] = 0x00;
+		}
+		p[sizeofopen + bytes - 1] = bytes;
+		unsigned long int sizeofbytes = sizeofopen + bytes;
+		unsigned char * np = new unsigned char[sizeofbytes];
+		int isCBC = AESCBCEnc(p, sizeofbytes, key, np);
+		ofstream ofile(outpath, ios::binary | ios::out);
+		if (!ofile)
+		{
+			return 2;
+		}
+		for (int i = 0; i < sizeofbytes; i++)
+		{
+			ofile.write((char*)&p[i], sizeof(unsigned char));
+		}
+		ofile.close();
+		return 0;
+	}
 
 
 /********************************************************************/
