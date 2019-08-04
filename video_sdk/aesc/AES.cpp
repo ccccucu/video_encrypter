@@ -193,6 +193,8 @@ void Decrypt(unsigned char *datain, unsigned char *RndKey, unsigned char *dataou
 int AESCBCEnc(unsigned char *datain, unsigned long int length, unsigned char *key, unsigned char *dataout);/*CBC加密函数原型*/
 int AESCBCDec(unsigned char *datain, unsigned long int length, unsigned char *key, unsigned char *dataout);/*CBC加密函数原型*/
 int SelfCheck();    
+int EnFileByPath(char* path, unsigned char* key, char* outpath);                                        /*文件读取填充加密函数原型*/
+int DeFileByPath(char* path, unsigned char* key, char* outpath);                                        /*文件读取填充加密函数原型*/
 
 
 /********************************************************************/
@@ -605,7 +607,7 @@ int SelfCheck()
 	*/
 	/*                         用CBC加密函数实现                          */
 	/********************************************************************/
-	int EN_FILE_BY_PATH(char* path, unsigned char* key, char* outpath)
+	int EnFileByPath(char* path, unsigned char* key, char* outpath)
 	{
 		ifstream ifile(path, ios::binary | ios::in | ios::_Nocreate);
 		if (!ifile)
@@ -660,7 +662,7 @@ int SelfCheck()
 	/*                         用CBC解密函数实现                          */
 	/********************************************************************/
 
-	int DE_FILE_BY_PATH(char* path, unsigned char* key, char* outpath)
+	int DeFileByPath(char* path, unsigned char* key, char* outpath)
 	{
 		ifstream ifile(path, ios::binary | ios::in | ios::_Nocreate);
 		if (!ifile)
