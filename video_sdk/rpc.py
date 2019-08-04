@@ -3,7 +3,7 @@ from flask_jsonrpc import JSONRPC
 from flask_cors import CORS
 
 import os
-
+import screen
 from water_mark import *
 
 import aes
@@ -83,12 +83,12 @@ def de_file_by_path(path, key, outpath):
 @jsonrpc.method('GetThumbnailByPath')
 def get_thumbnail_by_path(path, outpath):
     """
-    解密
-    :param path:
-    :param outpath:
-    :return:
+    提取截图
+    :param path:视频路径
+    :param outpath:截图路径
+    :return:无
     """
-    pass
+    screen.GetScreen(path, outpath)
 
 @app.route('/api/read_file', methods=['GET'])
 def read_file():
