@@ -4,24 +4,24 @@
       <div
         v-if="!loading"
         class="player"
-           style="text-align: center; width: 100%">
+          style="text-align: center; width: 100%">
         <video-player
           style="width: 100%;text-align: center;"
-                    class="vjs-custom-skin"
-                       ref="videoPlayer"
-                       :options="playerOptions"
-                       :playsinline="true"
-                       @play="onPlayerPlay($event)"
-                       @pause="onPlayerPause($event)"
-                       @ended="onPlayerEnded($event)"
-                       @loadeddata="onPlayerLoadeddata($event)"
-                       @waiting="onPlayerWaiting($event)"
-                       @playing="onPlayerPlaying($event)"
-                       @timeupdate="onPlayerTimeupdate($event)"
-                       @canplay="onPlayerCanplay($event)"
-                       @canplaythrough="onPlayerCanplaythrough($event)"
-                       @ready="playerReadied"
-                       @statechanged="playerStateChanged($event)">
+                  class="vjs-custom-skin"
+                  ref="videoPlayer"
+                  :options="playerOptions"
+                  :playsinline="true"
+                  @play="onPlayerPlay($event)"
+                  @pause="onPlayerPause($event)"
+                  @ended="onPlayerEnded($event)"
+                  @loadeddata="onPlayerLoadeddata($event)"
+                  @waiting="onPlayerWaiting($event)"
+                  @playing="onPlayerPlaying($event)"
+                  @timeupdate="onPlayerTimeupdate($event)"
+                  @canplay="onPlayerCanplay($event)"
+                  @canplaythrough="onPlayerCanplaythrough($event)"
+                  @ready="playerReadied"
+                  @statechanged="playerStateChanged($event)">
         </video-player>
       </div>
       <div v-else style="text-align: center">
@@ -32,7 +32,7 @@
     <div style="padding-top: 30px"></div>
     <el-card>
       <el-table
-        :data="tableData">
+        :data="tableData" max-height="500">
         <el-table-column
           prop="id"
           label="编号"
@@ -60,8 +60,22 @@
               >播放</el-button>
           </template>
         </el-table-column>
+
+        <el-table-column label="操作2">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="primary"
+              @click="downloadTest(scope.row.id)"
+              >下载</el-button>
+          </template>
+        </el-table-column>
+        
       </el-table>
     </el-card>
+    <button v-on:click="aaa('/Users/moyu/Downloads/01.mp4')">aaaaaaaa</button>
+    
+    
   </div>
 </template>
 
@@ -69,9 +83,25 @@
   import 'video.js/dist/video-js.css'
   import './style.css'
   import { videoPlayer } from 'vue-video-player'
+  import Rpc from '@/rpc/index'
+  import videoDownload from '@/api/video'
+  const axios = require('axios');
+
   export default {
     components:{videoPlayer},
     name: "index",
+    beforeMount(){
+      axios.post('http://47.104.148.221:8082/videos', {"_method": "GET", "_args": {}})
+        .then( (response)=> {
+          console.log(response);
+          this.tableData = response.data.videos;
+        });
+      // Rpc.readVideoList()
+      // .then( (response)=> {
+      //   console.log(response);
+      //   this.tableData = response.data.videos;
+      // });
+    },
     data() {
       return {
         loading: false,
@@ -125,15 +155,43 @@
       }
     },
     methods: {
+      aaa(test){
+        var tempp
+        tempp = Rpc.redaLocalFile(test)
+        console.log(tempp)
+        // this.sources = [{
+        //     type: "video/mp4",
+        //     // mp4
+        //     src: '#tempp',
+        //     // webm
+        //     // src: "https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm"
+        //   }]
+        //console.log(Rpc)
+      },
+      downloadTest(videoId){
+
+        axios.get('http://47.104.148.221:8082/videos/download/'+videoId)
+        .then( (response)=> {
+          console.log(response);
+        });
+        // videoDownload(videoId)
+        // Rpc.downloadFile(videoId)
+        // .then( (response)=> {
+        //   console.log(response);
+        // });
+      },
+      uploadFile(name){
+        
+      },
       // listen event
       onPlayerPlay(player) {
-         console.log('player play!', player)
+        console.log('player play!', player)
       },
       onPlayerPause(player) {
-         console.log('player pause!', player)
+        console.log('player pause!', player)
       },
       onPlayerEnded(player) {
-         console.log('player ended!', player)
+        console.log('player ended!', player)
       },
       onPlayerLoadeddata(player) {
         // console.log('player Loadeddata!', player)
@@ -142,10 +200,10 @@
         console.log('player Waiting!', player)
       },
       onPlayerPlaying(player) {
-         console.log('player Playing!', player)
+        console.log('player Playing!', player)
       },
       onPlayerTimeupdate(player) {
-         console.log('player Timeupdate!', player.currentTime())
+        console.log('player Timeupdate!', player.currentTime())
       },
       onPlayerCanplay(player) {
         // console.log('player Canplay!', player)

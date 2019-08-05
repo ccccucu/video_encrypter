@@ -90,7 +90,7 @@ def get_thumbnail_by_path(path, outpath):
     """
     screen.GetScreen(path, outpath)
 
-@app.route('/api/read_file', methods=['GET'])
+@app.route('/rpc/read_file', methods=['GET'])
 def read_file():
     path=request.args.get('path')
     if not path or not os.path.isabs(path):
