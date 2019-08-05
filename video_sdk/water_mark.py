@@ -15,7 +15,7 @@ def readColorImage(filename):
 
 def writeImage(filename, img):
 	cv2.imwrite(filename, img)
-	#print('Write "'+filename+'".')
+
     
 def rgb2ycc(img):
 	height = img.shape[0]
@@ -128,7 +128,7 @@ def reconstruct_video(path,  frames_dict):
     videoCapture = cv2.VideoCapture(path)
     fps = videoCapture.get(cv2.CAP_PROP_FPS)
     #fourcc = int(videoCapture.get(cv2.CAP_PROP_FOURCC))
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    fourcc = cv2.VideoWriter_fourcc(*'X264')
     size = (int(1344), int(525))
     vw = cv2.VideoWriter(os.path.dirname(path)+'/temp.mp4', fourcc, fps, size)
     frame_num=[]
@@ -156,16 +156,16 @@ def reconstruct_video(path,  frames_dict):
         success, frame = videoCapture.read()
     vw.release()
 
-def apply_watermarking(path,message):
+def apply_watermarking(path,message, outpath):
     video = VideoFileClip(path)
     frames_dict = add_watermark(path,video, message)
     reconstruct_video(path,  frames_dict)
 
-def extract_message_from_video(video):
+def extract_message_from_video(path,video):
 
     for (time, frame) in video.iter_frames(with_times=True):
         if time>=1.0:
-            image = extract_image_from_clip(video, time)
+            image = extract_image_from_clip(path,video, time)
             rgb_img = readColorImage(image)
             print(rgb_img.shape)
             for i in range(0, rgb_img.shape[0] - 256 - 260):

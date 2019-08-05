@@ -15,15 +15,15 @@ CORS(app)
 
 
 @jsonrpc.method('EnWaterMakerByPath')
-def en_water_mark_by_path(path,conent, outpath):
+def en_water_mark_by_path(path, content, outpath):
     """
     加水印
     :param path: 输入路径
-    :param conent: 水印内容
+    :param content: 水印内容
     :param outpath: 输出路径
     :return: 是否成功
     """
-    msg = 'bjfu' + conent
+    msg = 'bjfu' + content
     secret = ''
     for i in range(len(msg)):
         s = bin(ord(msg[i])).replace('0b', '')
@@ -41,12 +41,12 @@ def en_water_mark_by_path(path,conent, outpath):
     subprocess.call(strcmd, shell=True)
     file = workplace + '/temp.mp4'
     wavNameNew1 = workplace + '/audio.m4a'
-    strcmd1 = "ffmpeg -i " + file + " -i " + wavNameNew1 + " -c:v copy -c:a aac -strict experimental " + outpath
+    strcmd1 = "ffmpeg -i " + file + " -i " + wavNameNew1 + " -c:v copy -c:a aac -strict experimental " + outpath + " -y"
     subprocess.call(strcmd1, shell=True)
     return True
 
 
-@jsonrpc.method('DnWaterMakerByPath')
+@jsonrpc.method('DeWaterMakerByPath')
 def de_water_mark_by_path(path):
     """
     解水印
@@ -54,7 +54,7 @@ def de_water_mark_by_path(path):
     :return: 水印内容
     """
     video = VideoFileClip(path)
-    msg = extract_message_from_video(video)
+    msg = extract_message_from_video(path,video)
     print(msg)
     return msg
 

@@ -1,10 +1,17 @@
 /* eslint-disable space-before-blocks */
-import axios from '@/utils/request'
+import axios from 'axios'
 
 const BASE_URL = 'http://0.0.0.0:10086'
 
+const service = axios.create({
+  baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
+  withCredentials: true, // send cookies when cross-domain requests
+  timeout: 50000000 // request timeout
+})
+
+
 export function callRpc(method, params) {
-    return axios({
+    return service({
         url: `${BASE_URL}/rpc`,
         method: 'post',
         data: {
@@ -18,29 +25,29 @@ export function callRpc(method, params) {
 
 var Rpc = {}
 
-Rpc.enWaterMarkByPath = function(path, outpath) {
+Rpc.enWaterMarkByPath = function(path,content, outpath) {
     return callRpc('EnWaterMakerByPath', {
         'path': path,
+        'content': content,
         'outpath': outpath
     })
 }
 
-Rpc.redaLocalFile = function(path){
+Rpc.deWaterMarkByPath = function(path) {
+  return callRpc('DeWaterMakerByPath', {
+    'path': path,
+  })
+}
+
+Rpc.readLocalFile = function(path){
     //console.log(`${BASE_URL}/api/read_file`)
     return axios.get(`${BASE_URL}/rpc/read_file`, { params: {'path': path} })
 }
 
-Rpc.downloadFile = function(path){
-    // return axios.get('http://47.104.148.221:8082/videos/download/'+ path)
-    return axios.get('http://47.104.148.221:8082/videos/download/'+ path)
+Rpc.readLocalUrl = function(path){
+  return `file://${path}`
 }
 
-Rpc.readVideoList = function(){
-    return axios.post('http://47.104.148.221:8082/videos', {"_method": "GET", "_args": {}})
-    // .then( (response)=> {
-    //   console.log(response);
-    //   this.tableData = response.data.videos;
-    // });
-}
+
 
 export default Rpc;
