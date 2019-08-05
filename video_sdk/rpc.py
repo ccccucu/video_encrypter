@@ -54,7 +54,7 @@ def de_water_mark_by_path(path):
     :return: 水印内容
     """
     video = VideoFileClip(path)
-    msg = extract_message_from_video(video)
+    msg = extract_message_from_video(path,video)
     print(msg)
     return msg
 
