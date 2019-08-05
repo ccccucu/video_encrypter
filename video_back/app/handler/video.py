@@ -5,6 +5,7 @@ from easyapi_tools.errors import BusinessError
 from flask_jwt import jwt_required, current_identity
 import app.core as controller
 import app.service as service
+from app.config import Config
 
 class VideoHandler(easyapi.FlaskBaseHandler):
     __controller__ = controller.VideoController
@@ -18,9 +19,9 @@ def video_upload():
     try:
         file = request.files['file']
         controller.VideoController.upload_video(file=file,
-                                                origin_path=current_app.config.ORIGIN_VIDEO_UPLOAD_PATH,
-                                                encrpty_path=current_app.config.ENCRYPT_VIDEO_PATH,
-                                                thumnail_path=current_app.config.VIDEO_THUMBNAIL_PATH
+                                                origin_path=Config.ORIGIN_VIDEO_UPLOAD_PATH,
+                                                encrpty_path=Config.ENCRYPT_VIDEO_PATH,
+                                                thumnail_path=Config.VIDEO_THUMBNAIL_PATH
                                                 )
     except easyapi.BusinessError as e:
         return jsonify(**{
@@ -39,7 +40,7 @@ def video_download(id):
     try:
         video = controller.VideoController.get(id)
         video_uuid = video['uuid']
-        return send_file(os.path.join(current_app.config.ENCRYPT_VIDEO_PATH, video_uuid))
+        return send_file(os.path.join(Config.ENCRYPT_VIDEO_PATH, video_uuid))
     except easyapi.BusinessError as e:
         return jsonify(**{
             'msg': e.err_info,
