@@ -28,16 +28,15 @@
         <span>解析结果</span>
       </div>
       <el-table
-        :data="tableData">
+        :data="waterMarkInfo">
         <el-table-column
           prop="key"
           label="属性"
-          width="80">
+          width="180">
         </el-table-column>
         <el-table-column
           prop="value"
-          label="值"
-          width="180">
+          label="值">
         </el-table-column>
       </el-table>
     </el-card>
@@ -52,7 +51,7 @@
     data() {
       return {
         current_file: "",
-        tableData: [
+        waterMarkInfo: [
         ]
       }
     },
@@ -66,7 +65,14 @@
       },
       handleParserClick() {
         Rpc.deWaterMarkByPath(this.current_file).then((resp)=>{
+          if (resp.data.code) {
+            // 出错
+          }
           if (resp.data.result) {
+            this.waterMarkInfo.push({
+              key :'原始内容',
+              value: resp.data.result
+            })
             console.log(resp)
           }
         })
