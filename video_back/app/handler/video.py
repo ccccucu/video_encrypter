@@ -40,7 +40,7 @@ def video_download(id):
     try:
         video = controller.VideoController.get(id)
         video_uuid = video['uuid']
-        return send_file(os.path.join(Config.ENCRYPT_VIDEO_PATH, video_uuid))
+        return send_file(os.path.join(Config.ENCRYPT_VIDEO_PATH, video_uuid+'.mp4'))
     except easyapi.BusinessError as e:
         return jsonify(**{
             'msg': e.err_info,

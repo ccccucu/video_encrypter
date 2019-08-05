@@ -129,7 +129,8 @@
             // 存入本地完成后 加水印
             this.progressStatus.value = 50
             const water_path = Path.resolve('./', 'water_'+row.uuid)
-            Rpc.enWaterMarkByPath(path, 'test',water_path).then((resp)=>{
+            debugger
+            Rpc.clientReadVideo(path, row.secret_key,'test',water_path).then((resp)=>{
               if (resp.data.result) {
                 // 加水印成功
                 this.progressStatus.value = 100
