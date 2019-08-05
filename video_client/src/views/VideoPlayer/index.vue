@@ -119,7 +119,8 @@
       handleListPlayClick(row) {
         // 点击播放按钮的回调
         this.loading = true
-        const path = Path.resolve('./', row.uuid)
+        const video_name = row.uuid+'.mp4'
+        const path = Path.resolve('./', video_name)
         const writer = FS.createWriteStream(path)
         this.progressStatus.value = 10
         // 下载视频
@@ -128,8 +129,7 @@
           writer.on('finish', () => {
             // 存入本地完成后 加水印
             this.progressStatus.value = 50
-            const water_path = Path.resolve('./', 'water_'+row.uuid)
-            debugger
+            const water_path = Path.resolve('./', 'water_'+video_name)
             Rpc.clientReadVideo(path, row.secret_key,'test',water_path).then((resp)=>{
               if (resp.data.result) {
                 // 加水印成功
