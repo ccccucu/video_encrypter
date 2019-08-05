@@ -161,11 +161,11 @@ def apply_watermarking(path,message, outpath):
     frames_dict = add_watermark(path,video, message)
     reconstruct_video(path,  frames_dict)
 
-def extract_message_from_video(video):
+def extract_message_from_video(path,video):
 
     for (time, frame) in video.iter_frames(with_times=True):
         if time>=1.0:
-            image = extract_image_from_clip(video, time)
+            image = extract_image_from_clip(path,video, time)
             rgb_img = readColorImage(image)
             print(rgb_img.shape)
             for i in range(0, rgb_img.shape[0] - 256 - 260):
