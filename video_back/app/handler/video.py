@@ -18,17 +18,24 @@ easyapi.register_api(app=video_bp, view=VideoHandler, endpoint='video_api', url=
 def video_upload():
     try:
         file = request.files['file']
-        controller.VideoController.upload_video(file=file,
+        id = controller.VideoController.upload_video(file=file,
                                                 origin_path=Config.ORIGIN_VIDEO_UPLOAD_PATH,
                                                 encrpty_path=Config.ENCRYPT_VIDEO_PATH,
                                                 thumnail_path=Config.VIDEO_THUMBNAIL_PATH
                                                 )
+
     except easyapi.BusinessError as e:
         return jsonify(**{
             'msg': e.err_info,
             'code': e.code,
         }), e.http_code
-    return jsonify(code=200, msg='上传成功')
+    #return jsonify(code=200, msg='上传成功')
+    return jsonify(**{
+        'msg': '上传成功',
+        'code': 200,
+        'id': id
+    })
+
 
 
 @video_bp.route('/videos/download/<int:id>',methods=['GET','POST']) #不写,methods=['GET','POST'] 默认是get
