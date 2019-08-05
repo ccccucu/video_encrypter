@@ -78,7 +78,7 @@ def de_file_by_path(path, key, outpath):
     :param outpath:
     :return:
     """
-    return aes.aes_encrypt_by_path(path, key, outpath)
+    return aes.aes_decrypt_by_path(path, key, outpath)
 
 @jsonrpc.method('ClientReadVideo')
 def client_read_video(path, key, watermark, outpath):
@@ -88,9 +88,9 @@ def client_read_video(path, key, watermark, outpath):
     :param outpath:截图路径
     :return:无
     """
-    (path, encrpty_path) = os.path.split(path)
-    origin_file = 'raw_'+ encrpty_path
-    origin_file_path = os.path.join(path, origin_file)
+    (base_path, encrpty_file) = os.path.split(path)
+    origin_file = 'raw_'+ encrpty_file
+    origin_file_path = os.path.join(base_path, origin_file)
 
     de_file_by_path(path=path, key=key, outpath=origin_file_path)
     en_water_mark_by_path(path=origin_file_path, content=watermark, outpath=outpath)
