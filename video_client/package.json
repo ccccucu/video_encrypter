@@ -31,6 +31,7 @@
     "path": "^0.12.7",
     "path-to-regexp": "2.4.0",
     "url": "^0.11.0",
+    "videojs-flash": "^2.2.0",
     "vue": "2.6.10",
     "vue-router": "3.0.6",
     "vue-video-player": "^5.0.2",

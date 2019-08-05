@@ -14,6 +14,8 @@ import router from './router'
 
 import '@/icons' // icon
 import '@/permission' // permission control
+import VueVideoPlayer from 'vue-video-player'
+require('videojs-flash');
 
 /**
  * If you don't want to use mock-server
@@ -28,7 +30,14 @@ import '@/permission' // permission control
 Vue.use(ElementUI, { locale })
 
 Vue.config.productionTip = false
+// require videojs style
+import 'video.js/dist/video-js.css'
+// import 'vue-video-player/src/custom-theme.css'
 
+Vue.use(VueVideoPlayer, /* {
+  options: global default options,
+  events: global videojs events
+} */)
 new Vue({
   el: '#app',
   router,

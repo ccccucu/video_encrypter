@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+      <div class="app-container">
     <el-card>
       <div slot="header" class="clearfix">
         <span>水印解析</span>
@@ -46,20 +46,13 @@
 </template>
 
 <script>
+  import Rpc from '@/rpc/index'
 
   export default {
     data() {
       return {
-        curent_file: "",
+        current_file: "",
         tableData: [
-          {
-            key: 'IP',
-            value: '0.0.0.0',
-          },
-          {
-            key: '用户',
-            value: '测试用户',
-          }
         ]
       }
     },
@@ -69,10 +62,14 @@
       handleUpload(file, fileList) {
         // 上传新的文件的回调
         console.log(file)
-        this.curent_file = file.raw.path
+        this.current_file = file.raw.path
       },
       handleParserClick() {
-        // 解析水印的回调
+        Rpc.deWaterMarkByPath(this.current_file).then((resp)=>{
+          if (resp.data.result) {
+            console.log(resp)
+          }
+        })
       }
     }
   }

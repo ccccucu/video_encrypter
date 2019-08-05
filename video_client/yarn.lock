@@ -10034,7 +10034,7 @@ videojs-contrib-media-sources@4.7.2:
     video.js "^5.17.0 || ^6.2.0"
     webwackify "0.1.6"
 
-videojs-flash@^2.1.0:
+videojs-flash@^2.1.0, videojs-flash@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/videojs-flash/-/videojs-flash-2.2.0.tgz#92aa47855eafb4d71cb041c768936e97de5aca7c"
   dependencies:
