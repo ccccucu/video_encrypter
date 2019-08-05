@@ -15,7 +15,7 @@ def readColorImage(filename):
 
 def writeImage(filename, img):
 	cv2.imwrite(filename, img)
-	#print('Write "'+filename+'".')
+
     
 def rgb2ycc(img):
 	height = img.shape[0]
