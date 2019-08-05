@@ -46,7 +46,7 @@ class VideoController(easyapi.BaseController):
         # 加密
         key = util.ranstr(32)
         res = rpc.en_file_by_path(origin_file, key, encrypt_file)
-        if not res:
+        if res > 0:
             raise easyapi.BusinessError(code=500, http_code=200, err_info="加密失败")
 
         dao.VideoDao.insert(ctx=easyapi.EasyApiContext(),
