@@ -20,7 +20,7 @@ LIB_MYAES = ctypes.cdll.LoadLibrary(LIBMYAES_PATH)
 def aes_encrypt(raw, key):
     raw_b =bytes(raw,encoding='utf-8') 
     datain = ctypes.create_string_buffer(raw_b)
-    keyin = ctypes.create_string_buffer(bytes(encoding='utf-8',32))
+    keyin = ctypes.create_string_buffer(bytes(key,encoding='utf-8'),32)
     buffer = ctypes.create_string_buffer(len(raw_b))
     LIB_MYAES.AESCBCEnc(datain,len(raw) , keyin, buffer)
     return buffer.value
