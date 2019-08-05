@@ -31,6 +31,18 @@ def aes_decrypt(en, key):
     LIB_MYAES.AESCBCDec(datain, len(en), keyin, buffer)
     return buffer.value
 
+def aes_encrypt_by_path(path, key, outpath):
+    key_buf =  ctypes.create_string_buffer(bytes(key, 32))
+    path_buf = ctypes.create_string_buffer(bytes(path, encoding='utf-8'))
+    outpath_buf = ctypes.create_string_buffer(bytes(outpath, encoding='utf-8'))
+    return LIB_MYAES.EnFileByPath(path_buf, key_buf, outpath_buf)
+
+def aes_decrypt_by_path(path, key, outpath):
+    key_buf =  ctypes.create_string_buffer(bytes(key, 32))
+    path_buf = ctypes.create_string_buffer(bytes(path, encoding='utf-8'))
+    outpath_buf = ctypes.create_string_buffer(bytes(outpath, encoding='utf-8'))
+    return LIB_MYAES.DeFileByPath(path_buf, key_buf, outpath_buf)
+
 if __name__ == "__main__":
     raw = bytes([0xdc, 0x95, 0xc0, 0x78, 0xa2, 0x40, 0x89, 0x89, 0xad, 0x48, 0xa2, 0x14, 0x92, 0x84, 0x20, 0x87,
     0x08, 0xc3, 0x74, 0x84, 0x8c, 0x22, 0x82, 0x33, 0xc2, 0xb3, 0x4f, 0x33, 0x2b, 0xd2, 0xe9, 0xd3])

@@ -1,11 +1,18 @@
 from flask import Flask, request, jsonify, send_file
 from flask_jsonrpc import JSONRPC
 from flask_cors import CORS
+
 import os
+import screen
+from water_mark import *
+
+import aes
 
 app = Flask(__name__)
 jsonrpc = JSONRPC(app, '/rpc')
 CORS(app)
+
+
 
 @jsonrpc.method('EnWaterMakerByPath')
 def en_water_mark_by_path(path,conent, outpath):
@@ -16,7 +23,27 @@ def en_water_mark_by_path(path,conent, outpath):
     :param outpath: 输出路径
     :return: 是否成功
     """
-    pass
+    msg = 'bjfu' + conent
+    secret = ''
+    for i in range(len(msg)):
+        s = bin(ord(msg[i])).replace('0b', '')
+        if (len(s) == 6):
+            s = '00' + s
+        if (len(s) == 7):
+            s = '0' + s
+        secret += s
+    message = list(map(int, secret))
+
+    workplace=os.path.dirname(path)
+    apply_watermarking(path, message, outpath)
+    wavNameNew = workplace+'/audio'
+    strcmd = "ffmpeg -i " + path + " -f wav " + wavNameNew + ".m4a" + " -y"
+    subprocess.call(strcmd, shell=True)
+    file = workplace + '/temp.mp4'
+    wavNameNew1 = workplace + '/audio.m4a'
+    strcmd1 = "ffmpeg -i " + file + " -i " + wavNameNew1 + " -c:v copy -c:a aac -strict experimental " + outpath
+    subprocess.call(strcmd1, shell=True)
+    return True
 
 
 @jsonrpc.method('DnWaterMakerByPath')
@@ -26,8 +53,10 @@ def de_water_mark_by_path(path):
     :param path: 输入路径
     :return: 水印内容
     """
-    pass
-
+    video = VideoFileClip(path)
+    msg = extract_message_from_video(video)
+    print(msg)
+    return msg
 
 @jsonrpc.method('EnFileByPath')
 def en_file_by_path(path, key, outpath):
@@ -37,7 +66,7 @@ def en_file_by_path(path, key, outpath):
     :param outpath:
     :return:
     """
-    pass
+    return aes.aes_encrypt_by_path(path, key, outpath)
 
 
 @jsonrpc.method('DeFileByPath')
@@ -49,30 +78,19 @@ def de_file_by_path(path, key, outpath):
     :param outpath:
     :return:
     """
-    pass
+    return aes.aes_encrypt_by_path(path, key, outpath)
 
-@jsonrpc.method('DeFileByPath')
-def de_file_by_path(path, key, outpath):
+@jsonrpc.method('GetThumbnailByPath')
+def get_thumbnail_by_path(path, outpath):
     """
-    解密
-    :param path:
-    :param key: 秘钥
-    :param outpath:
-    :return:
+    提取截图
+    :param path:视频路径
+    :param outpath:截图路径
+    :return:无
     """
-    pass
+    screen.GetScreen(path, outpath)
 
-@jsonrpc.method('DeFileByPath')
-def de_tbumbnail_by_path(path, outpath):
-    """
-    解密
-    :param path:
-    :param outpath:
-    :return:
-    """
-    pass
-
-@app.route('/api/read_file', methods=['GET'])
+@app.route('/rpc/read_file', methods=['GET'])
 def read_file():
     path=request.args.get('path')
     if not path or not os.path.isabs(path):

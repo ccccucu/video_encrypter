@@ -1,11 +1,13 @@
 /*
 程序采用字节流的形式进行加解密，将输入的密钥，明文或者密文都看作是流的形式进行操作
 */
-extern "C" {
 #include <stdio.h>
-#include <time.h>       
+#include <time.h>     
+#include <fstream> 
+#include "AES.h" 
 #define Num_OF_AES_Round 14          //定义256比特对应轮数
 #define Size_OF_AES_Block 16        //定义分块字节数
+using namespace std;
 
 /*定义S盒,操作方式：只读*/
 const unsigned char Sbox[256] = {
@@ -179,23 +181,9 @@ const unsigned char initvec[16] = {
 	0x39, 0xef, 0x8b, 0xc9, 0xdb, 0x5f, 0xea, 0xb7, 0xa6, 0x68, 0x19, 0x21, 0xaf, 0xb1, 0x3d, 0x17,
 };
 
-void SubBytes(unsigned char *state, const unsigned char box[256]);                                         /*字节代换函数原型*/
-void ShiftRows(unsigned char *state);                                                                      /*行移位函数原型*/
-void InvShiftRows(unsigned char *state);                                                                   /*逆行移位函数原型*/
-void AddRoundKey(unsigned char *state, unsigned char *RndKey, int round);                                  /*轮密钥加函数原型*/
-void MixColumn(unsigned char *state);                                                                      /*列混淆函数原型*/
-void InvMixColumn(unsigned char *state);                                                                   /*逆向列混淆函数原型*/
-void KeyExpansion(unsigned char *key, unsigned char *RndKey);                                              /*密钥扩展函数原型*/
-void Encrypt(unsigned char *datain, unsigned char *RndKey, unsigned char *dataout);                        /*加密函数原型*/
-void Decrypt(unsigned char *datain, unsigned char *RndKey, unsigned char *dataout);                        /*解密函数原型*/
-int AESCBCEnc(unsigned char *datain, unsigned long int length, unsigned char *key, unsigned char *dataout);/*CBC加密函数原型*/
-int AESCBCDec(unsigned char *datain, unsigned long int length, unsigned char *key, unsigned char *dataout);/*CBC加密函数原型*/
-int SelfCheck();    
-
-
 /********************************************************************/
 /*                        字节代换函数实现                          */
-/*
+/*f
 输入：state指向待处理字符串;box数组指明是加密还是解密
 输出：字节代换后的state数组
 主要思想:根据所给表格实行查表运算
@@ -594,6 +582,109 @@ int SelfCheck()
 
 	return 0;
 }
+/********************************************************************/
+	/*                 读文件，填充位数，加密，写入文件                 */
+	/*
+	输入：视频文件的本地路径path，秘钥key
+	输出：输出路径path
+	返回：0，输出文件；1，读文件错误；2，写文件错误
+	*/
+	/*                         用CBC加密函数实现                          */
+	/********************************************************************/
+	int EnFileByPath(char* path, unsigned char* key, char* outpath)
+	{
+		printf("P %s",outpath);
+		ifstream ifile(path, ios::in );
+		if (!ifile)
+		{
+			return 1;
+		}
+		ifile.seekg(0, ios::end);
+		unsigned long int sizeofopen = ifile.tellg();//读取文件的位数
+		ifile.seekg(0, ios::beg);
+		unsigned char * p = new unsigned char[sizeofopen+16];
+		for (int i = 0; i < sizeofopen; i++)
+		{
+			ifile.read((char*)&p[i], sizeof(unsigned char));
+		}
+		ifile.close();
+		unsigned long int bytes = 16 - sizeofopen % 16;
+		for (int i = sizeofopen; i < sizeofopen + bytes - 1; i++)
+		{
+			p[i] = 0x00;
+		}
+		p[sizeofopen + bytes - 1] = bytes;
+		unsigned long int sizeofbytes = sizeofopen + bytes;
+		unsigned char * np = new unsigned char[sizeofbytes +16];
+		int isCBC = AESCBCEnc(p, sizeofbytes, key, np);
+		ofstream ofile(outpath,  ios::binary|ios::out);
+		printf("en %i", isCBC);
+		if (!ofile)
+		{
+			delete []p;
+			delete []np;
+			printf("fails");
+			return 2;
+		}
+		for (int i = 0; i < sizeofbytes; i++)
+		{
+			ofile.write((char*)&np[i], sizeof(unsigned char));
+		}
+		
+		ofile.close();
+		delete[] p;
+		delete[] np;
+		return 0;
+		
+		
+	}
+
+	/********************************************************************/
+	/*                 读文件，解密，反填充，写入文件                 */
+	/*
+	输入：加密的本地路径path，秘钥key
+	输出：输出路径path
+	返回：0，输出文件；1，读文件错误；2，写文件错误
+	*/
+	/*                         用CBC解密函数实现                          */
+	/********************************************************************/
+
+	int DeFileByPath(char* path, unsigned char* key, char* outpath)
+	{
+		ifstream ifile(path,  ios::binary |ios::in);
+		if (!ifile)
+		{
+			return 1;
+		}
+		ifile.seekg(0, ios::end);
+		unsigned long int sizeofopen = ifile.tellg();//读取文件的位数
+		ifile.seekg(0, ios::beg);//返回开头
+		unsigned char * p = new unsigned char[sizeofopen];
+		for (int i = 0; i < sizeofopen; i++)
+		{
+			ifile.read((char*)&p[i], sizeof(unsigned char));
+		}
+		ifile.close();
+		unsigned char * np = new unsigned char[sizeofopen];
+		int isCBC = AESCBCDec(p, sizeofopen, key, np);//np存储解密数据
+		int fillcount = np[sizeofopen - 1];
+		int sizeofwrite = sizeofopen - fillcount; //写文件的大小
+		ofstream ofile(outpath, ios::binary | ios::out);
+		if (!ofile)
+		{
+			delete[] p;
+			delete[] np;
+			return 2;
+		}
+		for (int i = 0; i < sizeofwrite; i++)
+		{
+			ofile.write((char*)&np[i], sizeof(unsigned char));
+		}
+		ofile.close();
+		delete[] p;
+		delete[] np;
+		return 0;
+	}
 
 
 /********************************************************************/
@@ -762,4 +853,3 @@ int SelfCheck()
 // 	return 0;
 // }
 
-}
