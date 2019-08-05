@@ -1,5 +1,6 @@
 import axios from '@/utils/request'
 
+//登录并获取token
 export function login(data) {
   let d = {'type':'admin', 'password':'123456'}
   return axios({
@@ -9,6 +10,7 @@ export function login(data) {
   })
 }
 
+//获得当前用户信息，by token，token在http HEAD种
 export function getInfo(token) {
   return axios({
     url: '/api/current_user',
@@ -16,6 +18,7 @@ export function getInfo(token) {
   })
 }
 
+//登出
 export function logout() {
   return axios({
     url: '/user/logout',
