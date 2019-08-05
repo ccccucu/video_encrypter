@@ -6,7 +6,7 @@ import os
 from  video_sdk import screen
 from video_sdk.water_mark import *
 
-import aes
+from video_sdk import aes
 
 app = Flask(__name__)
 jsonrpc = JSONRPC(app, '/rpc')
