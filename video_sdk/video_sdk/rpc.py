@@ -3,8 +3,8 @@ from flask_jsonrpc import JSONRPC
 from flask_cors import CORS
 
 import os
-import screen
-from water_mark import *
+from  video_sdk import screen
+from video_sdk.water_mark import *
 
 import aes
 
