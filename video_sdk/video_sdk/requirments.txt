@@ -1,0 +1,7 @@
+Flask-JSONRPC
+flask
+flask-cors
+
+moviepy
+opencv-python
+Pillow
