@@ -30,7 +30,7 @@ def jwt_init():
                 password = kwargs.get('password', None)
                 user = dao.UserDao.get(query = {'account': account, 'password': password})
                 if not user:
-                    return None
+                    raise JWTError('Bad Request', '用户名或密码错误')
                 return dict(user)
             except (OperationalError, IntegrityError ) as e:
                 raise JWTError('Bad Request', str(e))
@@ -76,12 +76,19 @@ def jwt_init():
 
     return custom_jwt
 
-
+# 生成token的新载荷
 def new_payload(identity):
-    iat = datetime.utcnow()
-    exp = iat + current_app.config.get('JWT_EXPIRATION_DELTA')
-    nbf = iat + current_app.config.get('JWT_NOT_BEFORE_DELTA')
-    return {'exp': exp, 'iat': iat, 'nbf': nbf, 'identity': dict(identity)}
+
+    # “exp”: 过期时间
+    # “nbf”: 表示当前时间在nbf里的时间之前，则Token不被接受
+    # “iss”: token签发者
+    # “aud”: 接收者
+    # “iat”: 发行时间
+
+    iat = datetime.utcnow()  # 发行时间
+    exp = iat + current_app.config.get('JWT_EXPIRATION_DELTA')  # 过期时间 3600*24*30*12 秒
+    nbf = iat + current_app.config.get('JWT_NOT_BEFORE_DELTA')  # 表示当前时间在nbf里的时间之前，则Token不被接受
+    return {'exp': exp, 'iat': iat, 'nbf': nbf, 'identity': dict(identity)}  # 有效用户信息载荷
 
 
 def new_token(identity):
