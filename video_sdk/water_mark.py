@@ -15,7 +15,7 @@ def readColorImage(filename):
 
 def writeImage(filename, img):
 	cv2.imwrite(filename, img)
-	#print('Write "'+filename+'".')
+
     
 def rgb2ycc(img):
 	height = img.shape[0]
@@ -156,7 +156,7 @@ def reconstruct_video(path,  frames_dict):
         success, frame = videoCapture.read()
     vw.release()
 
-def apply_watermarking(path,message):
+def apply_watermarking(path,message, outpath):
     video = VideoFileClip(path)
     frames_dict = add_watermark(path,video, message)
     reconstruct_video(path,  frames_dict)
