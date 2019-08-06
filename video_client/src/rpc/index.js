@@ -39,6 +39,15 @@ Rpc.deWaterMarkByPath = function(path) {
   })
 }
 
+Rpc.clientReadVideo = function(path, key, watermark, outpath) {
+  return callRpc('ClientReadVideo', {
+    'path': path,
+    'key': key,
+    'watermark': watermark,
+    'outpath': outpath
+  })
+}
+
 Rpc.readLocalFile = function(path){
     //console.log(`${BASE_URL}/api/read_file`)
     return axios.get(`${BASE_URL}/rpc/read_file`, { params: {'path': path} })

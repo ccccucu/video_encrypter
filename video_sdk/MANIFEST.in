@@ -1,0 +1,3 @@
+include video_sdk/aesc/target/linux/*.so
+include video_sdk/aesc/target/macos/*.so
+include svideo_sdk/aesc/target/windows/*.dll
