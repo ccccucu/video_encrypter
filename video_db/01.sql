@@ -1,0 +1,1 @@
+ALTER TABLE `distribut_videos` ADD COLUMN `video_title`  varchar(255) NOT NULL DEFAULT '' AFTER `video_uuid`;
