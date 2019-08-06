@@ -49,17 +49,18 @@ class VideoController(easyapi.BaseController):
         if res > 0:
             raise easyapi.BusinessError(code=500, http_code=200, err_info="加密失败")
 
-        dao.VideoDao.insert(ctx=easyapi.EasyApiContext(),
-                            data={"title": title, "uuid": uuid_1,
-                                  "original_file_size": original_file_size,
-                                  "allow_play_time": "2019-08-02 16:37:45",
-                                  "delete_admin_user_id": 1,
-                                  "release_time": "2019-08-02 16:37:45",
-                                  "release_admin_user_id": 1,
-                                  "upload_admin_user_id": 1,
-                                  "upload_organization_id": 1,
-                                  "secret_key": key
-                                  })
+        video_id = dao.VideoDao.insert(ctx=easyapi.EasyApiContext(),
+                                       data={"title": title, "uuid": uuid_1,
+                                             "original_file_size": original_file_size,
+                                             "allow_play_time": "2019-08-02 16:37:45",
+                                             "delete_admin_user_id": 1,
+                                             "release_time": "2019-08-02 16:37:45",
+                                             "release_admin_user_id": 1,
+                                             "upload_admin_user_id": 1,
+                                             "upload_organization_id": 1,
+                                             "secret_key": key
+                                             })
+        return video_id
 
     @classmethod
     def query_distribute_videos(cls, query, pager, sorter, current_user):
