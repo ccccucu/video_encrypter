@@ -11,11 +11,6 @@
           width="100">
         </el-table-column>
         <el-table-column
-          prop="video_title"
-          label="视频名称"
-          width="220">
-        </el-table-column>
-        <el-table-column
           prop="organization_account"
           label="分发单位"
           width="200">
@@ -23,28 +18,32 @@
         <el-table-column
           prop="created_at"
           label="分配时间"
-          width="120">
+          width="160">
         </el-table-column>
         <el-table-column
           prop="created_by"
           label="分配者"
-          width="100">
+          width="120">
         </el-table-column>
 
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button
               size="mini"
-              type="warning">删除</el-button>
+              type="warning"
+              @click="onDeleteClick(scope.$index, scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
 
+      <el-button
+        size="mini"
+        type="primary"
+        @click="onNewClick">分配视频</el-button>
 
       <CreatorDialog
         :visible="newDialogShow"
-        :video_uuid = "video_uuid"
-        :video_title = "video_title"
+        :video_id = "video_id"
         @onOK="onNewOK"
         @onCancel="onNewCancel">
       </CreatorDialog>
@@ -74,8 +73,7 @@
     components: { CreatorDialog },
     mixins: [commonTable],
     props: {
-      video_uuid: String,
-      video_title: String
+      video_id: Number
     },
     data() {
       return {
@@ -87,7 +85,7 @@
         queryMethod: queryDistributVideos,
 
         //查询条件
-        query: { uuid: this.video_uuid }
+        query: { video_id: this.video_id } //应该是video_id 但是后端未更新   { id: this.video_id }
       }
     },
     methods: {
@@ -95,6 +93,7 @@
     },
 
     mounted(){
+      window.vue = this
     }
   }
 </script>

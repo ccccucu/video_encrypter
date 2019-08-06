@@ -30,10 +30,11 @@
           width="80">
           <template slot-scope="props">
             <el-card>
+
               <DistributeTable
-                :video_uuid="props.row.uuid"
-                :video_title="props.row.title">
+                :video_id="props.row.video_id">
               </DistributeTable>
+
             </el-card>
           </template>
         </el-table-column>
@@ -119,25 +120,13 @@
           _like_title: undefined
         },
 
-        // tableData: [{
-        //   id: 1,
-        //   title: '测试视频',
-        //   upload_unit: '测试单位',
-        //   created_by: '测试管理员',
-        //   created_at: '2019-01-01 12:00:00'
-        // }]
-        data: []  //视频列表
-
-
+        data: [],  //视频列表
 
       }
     },
     created() {
     },
     methods: {
-      //Rewrite minxin onSearch() 查询
-      // onSearch() {
-      // },
       //Rewrite minxin onReset()  查询条件重置
       onReset() {
         this.query = {  //条件查询 dict
@@ -148,16 +137,9 @@
         this.fetchData()
       },
 
-      //获取视频列表信息
-      setVideos(query) {
-        queryVideos({_page:1,_per_page:30,_like_title:query}).then(res => {
-          this.data = res.data.videos;
-        })
-      },
-
     },
     mounted() {
-      this.setVideos("")
+
     }
 
   }
