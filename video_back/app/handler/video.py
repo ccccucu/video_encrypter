@@ -51,7 +51,7 @@ def video_download(id):
         }), e.http_code
 
 
-@video_bp.route('/videos/distribute', methods=['GET', 'POST'])  # 不写,methods=['GET','POST'] 默认是get
+@video_bp.route('/videos/distribute', methods=['POST'])  # 不写,methods=['GET','POST'] 默认是get
 @jwt_required()
 def video_distribute():
     """
