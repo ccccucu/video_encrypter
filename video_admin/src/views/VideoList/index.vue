@@ -4,7 +4,7 @@
 
     <div class="app-container">
       <!-- <div>模板列表</div> -->
-      <br>
+
       <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
         <el-form :inline="true" v-model="query">
           <el-form-item label="视频标题：">
@@ -24,13 +24,17 @@
         :data="data"
         v-loading="tableLoading"
         @sort-change="onSort">
-        <el-table-column type="expand">
+        <el-table-column
+          type="expand"
+          label="分发单位"
+          width="80">
           <template slot-scope="props">
-            <el-form label-position="left" inline class="demo-table-expand">
-              <el-form-item label="分发单位">
-                <span>{{ props.row.name }}</span>
-              </el-form-item>
-            </el-form>
+            <el-card>
+              <DistributeTable
+                :video_uuid="props.row.uuid"
+                :video_title="props.row.title">
+              </DistributeTable>
+            </el-card>
           </template>
         </el-table-column>
         <el-table-column
@@ -86,11 +90,15 @@
 <script>
   //mixin
   import commonTable from '@/mixins/table'
+  import  DistributeTable from './components/DistributeTable'
   //视频接口
   import { queryVideos, deleteVideo, updateVideo, getVideo, createVideo } from '@/api/video'
 
   export default {
     mixins: [commonTable],
+    components :{
+      DistributeTable
+    },
     data() {
       return {
         //配置minxin种curd api方法：

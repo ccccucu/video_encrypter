@@ -47,7 +47,6 @@
   import { queryVideos, deleteVideo, updateVideo, getVideo, createVideo } from '@/api/video'
 
   export default {
-    inject: ['reload'],
     mixins: [commonTable],
     data() {
       return {
