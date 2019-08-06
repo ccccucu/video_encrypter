@@ -61,6 +61,19 @@ class VideoController(easyapi.BaseController):
                                   "secret_key": key
                                   })
 
+    @classmethod
+    def query_distribute_videos(cls, query, pager, sorter, current_user):
+        """
+        获取分发给本人的视频
+        :param user:
+        :return:
+        """
+        ctx = easyapi.EasyApiContext()
+        return super().query(ctx=ctx,
+                             query={**query, 'organization_id': current_user.get('organization_id', 1)},
+                             pager=pager,
+                             sorter=sorter)
+
 
 class WatermarkLogController(easyapi.BaseController):
     __dao__ = dao.WatermarkLogDao

@@ -52,20 +52,30 @@ def video_download(id):
 
 
 @video_bp.route('/videos/distribute', methods=['GET', 'POST'])  # 不写,methods=['GET','POST'] 默认是get
-def video_distribute(id):
+@jwt_required()
+def video_distribute():
     """
+    获取分发给本人的视频
     :param id:
     :return:
     """
     try:
-        video = controller.VideoController.get(id)
-        video_uuid = video['uuid']
-        return send_file(os.path.join(Config.ENCRYPT_VIDEO_PATH, video_uuid + '.mp4'))
+        body = request.json
+        query, pager, sorter = VideoHandler.__url_condition__.parser(body.get("_args"))
+        data, total = controller.VideoController.query_distribute_videos(query=query, sorter=sorter, pager=pager,
+                                                                         current_user=current_identity)
+        return jsonify(**{
+            'msg': "",
+            'code': 200,
+            'videos': data,
+            'total': total
+        })
     except easyapi.BusinessError as e:
         return jsonify(**{
             'msg': e.err_info,
             'code': e.code,
         }), e.http_code
+
 
 class WatermarkLogHandler(easyapi.FlaskBaseHandler):
     __controller__ = controller.WatermarkLogController
