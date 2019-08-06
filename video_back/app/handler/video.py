@@ -7,14 +7,17 @@ import app.core as controller
 import app.service as service
 from app.config import Config
 
+
 class VideoHandler(easyapi.FlaskBaseHandler):
     __controller__ = controller.VideoController
+
 
 video_bp = Blueprint(name='video', import_name='video', url_prefix='')
 
 easyapi.register_api(app=video_bp, view=VideoHandler, endpoint='video_api', url='/videos')
 
-@video_bp.route('/videos/upload',methods=['POST']) #不写,methods=['GET','POST'] 默认是get
+
+@video_bp.route('/videos/upload', methods=['POST'])  # 不写,methods=['GET','POST'] 默认是get
 def video_upload():
     try:
         file = request.files['file']
@@ -31,7 +34,7 @@ def video_upload():
     return jsonify(code=200, msg='上传成功')
 
 
-@video_bp.route('/videos/download/<int:id>',methods=['GET','POST']) #不写,methods=['GET','POST'] 默认是get
+@video_bp.route('/videos/download/<int:id>', methods=['GET', 'POST'])  # 不写,methods=['GET','POST'] 默认是get
 def video_download(id):
     """
     :param id:
@@ -40,7 +43,7 @@ def video_download(id):
     try:
         video = controller.VideoController.get(id)
         video_uuid = video['uuid']
-        return send_file(os.path.join(Config.ENCRYPT_VIDEO_PATH, video_uuid+'.mp4'))
+        return send_file(os.path.join(Config.ENCRYPT_VIDEO_PATH, video_uuid + '.mp4'))
     except easyapi.BusinessError as e:
         return jsonify(**{
             'msg': e.err_info,
@@ -48,7 +51,21 @@ def video_download(id):
         }), e.http_code
 
 
-
+@video_bp.route('/videos/distribute', methods=['GET', 'POST'])  # 不写,methods=['GET','POST'] 默认是get
+def video_distribute(id):
+    """
+    :param id:
+    :return:
+    """
+    try:
+        video = controller.VideoController.get(id)
+        video_uuid = video['uuid']
+        return send_file(os.path.join(Config.ENCRYPT_VIDEO_PATH, video_uuid + '.mp4'))
+    except easyapi.BusinessError as e:
+        return jsonify(**{
+            'msg': e.err_info,
+            'code': e.code,
+        }), e.http_code
 
 class WatermarkLogHandler(easyapi.FlaskBaseHandler):
     __controller__ = controller.WatermarkLogController
@@ -56,9 +73,8 @@ class WatermarkLogHandler(easyapi.FlaskBaseHandler):
 
 watermark_log_bp = Blueprint(name='watermark_logs', import_name='watermark_logs', url_prefix='')
 
-easyapi.register_api(app=watermark_log_bp, view=WatermarkLogHandler, endpoint='watermark_log_api', url='/watermark_logs')
-
-
+easyapi.register_api(app=watermark_log_bp, view=WatermarkLogHandler, endpoint='watermark_log_api',
+                     url='/watermark_logs')
 
 
 class DownloadLogHandler(easyapi.FlaskBaseHandler):

@@ -2,6 +2,8 @@ import platform
 import os
 import ctypes
 
+mock = False
+LIB_MYAES = None
 SYS_PLATFORM = platform.system()
 SYS_ARCHITECTURE = platform.architecture()[0]
 LIBMYAES_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'aesc', 'target')
@@ -15,7 +17,8 @@ elif SYS_PLATFORM == 'Darwin'  and SYS_ARCHITECTURE == '64bit':
 else:
     raise ImportError("不支持的平台")
 
-LIB_MYAES = ctypes.cdll.LoadLibrary(LIBMYAES_PATH)
+if not  mock:
+    LIB_MYAES = ctypes.cdll.LoadLibrary(LIBMYAES_PATH)
 
 def aes_encrypt(raw, key):
     raw_b =bytes(raw,encoding='utf-8') 
