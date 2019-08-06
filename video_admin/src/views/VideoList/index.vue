@@ -104,11 +104,12 @@
         queryMethod: queryVideos,
 
         //配置mixin query
+        resource_name: 'video',
+
+        //配置mixin query
         query: {  //条件查询 dict  //api查询条件dict
           _like_title: undefined
         },
-        //配置mixin query
-        resource_name: 'video',
 
         // tableData: [{
         //   id: 1,
