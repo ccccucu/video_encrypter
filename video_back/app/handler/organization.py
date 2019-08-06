@@ -15,7 +15,7 @@ easyapi.register_api(app=organization_bp, view=OrganizationHandler, endpoint='or
 
 
 class DistributVideoHandler(easyapi.FlaskBaseHandler):
-    __controller__ = controller.DistributVideoController
+    __controller__ = controller.DistributeVideoController
 
 distribut_video_bp = Blueprint(name='distribut_videos', import_name='distribut_videos', url_prefix='')
 
