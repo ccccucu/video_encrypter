@@ -3,17 +3,14 @@
     <el-form :model="data" label-width="80px" ref="templateForm">
 
       <el-form-item label="选择部门">
-        <el-select v-model="query.organization_id"
-                   filterable
+        <el-select v-model="data.organization_id"
                    clearable
-                   remote
-                   :remote-method="setOrganizations"
                    placeholder="请选择">
           <el-option
-            v-for="video in videos"
-            :key="user.id"
-            :label="user.title"
-            :value="user.uuid">
+            v-for="organization in organizations"
+            :key="organization.id"
+            :label="organization.name"
+            :value="organization.id">
           </el-option>
         </el-select>
       </el-form-item>
@@ -26,56 +23,52 @@
   </el-dialog>
 </template>
 <script>
-import commonNewDialog from '@/mixins/new_dialog'
-
-import queryOrganizations from '@/api/organization'
-import queryVideos from '@/api/video'
+  import { queryOrganizations }  from '@/api/organization'
+  import { queryDistributVideos, createDistributVideo } from '@/api/distribut_video'
 
 export default {
-  mixins: [commonNewDialog],
   props: {
-    video_uuid: String
+    video_id: Number,
+    visible: Boolean,
+    onCancel: Function,
+    onOK: Function
   },
   data() {
     return {
       data: {
-        video_uuid: this.video_uuid,
-        video_title:'',
-        organization_id:'',
-        organization_account:''
+        video_id: this.video_id,
+        video_uuid: "",
+        video_title:'测试video_id',
+        organization_id: undefined,
+        organization_account: "**部门"
       },
 
-      query: {},
-
-      videos: [], //视频列表
       organizations: [],  //部门列表
-
 
     }
   },
   methods: {
-    //获取视频信息
-    // setVideos(query){
-    //   queryVideos({_order_by: 'create_at', _desc: true}).then(res => {
-    //       this.videos = res.data.videos
-    //   })
-    // },
+    handleCancel() {
+      this.$emit('onCancel');
+    },
+    handleSubmit() {
+      this.$emit('onOK', this.data);
+    },
     //获取部门信息
-    // setOrganizations(query){
-    //   queryOrganizations({_order_by: 'create_at', _desc: true}).then(res => {
-    //     this.organizations = res.data.organizations
-    //   })
-    // },
-    setOrganizations(query){}
+    setOrganizations(){
+      queryOrganizations({}).then(res => {
+        this.organizations = res.data.organizations
+      })
+    },
 
+  },
+  created(){
 
   },
   mounted() {
-    // this.setVideos("")
-    this.setOrganizations("")
+    this.setOrganizations()
+
   }
-
-
 
 }
 </script>
