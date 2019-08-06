@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div  >
     <el-card>
       <div
         v-show="!loading"
@@ -79,7 +79,8 @@
           src: ""
         },
         playerOptions: {
-          height: '360',
+          height: '525',
+          width: '1344',
           autoplay: true,
           muted: false,
           language: 'en',
@@ -130,12 +131,13 @@
             // 存入本地完成后 加水印
             this.progressStatus.value = 50
             const water_path = Path.resolve('./', 'water_'+video_name)
-            Rpc.clientReadVideo(path, row.secret_key,'test',water_path).then((resp)=>{
+            Rpc.clientReadVideo(path, row.secret_key,'121.56.29.239',water_path).then((resp)=>{
               if (resp.data.result) {
                 // 加水印成功
                 this.progressStatus.value = 100
                 this.playerOptions.sources[0].src = Rpc.readLocalUrl(water_path)
                 this.player.load()
+                console.log(this.player)
                 this.loading = false
               } else {
                 // 失败

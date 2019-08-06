@@ -16,9 +16,13 @@ protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: { secure: true
 
 function createWindow () {
   // Create the browser window.
-  win = new BrowserWindow({ width: 800, height: 600, webPreferences: {
+  win = new BrowserWindow({
+    fullscreen: true,
+    movable: false,
+    minimizable: false,
+    webPreferences: {
     nodeIntegration: true,
-    webSecurity: false
+    webSecurity: false,
   } })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -33,6 +37,14 @@ function createWindow () {
 
   win.on('closed', () => {
     win = null
+  })
+
+  win.on('resize', () => {
+    win.setFullScreen(true)
+  })
+
+  win.on('setFullScreen', ()=>{
+    win.setFullScreen(true)
   })
 }
 
@@ -67,6 +79,7 @@ app.on('ready', async () => {
   }
   createWindow()
 })
+
 
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {

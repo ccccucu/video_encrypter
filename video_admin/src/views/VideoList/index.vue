@@ -65,9 +65,6 @@
             <el-button
             size="mini"
             type="primary">查看</el-button>
-            <el-button
-              size="mini"
-              type="primary">播放</el-button>
           </template>
         </el-table-column>
       </el-table>

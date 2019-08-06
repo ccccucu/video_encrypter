@@ -13,9 +13,11 @@
         ref="upload"
         drag
         :auto-upload="false"
-        action="api/videos/upload"
+        action="/api/videos/upload"
+        accept="audio/mp4,video/mp4"
+        :limit="1"
         :on-success = "handleSuccess"
-
+        :on-change= "handleFileChange"
         :multiple = "false"
       >
         <!--:file-list="uploadFileList"-->
@@ -61,13 +63,11 @@
 
         data: [],  //视频列表
 
-        form:Object,
-        input:'',
+        query: {
+            title: undefined
+        },
 
         videoId: undefined,
-        query: {  //条件查询 dict  //api查询条件dict
-          title: undefined
-        },
 
         // uploadFileList: [],//上传文件列表
 
@@ -76,7 +76,12 @@
     created() {
     },
     methods: {
-
+      // 上传前改变文件名字
+      handleFileChange(file, fileList) {
+          if (file.status === 'ready') {
+            this.query.title = file.raw.name
+          }
+      },
       //当文件上传成功后
       handleSuccess(response, file, fileList){
         var type = ''
