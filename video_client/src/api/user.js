@@ -2,11 +2,10 @@
 import axios from '@/utils/request'
 
 export function login(data) {
-  let d = { 'type': 'admin', 'password': '123456' }
   return axios({
     url: '/api/login',
     method: 'post',
-    data: d
+    data: data
   })
 }
 

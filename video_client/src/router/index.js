@@ -119,7 +119,10 @@ export const asyncRoutes = [
       path: '',
       name: 'video_checker',
       component: () => import('@/views/VideoCheck/index'),
-      meta: { title: '视频解水印'}
+      meta: {
+        title: '视频解水印',
+        roles: ['admin']
+      }
     }]
   },
   {

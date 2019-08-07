@@ -26,9 +26,9 @@ def jwt_init():
         else:
             # 用户登录
             try:
-                account = kwargs.get('account', None)
+                account = kwargs.get('username', None)
                 password = kwargs.get('password', None)
-                user = dao.UserDao.get(query = {'account': account, 'password': password})
+                user = dao.UserDao.get(query={'account': account, 'password': password})
                 if not user:
                     raise JWTError('Bad Request', '用户名或密码错误')
                 return dict(user)

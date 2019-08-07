@@ -6,7 +6,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'super-secret'
 
     MYSQL_USER = 'root'  # 数据库用户名
-    MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD') or ''  # 数据库密码Root!!2018
+    MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD') or 'Root!!2018'  # 数据库密码Root!!2018
     MYSQL_HOST = 'localhost'  # ip or host
     MYSQL_PORT = 3306  # 数据库端口
     MYSQL_DATABASE = 'video_encrypter'  # 数据库名称

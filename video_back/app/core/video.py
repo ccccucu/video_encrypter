@@ -70,8 +70,16 @@ class VideoController(easyapi.BaseController):
         :return:
         """
         ctx = easyapi.EasyApiContext()
+        distributes = dao.DistributeVideoDao.query(ctx=ctx,
+                                                   query={'organization_id': current_user.get('organization_id', 1)},
+                                                   pager=None,
+                                                   sorter=None)
+        if not distributes:
+            return [], 0
         return super().query(ctx=ctx,
-                             query={**query, 'organization_id': current_user.get('organization_id', 1)},
+                             query={**query,
+                                    '_in_id': [d.get('video_id') for d in distributes]
+                                    },
                              pager=pager,
                              sorter=sorter)
 
