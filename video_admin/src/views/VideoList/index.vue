@@ -32,7 +32,7 @@
             <el-card>
 
               <DistributeTable
-                :video_id="props.row.video_id">
+                :video_id="props.row.id">
               </DistributeTable>
 
             </el-card>
