@@ -1,21 +1,24 @@
 <template>
-  <div  >
-    <el-card>
-      <div
-        v-show="!loading"
-        class="player"
-        style="text-align: center; width: 100%">
-        <video-player  class="vjs-custom-skin"
-                       ref="videoPlayer"
-                       :options="playerOptions"
-                       :playsinline="true">
-        </video-player>
+  <div>
+    <el-card >
+      <div  id="watermark-area">
+        <div
+          v-show="!loading"
+          class="player"
+          style="text-align: center; width: 100%">
+          <video-player  class="vjs-custom-skin"
+                         ref="videoPlayer"
+                         :options="playerOptions"
+                         :playsinline="true">
+          </video-player>
+        </div>
+        <div v-show="loading" style="text-align: center"  >
+          <el-progress type="circle" :percentage="progressStatus.value" :status="progressStatus.status"></el-progress>
+          <div v-if="progressStatus.status === ''">视频解密中, 请稍后</div>
+          <div v-if="progressStatus.status === 'exception'">{{progressStatus.err}}</div>
+        </div>
       </div>
-      <div v-show="loading" style="text-align: center">
-        <el-progress type="circle" :percentage="progressStatus.value" :status="progressStatus.status"></el-progress>
-        <div v-if="progressStatus.status === ''">视频解密中, 请稍后</div>
-        <div v-if="progressStatus.status === 'exception'">{{progressStatus.err}}</div>
-      </div>
+
     </el-card>
     <div style="padding-top: 30px"></div>
     <el-card>
@@ -101,6 +104,9 @@
         this.tableData = resp.data.videos
         this.video_total = resp.data.total
       })
+      this.$nextTick(()=>{
+        this.addWaterMark()
+      })
     },
     mounted() {
     },
@@ -110,6 +116,35 @@
       }
     },
     methods: {
+      watermark(str) {
+        let can = document.createElement('canvas');
+        let font_size = 40*(4/str.length);
+        //设置画布的长宽
+        can.width = font_size*str.length*2;
+        can.height = font_size*str.length*2;
+        let cans = can.getContext('2d');
+        //旋转角度
+        cans.rotate(-30 * Math.PI / 180);
+        cans.font = font_size + 'pxa';
+        //设置填充绘画的颜色、渐变或者模式
+        cans.fillStyle = 'rgba(0,0,0,0.8)';
+        //设置文本内容的当前对齐方式
+        cans.textAlign = 'left';
+        //设置在绘制文本时使用的当前文本基线
+        cans.textBaseline = 'Middle';
+        //在画布上绘制填色的文本（输出的文本，开始绘制文本的X坐标位置，开始绘制文本的Y坐标位置）
+        cans.fillText(str, 0, font_size*str.length);
+        let background = 'url(' + can.toDataURL('image/png') + ') left top repeat';
+        return background;
+      },
+      addWaterMark() {
+        let ct_element = document.getElementById('watermark-area');
+        let str = '121.56.29.239';
+        if(str){
+          let bg = this.watermark(str);
+          ct_element.style.background = bg;
+        }
+      },
       handleVideoError(event) {
         console.log(event)
 

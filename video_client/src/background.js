@@ -42,7 +42,7 @@ function createWindow () {
   win.on('resize', () => {
     win.setFullScreen(true)
   })
-
+  
   win.on('setFullScreen', ()=>{
     win.setFullScreen(true)
   })

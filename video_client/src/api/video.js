@@ -2,7 +2,7 @@ import {ipcMain} from 'electron'
 import axios from '@/utils/request'
 import httpAdapter from '@/utils/http'
 
-const BASE_URL = 'http://47.104.148.221:8082'
+const BASE_URL = 'http://0.0.0.0:5005/'
 
 export function videoDownload(videoId) {
     return axios({
@@ -14,7 +14,7 @@ export function videoDownload(videoId) {
   }
 
   export function queryVideos (args)  {
-    return axios.post('/api/videos',
+    return axios.post('/api/videos/distribute',
       {"_method": "GET", "_args": args})
   }
 
