@@ -6,12 +6,7 @@
         :default-sort="{prop: 'id', order: 'descending'}"
         @sort-change="onSort">
         <el-table-column
-          prop="video_uuid"
-          label="视频uuid"
-          width="100">
-        </el-table-column>
-        <el-table-column
-          prop="organization_account"
+          prop="organization.name"
           label="分发单位"
           width="200">
         </el-table-column>

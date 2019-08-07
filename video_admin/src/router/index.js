@@ -55,44 +55,6 @@ export const constantRoutes = [
     },]
   },
 
-
-  
-
-
-  // {
-  //   path: '/example',
-  //   component: Layout,
-  //   redirect: '/example/table',
-  //   name: 'Example',
-  //   meta: { title: 'Example', icon: 'example' },
-  //   children: [
-  //     {
-  //       path: 'table',
-  //       name: 'Table',
-  //       component: () => import('@/views/mixinTest/index'),
-  //       meta: { title: 'Table', icon: 'table' }
-  //     },
-  //     {
-  //       path: 'tree',
-  //       name: 'Tree',
-  //       component: () => import('@/views/tree/index'),
-  //       meta: { title: 'Tree', icon: 'tree' }
-  //     }
-  //   ]
-  // },
-
-  // {
-  //   path: '/form',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'Form',
-  //       component: () => import('@/views/form/index'),
-  //       meta: { title: 'Form', icon: 'form' }
-  //     }
-  //   ]
-  // }
 ]
 
 /**
@@ -100,17 +62,6 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
-
-  // {
-  //   path: 'external-link',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-  //       meta: { title: 'External Link', icon: 'link' }
-  //     }
-  //   ]
-  // },
 
   {
     path: '/video',
@@ -123,7 +74,7 @@ export const asyncRoutes = [
       component: () => import('@/views/VideoUpload/index'),
       meta: { title: "视频上传"}
     },
-  
+
     {
       path: 'manager',
       name: 'video_manager',
@@ -139,14 +90,14 @@ export const asyncRoutes = [
   },
 
   {
-    path: '/unit',
+    path: '/organization',
     component: Layout,
     redirect: 'list',
     meta: { title: '单位管理'},
     children: [{
       path: 'list',
-      name: 'unit_list',
-      component: () => import('@/views/dashboard/index'),
+      name: 'organization_list',
+      component: () => import('@/views/OrganizationList/index'),
       meta: { title: "单位列表"}
     },
     {

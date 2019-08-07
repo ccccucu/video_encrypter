@@ -1,13 +1,14 @@
 <template>
+  <div class="app-container">
+
 
     <div class="app-container">
       <!-- <div>模板列表</div> -->
-      <h1>视频播放</h1>
-      <br>
+
       <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
         <el-form :inline="true" v-model="query">
-          <el-form-item label="水印标题：">
-            <el-input v-model="query.watermark" placeholder="水印标题"></el-input>
+          <el-form-item label="管理员姓名：">
+            <el-input v-model="query._like_name" placeholder="请输入管理员姓名"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onSearch">查询</el-button>
@@ -17,52 +18,55 @@
           </el-form-item>
         </el-form>
       </el-col>
+
+
       <el-table
         :data="data"
         v-loading="tableLoading"
         @sort-change="onSort">
+
         <el-table-column
           prop="id"
-          label="编号"
+          label="id"
           sortable
           width="80">
         </el-table-column>
         <el-table-column
-          prop="watermark"
-          label="水印"
+          prop="account"
+          label="编号"
           sortable
           width="180">
         </el-table-column>
         <el-table-column
-          prop="video.title"
-          label="视频标题"
+          prop="name"
+          label="姓名"
           sortable>
         </el-table-column>
         <el-table-column
-          prop="organization.name"
-          label="单位"
+          prop="responsible_name"
+          label="单位负责人姓名"
           sortable>
         </el-table-column>
         <el-table-column
-          prop="user.name"
-          label="用户"
+          prop="organization_duty_phone"
+          label="单位值班电话"
           sortable>
         </el-table-column>
         <el-table-column
-          prop="ip"
-          label="IP"
+          prop="responsible_phone"
+          label="单位负责人电话"
           sortable>
         </el-table-column>
         <el-table-column
-          prop="time"
-          label="时间"
+          prop="father_organization.name"
+          label="上级单位"
           sortable>
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button
-              size="mini"
-              type="primary">查看</el-button>
+            size="mini"
+            type="primary">查看</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -78,39 +82,55 @@
       </el-col>
 
     </div>
+  </div>
 </template>
 
 <script>
   //mixin
   import commonTable from '@/mixins/table'
-  //水印接口
-  import { queryWatermarkLogs, deleteWatermarkLog, updateWatermarkLog, getWatermarkLog, createWatermarkLog } from '@/api/watermark_log'
+  //视频接口
+  import { queryOrganizations, deleteOrganization, updateOrganization, getOrganization, createOrganization } from '@/api/organization'
+
   export default {
     mixins: [commonTable],
     data() {
       return {
-
         //配置minxin种curd api方法：
-        newMethod: createWatermarkLog,
-        deleteMethod: deleteWatermarkLog,
-        updateMethod: updateWatermarkLog,
-        getMethod: getWatermarkLog,
-        queryMethod: queryWatermarkLogs,
+        newMethod: createOrganization,
+        deleteMethod: deleteOrganization,
+        updateMethod: updateOrganization,
+        getMethod: getOrganization,
+        queryMethod: queryOrganizations,
 
         //配置resource_name
-        resource_name: 'watermark_log',
+        resource_name: 'organization',
 
         //配置mixin query
         query: {  //条件查询 dict  //api查询条件dict
-          //_like_watermark: undefined,
+          _like_name: undefined
         },
 
-        data: [],  //列表
+        data: [],  //视频列表
 
       }
     },
     created() {
     },
-    methods: {}
+    methods: {
+      //Rewrite minxin onReset()  查询条件重置
+      onReset() {
+        this.query = {  //条件查询 dict
+          _like_title: undefined
+        }
+        this.order = { _order_by: 'id', _desc: true } //order 在
+        this.pages._page = 1
+        this.fetchData()
+      },
+
+    },
+    mounted() {
+
+    }
+
   }
 </script>

@@ -51,12 +51,12 @@
           width="180">
         </el-table-column>
         <el-table-column
-          prop="upload_unit"
+          prop="upload_organization.name"
           label="上传单位"
           sortable>
         </el-table-column>
         <el-table-column
-          prop="created_by"
+          prop="upload_admin.name"
           label="上传管理员"
           sortable>
         </el-table-column>
@@ -109,7 +109,7 @@
         getMethod: getVideo,
         queryMethod: queryVideos,
 
-        //配置mixin query
+        //配置resource_name
         resource_name: 'video',
 
         //配置mixin query

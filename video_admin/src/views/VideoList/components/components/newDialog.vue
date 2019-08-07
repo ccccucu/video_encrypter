@@ -37,10 +37,8 @@ export default {
     return {
       data: {
         video_id: this.video_id,
-        video_uuid: "",
-        video_title:'测试video_id',
         organization_id: undefined,
-        organization_account: "**部门"
+        created_by: "管理员"
       },
 
       organizations: [],  //部门列表
