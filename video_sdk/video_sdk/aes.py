@@ -11,7 +11,7 @@ LIBMYAES_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'aesc',
 if SYS_PLATFORM == 'Linux'  and SYS_ARCHITECTURE == '64bit':
     LIBMYAES_PATH = os.path.join(LIBMYAES_PATH, 'linux', 'libmyaes.so')
 elif SYS_PLATFORM == 'Windows'  and SYS_ARCHITECTURE == '64bit':
-    LIBMYAES_PATH = os.path.join(LIBMYAES_PATH, 'windows', 'libmyaes.so')
+    LIBMYAES_PATH = os.path.join(LIBMYAES_PATH, 'windows', 'libmyaes.dll')
 elif SYS_PLATFORM == 'Darwin'  and SYS_ARCHITECTURE == '64bit':
     LIBMYAES_PATH = os.path.join(LIBMYAES_PATH, 'macos', 'libmyaes.so')
 else:

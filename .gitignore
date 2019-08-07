@@ -109,5 +109,5 @@ node_modules
 
 .DS_Store
 
-.mp4
-.mov
+*.mp4
+*.mov
