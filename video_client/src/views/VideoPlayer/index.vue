@@ -64,6 +64,7 @@
   import {videoDownload, queryVideos} from '@/api/video'
   import FS from 'fs'
   import Path from 'path'
+  import store from '@/store'
   export default {
     name: "index",
     data() {
@@ -139,7 +140,7 @@
       },
       addWaterMark() {
         let ct_element = document.getElementById('watermark-area');
-        let str = '121.56.29.239';
+        let str = this.$store.state.user.name;
         if(str){
           let bg = this.watermark(str);
           ct_element.style.background = bg;
@@ -166,7 +167,7 @@
             // 存入本地完成后 加水印
             this.progressStatus.value = 50
             const water_path = Path.resolve('./', 'water_'+video_name)
-            Rpc.clientReadVideo(path, row.secret_key,'121.56.29.239',water_path).then((resp)=>{
+            Rpc.clientReadVideo(path, row.secret_key, this.$store.state.user.name,water_path).then((resp)=>{
               if (resp.data.result) {
                 // 加水印成功
                 this.progressStatus.value = 100
