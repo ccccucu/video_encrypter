@@ -1,12 +1,14 @@
 import platform
 import os
 import ctypes
+import time
 
 mock = False
 LIB_MYAES = None
 SYS_PLATFORM = platform.system()
 SYS_ARCHITECTURE = platform.architecture()[0]
-LIBMYAES_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'aesc', 'target')
+LIBMYAES_PATH = os.path.join(os.getcwd(),'./target')
+print(LIB_MYAES)
 
 if SYS_PLATFORM == 'Linux'  and SYS_ARCHITECTURE == '64bit':
     LIBMYAES_PATH = os.path.join(LIBMYAES_PATH, 'linux', 'libmyaes.so')
