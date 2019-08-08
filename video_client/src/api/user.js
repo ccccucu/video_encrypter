@@ -1,9 +1,10 @@
 /* eslint-disable prefer-const */
 import axios from '@/utils/request'
+import {SERVER_URL} from './index'
 
 export function login(data) {
   return axios({
-    url: '/api/login',
+    url: `${SERVER_URL}/login`,
     method: 'post',
     data: data
   })
@@ -11,7 +12,7 @@ export function login(data) {
 
 export function getInfo(token) {
   return axios({
-    url: '/api/current_user',
+    url: `${SERVER_URL}/current_user`,
     method: 'get',
   })
 }

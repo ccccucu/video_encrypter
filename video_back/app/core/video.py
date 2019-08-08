@@ -5,7 +5,7 @@ import uuid
 import time
 import datetime
 from werkzeug.datastructures import FileStorage
-#from video_sdk import rpc
+from video_sdk import rpc
 import app.dao as dao
 from app.utils import util
 from easyapi.sql import Pager, Sorter
@@ -114,7 +114,7 @@ class VideoController(easyapi.BaseController):
 
         # 加密
         key = util.ranstr(32)
-        #res = rpc.en_file_by_path(origin_file, key, encrypt_file)
+        res = rpc.en_file_by_path(origin_file, key, encrypt_file)
         res = 0
         if res > 0:
             raise easyapi.BusinessError(code=500, http_code=200, err_info="加密失败")
