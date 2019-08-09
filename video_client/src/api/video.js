@@ -17,4 +17,31 @@ export function videoDownload(videoId) {
       {"_method": "GET", "_args": args})
   }
 
+function get_uuid(){
+  var s = [];
+  var hexDigits = "0123456789abcdef";
+  for (var i = 0; i < 36; i++) {
+    s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+  }
+  s[14] = "4";
+  s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);
+  s[8] = s[13] = s[18] = s[23] = "-";
 
+  var uuid = s.join("");
+  return uuid;
+}
+
+
+export function makeWater (video_id, user_info)  {
+  var time = new Date();
+  return axios.post(`${SERVER_URL}/watermark_logs`,
+    {
+      "video_id": video_id,
+      "organization_id": user_info.organization_id,
+      "user_id": user_info.id,
+      // "ip": user_info.ip,
+      // "time": time.toLocaleString(),
+      "watermark": get_uuid(),
+    })
+
+}
