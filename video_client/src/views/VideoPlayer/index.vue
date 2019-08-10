@@ -61,7 +61,7 @@
 <script>
   import './style.css'
   import Rpc from '@/rpc/index'
-  import {videoDownload, queryVideos, makeWater} from '@/api/video'
+  import {videoDownload, queryVideos, postWaterMark, get_uuid} from '@/api/video'
   import FS from 'fs'
   import Path from 'path'
   import UserMixin from '@/mixins/UserMixin'
@@ -176,10 +176,9 @@
                 this.progressStatus.value = 30
                 writer.on('finish', () =>{
                   // 存入本地完成后 加水印
-                  makeWater(row.id, this.userInfo).then((respp) => {
-                    respp_id = respp.id
-                    console.log(respp_id)
-                      Rpc.clientReadVideo(path, row.secret_key, respp_id,water_path).then((resp)=>{
+                  let water_mark =  get_uuid()
+                  postWaterMark(row.id, water_mark).then((respp) => {
+                      Rpc.clientReadVideo(path, row.secret_key, water_mark,water_path).then((resp)=>{
                         if (resp.data.result) {
                           // 加水印成功
                           this.progressStatus.value = 100
