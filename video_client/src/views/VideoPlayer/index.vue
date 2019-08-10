@@ -61,11 +61,14 @@
 <script>
   import './style.css'
   import Rpc from '@/rpc/index'
-  import {videoDownload, queryVideos} from '@/api/video'
+  import {videoDownload, queryVideos, makeWater} from '@/api/video'
   import FS from 'fs'
   import Path from 'path'
+  import UserMixin from '@/mixins/UserMixin'
+  import store from '@/store'
   export default {
     name: "index",
+    mixins:[UserMixin],
     data() {
       return {
         loading: false,
@@ -139,7 +142,7 @@
       },
       addWaterMark() {
         let ct_element = document.getElementById('watermark-area');
-        let str = '121.56.29.239';
+        let str = this.userInfo.name;
         if(str){
           let bg = this.watermark(str);
           ct_element.style.background = bg;
@@ -157,33 +160,52 @@
         this.loading = true
         const video_name = row.uuid+'.mp4'
         const path = Path.resolve('./', video_name)
+        const water_path = Path.resolve('./', 'water_'+video_name)
         const writer = FS.createWriteStream(path)
+        var respp_id
         this.progressStatus.value = 10
-        // 下载视频
-        videoDownload(row.id).then((resp) => {
-          this.progressStatus.value = 30
-          writer.on('finish', () => {
-            // 存入本地完成后 加水印
-            this.progressStatus.value = 50
-            const water_path = Path.resolve('./', 'water_'+video_name)
-            Rpc.clientReadVideo(path, row.secret_key,'121.56.29.239',water_path).then((resp)=>{
-              if (resp.data.result) {
-                // 加水印成功
+
+            if(fs.existsSync(path)){
                 this.progressStatus.value = 100
                 this.playerOptions.sources[0].src = Rpc.readLocalUrl(water_path)
                 this.player.load()
                 console.log(this.player)
-                this.loading = false
-              } else {
-                // 失败
-                this.progressStatus.status = 'exception'
-              }
-            })
-          });
-          resp.data.pipe(writer)
-        }).catch((err) => {
-          debugger
-        });
+            }else {
+              // 下载视频
+              videoDownload(row.id).then((resp) => {
+                this.progressStatus.value = 30
+                writer.on('finish', () =>{
+                  // 存入本地完成后 加水印
+                  makeWater(row.id, this.userInfo).then((respp) => {
+                    respp_id = respp.id
+                    console.log(respp_id)
+                      Rpc.clientReadVideo(path, row.secret_key, respp_id,water_path).then((resp)=>{
+                        if (resp.data.result) {
+                          // 加水印成功
+                          this.progressStatus.value = 100
+                          this.playerOptions.sources[0].src = Rpc.readLocalUrl(water_path)
+                          this.player.load()
+                          console.log(this.player)
+                          this.loading = false
+                        } else {
+                          // 失败
+                          this.progressStatus.status = 'exception'
+                        }
+                      })
+                  }),
+                
+
+                  this.progressStatus.value = 50
+
+                });
+                resp.data.pipe(writer)
+              }).catch((err) => {
+                debugger
+              });
+            }
+
+
+
       }
     }
   }
