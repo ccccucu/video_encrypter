@@ -13,7 +13,6 @@ app = Flask(__name__, template_folder=os.path.join(os.getcwd(), 'templates'),
             static_folder=os.path.join(os.getcwd(), 'static'))
 app.config.from_object(Config)
 
-app.register_blueprint(handler.admin_bp)
 app.register_blueprint(handler.user_bp)
 app.register_blueprint(handler.login_log_bp)
 

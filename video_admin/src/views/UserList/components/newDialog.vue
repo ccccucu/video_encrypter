@@ -1,8 +1,24 @@
 <template>
-  <el-dialog title="分配视频" :visible="visible" @close="handleCancel">
+  <el-dialog title="添加模板" :visible="visible" @close="handleCancel">
     <el-form :model="data" label-width="80px" ref="templateForm">
 
-      <el-form-item label="选择单位">
+      <el-form-item label="账号" prop="account">
+        <el-input v-model="data.account"></el-input>
+      </el-form-item>
+
+      <el-form-item label="编号" prop="uuid">
+        <el-input v-model="data.uuid"></el-input>
+      </el-form-item>
+
+      <el-form-item label="IP" prop="ip">
+        <el-input v-model="data.ip"></el-input>
+      </el-form-item>
+
+      <el-form-item label="姓名" prop="name">
+        <el-input v-model="data.name"></el-input>
+      </el-form-item>
+
+      <el-form-item label="所属单位">
         <el-select v-model="data.organization_id"
                    clearable
                    placeholder="请选择">
@@ -23,35 +39,27 @@
   </el-dialog>
 </template>
 <script>
-  import { queryOrganizations }  from '@/api/organization'
-  import { queryDistributVideos, createDistributVideo } from '@/api/distribut_video'
+import commonNewDialog from '@/mixins/new_dialog'
+import { queryOrganizations }  from '@/api/organization'
 
 export default {
-  props: {
-    video_id: Number,
-    visible: Boolean,
-    onCancel: Function,
-    onOK: Function
-  },
+  mixins: [commonNewDialog],
   data() {
     return {
       data: {
-        video_id: this.video_id,
-        organization_id: undefined,
-        created_by: "管理员"
+        uuid: '',
+        account: '',
+        password: '123456', //用户默认密码：123456
+        role: 'user',
+        ip: '',
+        name: '',
+        organization_id:0
       },
 
       organizations: [],  //部门列表
-
     }
   },
-  methods: {
-    handleCancel() {
-      this.$emit('onCancel');
-    },
-    handleSubmit() {
-      this.$emit('onOK', this.data);
-    },
+  methods:{
     //获取部门信息
     setOrganizations(){
       queryOrganizations({}).then(res => {
@@ -60,13 +68,10 @@ export default {
     },
 
   },
-  created(){
-
-  },
-  mounted() {
+  mounted(){
     this.setOrganizations()
+    window.vue = this
 
   }
-
 }
 </script>

@@ -1,11 +1,11 @@
 import easyapi
 import app.db as db
 
-
 from werkzeug.security import generate_password_hash
 
-class AdminDao(easyapi.BusinessBaseDao):
-    __tablename__ = 'admins'
+#用户和管理员都使用这一张表
+class UserDao(easyapi.BusinessBaseDao):
+    __tablename__ = "users"
     __db__ = db.mysql_db
 
     # @classmethod
@@ -21,10 +21,6 @@ class AdminDao(easyapi.BusinessBaseDao):
     #     if not  unscoped and 'deleted_at' not in data:
     #         new_data['deleted_at'] = None
     #     return new_data
-
-class UserDao(easyapi.BusinessBaseDao):
-    __tablename__ = "users"
-    __db__ = db.mysql_db
 
 
 class LoginLogDao(easyapi.BusinessBaseDao):

@@ -4,6 +4,7 @@ const getters = {
   token: state => state.user.token,      //token
   avatar: state => state.user.avatar,  //头像
   name: state => state.user.name,   //昵称或姓名
+  user: state => state.user.user,   //昵称或姓名
   roles: state => state.user.roles,   //用户角色
   permission_routes: state => state.permission.routes
 }
