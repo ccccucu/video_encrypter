@@ -49,6 +49,15 @@ module.exports = {
     },
     after: require('./mock/mock-server.js')
   },
+  pluginOptions:{
+    electronBuilder: {
+      "asar": false,
+      "extraResources": {
+        "from" : "./rpc.exe",
+        "to" :   "./rpc.exe"
+       }
+    }
+  },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
     // it can be accessed in index.html to inject the correct title.
@@ -59,6 +68,7 @@ module.exports = {
       }
     }
   },
+
   chainWebpack(config) {
     config.plugins.delete('preload') // TODO: need test
     config.plugins.delete('prefetch') // TODO: need test

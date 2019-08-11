@@ -55,10 +55,6 @@ export const constantRoutes = [
     },]
   },
 
-
-  
-
-
   // {
   //   path: '/example',
   //   component: Layout,
@@ -93,6 +89,11 @@ export const constantRoutes = [
   //     }
   //   ]
   // }
+
+
+
+  // 404 page must be placed at the end !!!
+  { path: '*', redirect: '/404', hidden: true }
 ]
 
 /**
@@ -111,6 +112,7 @@ export const asyncRoutes = [
   //     }
   //   ]
   // },
+
   {
     path: '/checker',
     redirect: '',
@@ -121,30 +123,28 @@ export const asyncRoutes = [
       component: () => import('@/views/VideoCheck/index'),
       meta: {
         title: '视频解水印',
-        roles: ['admin']
       }
     }]
   },
+  
   {
     path: '/watcher',
     component: Layout,
     redirect: '',
     children: [{
       path: '',
-      name: 'video_watcher',
+      name: 'video_watcher',  
       component: () => import('@/views/VideoPlayer/index'),
       meta: { title: '视频播放'}
     }]
   },
-
-  // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+ 
 ]
 
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
+  routes: constantRoutes,
 })
 
 const router = createRouter()

@@ -11,13 +11,15 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 // be closed automatically when the JavaScript object is garbage collected.
 let win
 
+var rpc
+
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: { secure: true, standard: true } }])
 
 function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({
-    fullscreen: true,
+    fullscreen: false,
     movable: false,
     minimizable: false,
     webPreferences: {
@@ -39,13 +41,13 @@ function createWindow () {
     win = null
   })
 
-  win.on('resize', () => {
-    win.setFullScreen(true)
-  })
+  // win.on('resize', () => {
+  //   win.setFullScreen(true)
+  // })
   
-  win.on('setFullScreen', ()=>{
-    win.setFullScreen(true)
-  })
+  // win.on('setFullScreen', ()=>{
+  //   win.setFullScreen(true)
+  // })
 }
 
 // Quit when all windows are closed.
@@ -69,6 +71,7 @@ app.on('activate', () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
+
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
     try {
@@ -77,6 +80,22 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
+  const { execFile } = require('child_process');
+  rpc = execFile('./rpc.exe')
+  rpc.on('close', ()=>{
+    app.quit()
+  })
+  rpc.on('exit', ()=>{
+    app.quit()
+  })
+  rpc.on('error', ()=>{
+    app.quit()
+  })
+  rpc.stdout.on('data', (data) => {
+    console.log(`stdout: ${data}`);
+  });
+
+  
   createWindow()
 })
 
