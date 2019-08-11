@@ -113,7 +113,3 @@ def read_file():
     if not path or not os.path.isabs(path):
         return jsonify(code=404, msg='没有对应的文件'), 200
     return send_file(path)
-
-
-
-app.run(port=10086, host='0.0.0.0')
