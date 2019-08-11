@@ -57,7 +57,7 @@ class UserController(easyapi.BaseController):
         user = dao.UserDao.get(query={'account':account})
         if user is not None:
             raise easyapi.BusinessError(code=404, http_code=404, err_info="该用户已注册")
-        res = super().insert(ctx=ctx, data=data)
+        super().insert(ctx=ctx, data=data)
 
 
 
