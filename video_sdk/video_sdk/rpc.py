@@ -3,10 +3,10 @@ from flask_jsonrpc import JSONRPC
 from flask_cors import CORS
 
 import os
-from  video_sdk import screen
-from video_sdk.water_mark import *
+from  . import screen
+from .water_mark import *
 
-from video_sdk import aes
+from . import aes
 
 app = Flask(__name__)
 jsonrpc = JSONRPC(app, '/rpc')
@@ -91,10 +91,10 @@ def client_read_video(path, key, watermark, outpath):
     (base_path, encrpty_file) = os.path.split(path)
     origin_file = 'raw_'+ encrpty_file
     origin_file_path = os.path.join(base_path, origin_file)
-
     de_file_by_path(path=path, key=key, outpath=origin_file_path)
     en_water_mark_by_path(path=origin_file_path, content=watermark, outpath=outpath)
-    return origin_file_path
+    os.remove(origin_file_path) # 删除原始文件
+    return outpath
 
 
 @jsonrpc.method('GetThumbnailByPath')
