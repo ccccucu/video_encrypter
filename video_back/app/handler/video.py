@@ -19,6 +19,7 @@ easyapi.register_api(app=video_bp, view=VideoHandler, endpoint='video_api', url=
 
 @video_bp.route('/videos/upload', methods=['POST'])  # 不写,methods=['GET','POST'] 默认是get
 def video_upload():
+
     try:
         file = request.files['file']
         id = controller.VideoController.upload_video(file=file,
@@ -87,6 +88,9 @@ def video_distribute():
 class WatermarkLogHandler(easyapi.FlaskBaseHandler):
     __controller__ = controller.WatermarkLogController
 
+    @jwt_required()
+    def post(self, *args, **kwargs):
+        return super().post()
 
 watermark_log_bp = Blueprint(name='watermark_logs', import_name='watermark_logs', url_prefix='')
 
