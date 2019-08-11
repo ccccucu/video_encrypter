@@ -12,12 +12,12 @@ export function videoDownload(videoId) {
     })
   }
 
-  export function queryVideos (args)  {
-    return axios.post(`${SERVER_URL}/videos/distribute`,
+export function queryVideos (args)  {
+    return axios.post(`${SERVER_URL}/videos`,
       {"_method": "GET", "_args": args})
   }
 
-function get_uuid(){
+export function get_uuid(){
   var s = [];
   var hexDigits = "0123456789abcdef";
   for (var i = 0; i < 36; i++) {

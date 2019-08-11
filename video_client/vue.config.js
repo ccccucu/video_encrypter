@@ -51,11 +51,12 @@ module.exports = {
   },
   pluginOptions:{
     electronBuilder: {
-      "asar": false,
-      "extraResources": {
-        "from" : "./rpc.exe",
-        "to" :   "./rpc.exe"
-       }
+      builderOptions: {
+          extraFiles: {
+            from: "./rpc.exe",
+            to: "./rpc.exe"
+          }
+      }
     }
   },
   configureWebpack: {

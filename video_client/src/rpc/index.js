@@ -1,7 +1,7 @@
 /* eslint-disable space-before-blocks */
 import axios from 'axios'
 
-const BASE_URL = 'http://0.0.0.0:10086'
+const BASE_URL = 'http://127.0.0.1:10086'
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url

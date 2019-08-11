@@ -5,6 +5,8 @@ import {
   createProtocol,
   installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
+const { execFile,exec } = require('child_process');
+
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -22,6 +24,7 @@ function createWindow () {
     fullscreen: false,
     movable: false,
     minimizable: false,
+    resizable: false,
     webPreferences: {
     nodeIntegration: true,
     webSecurity: false,
@@ -37,18 +40,34 @@ function createWindow () {
     win.loadURL('app://./index.html')
   }
 
+  win.maximize()
   win.on('closed', () => {
     win = null
   })
 
-  // win.on('resize', () => {
-  //   win.setFullScreen(true)
-  // })
-  
-  // win.on('setFullScreen', ()=>{
-  //   win.setFullScreen(true)
-  // })
+  win.on('resize', () => {
+    win.maximize()
+  })
+  if (process.platform === 'win32'){
+    rpc = execFile('./rpc.exe')
+// rpc.on('close', ()=>{
+//   app.quit()
+// })
+// rpc.on('exit', ()=>{
+//   app.quit()
+// })
+// rpc.on('error', ()=>{
+//   app.quit()
+// })
+rpc.stdout.on('data', (data) => {
+  console.log(`stdout: ${data}`);
+})
+  }
+
 }
+
+
+
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -80,25 +99,15 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
-  const { execFile } = require('child_process');
-  rpc = execFile('./rpc.exe')
-  rpc.on('close', ()=>{
-    app.quit()
-  })
-  rpc.on('exit', ()=>{
-    app.quit()
-  })
-  rpc.on('error', ()=>{
-    app.quit()
-  })
-  rpc.stdout.on('data', (data) => {
-    console.log(`stdout: ${data}`);
-  });
-
-  
   createWindow()
 })
 
+
+app.on('quit', ()=>{
+  if (process.platform === 'win32'){
+    exec('taskkill /F /pid '+rpc.pid);
+  }
+})
 
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
