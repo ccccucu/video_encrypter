@@ -14,34 +14,18 @@ def jwt_init():
 
     @custom_jwt.authentication_handler
     def authenticate(**kwargs):
-        login_type = kwargs.get('type', 'admin')
 
-        if login_type == 'admin':
-            #管理员登录
-            try:
-                account = kwargs.get('username', None)
-                password = kwargs.get('password', None)
-                user = dao.UserDao.get(query={'account': account, 'role': 'admin' })
-                password_hash = user['password']
+        try:
+            account = kwargs.get('username', None)
+            password = kwargs.get('password', None)
+            user = dao.UserDao.get(query={'account': account})
+            password_hash = user['password']
 
-                if not check_password_hash(password_hash,password):
-                    raise JWTError('Bad Request', '管理员账号或密码错误')
-                return dict(user)
-            except (OperationalError, IntegrityError ) as e:
-                raise JWTError('Bad Request', str(e))
-        else:
-            # 用户登录
-            try:
-                account = kwargs.get('username', None)
-                password = kwargs.get('password', None)
-                user = dao.UserDao.get(query={'account': account, 'role': 'user' })
-                password_hash = user['password']
-
-                if not check_password_hash(password_hash,password):
-                    raise JWTError('Bad Request', '用户名或密码错误')
-                return dict(user)
-            except (OperationalError, IntegrityError ) as e:
-                raise JWTError('Bad Request', str(e))
+            if not check_password_hash(password_hash, password):
+                raise JWTError('Bad Request', '用户名或密码错误')
+            return dict(user)
+        except (OperationalError, IntegrityError) as e:
+            raise JWTError('Bad Request', str(e))
 
 
     @custom_jwt.jwt_payload_handler
