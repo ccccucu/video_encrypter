@@ -2,8 +2,7 @@ import easyapi
 import app.dao as dao
 from easyapi.sql import Pager, Sorter
 from easyapi import EasyApiContext
-
-ctx = easyapi.EasyApiContext()
+from werkzeug.security import generate_password_hash
 
 class UserController(easyapi.BaseController):
     __dao__ = dao.UserDao
@@ -57,6 +56,8 @@ class UserController(easyapi.BaseController):
         user = dao.UserDao.get(query={'account':account})
         if user is not None:
             raise easyapi.BusinessError(code=404, http_code=404, err_info="该用户已注册")
+
+        data['password'] = generate_password_hash( data['password'] )
         super().insert(ctx=ctx, data=data)
 
 

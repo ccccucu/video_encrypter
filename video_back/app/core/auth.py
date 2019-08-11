@@ -18,18 +18,26 @@ def jwt_init():
 
         if login_type == 'admin':
             #管理员登录
-            if kwargs.get('password') == "123456":   # 默认用户名admin 密码admin
-                user = dao.UserDao.get(query = {'id': 6,'role': 'admin'})
+            try:
+                account = kwargs.get('username', None)
+                password = kwargs.get('password', None)
+                user = dao.UserDao.get(query={'account': account, 'role': 'admin' })
+                password_hash = user['password']
+
+                if not check_password_hash(password_hash,password):
+                    raise JWTError('Bad Request', '管理员账号或密码错误')
                 return dict(user)
-            else:
-                raise JWTError('Bad Request','密码错误')
+            except (OperationalError, IntegrityError ) as e:
+                raise JWTError('Bad Request', str(e))
         else:
             # 用户登录
             try:
                 account = kwargs.get('username', None)
                 password = kwargs.get('password', None)
-                user = dao.UserDao.get(query={'account': account, 'password': password, 'role': 'user' })
-                if not user:
+                user = dao.UserDao.get(query={'account': account, 'role': 'user' })
+                password_hash = user['password']
+
+                if not check_password_hash(password_hash,password):
                     raise JWTError('Bad Request', '用户名或密码错误')
                 return dict(user)
             except (OperationalError, IntegrityError ) as e:
