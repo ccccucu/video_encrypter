@@ -88,6 +88,9 @@ def video_distribute():
 class WatermarkLogHandler(easyapi.FlaskBaseHandler):
     __controller__ = controller.WatermarkLogController
 
+    @jwt_required()
+    def post(self, *args, **kwargs):
+        return super().post()
 
 watermark_log_bp = Blueprint(name='watermark_logs', import_name='watermark_logs', url_prefix='')
 

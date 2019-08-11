@@ -216,6 +216,13 @@ class WatermarkLogController(easyapi.BaseController):
 
         return res, total
 
+    @classmethod
+    def insert(cls, ctx: EasyApiContext = None, data: dict = None):
+        print(current_identity)
+        data['user_id'] = current_identity['id']
+        data['organization_id'] = current_identity['organization_id']
+        return super().insert(ctx=ctx, data=data)
+
 
 class DownloadLogController(easyapi.BaseController):
     __dao__ = dao.DownloadLogDao
