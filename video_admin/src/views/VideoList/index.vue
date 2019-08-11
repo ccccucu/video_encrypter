@@ -24,20 +24,20 @@
         :data="data"
         v-loading="tableLoading"
         @sort-change="onSort">
+
         <el-table-column
           type="expand"
           label="分发单位"
           width="80">
           <template slot-scope="props">
             <el-card>
-
               <DistributeTable
                 :video_id="props.row.id">
               </DistributeTable>
-
             </el-card>
           </template>
         </el-table-column>
+
         <el-table-column
           prop="id"
           label="编号"
@@ -83,6 +83,8 @@
           style="float:right;">
         </el-pagination>
       </el-col>
+
+
 
     </div>
   </div>

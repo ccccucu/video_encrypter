@@ -49,3 +49,4 @@ def get_current_user():
         current_user = dict(current_identity)
         return jsonify({'current_user': current_user, 'msg': '','code': 200}), 200
     raise easyapi.BusinessError(code=500, http_code=200, err_info="请先登录")
+

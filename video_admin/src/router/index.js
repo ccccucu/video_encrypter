@@ -103,7 +103,7 @@ export const asyncRoutes = [
     {
       path: 'pople',
       name: 'unit_people',
-      component: () => import('@/views/dashboard/index'),
+      component: () => import('@/views/UserList/index'),
       meta: { title: "人员列表"}
     }]
   },

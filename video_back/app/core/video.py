@@ -31,21 +31,21 @@ class VideoController(easyapi.BaseController):
 
         # 添加upload_admin对象:
         upload_admin_id = res['upload_admin_id']
-        upload_admin = dao.AdminDao.get(ctx=ctx, query={"id": upload_admin_id})
+        upload_admin = dao.UserDao.get(ctx=ctx, query={"id": upload_admin_id})
         if upload_admin is None:
             upload_admin = {}
         res['upload_admin'] = upload_admin
 
         # 添加release_admin对象:
         release_admin_id = res['release_admin_id']
-        release_admin = dao.AdminDao.get(ctx=ctx, query={"id": release_admin_id})
+        release_admin = dao.UserDao.get(ctx=ctx, query={"id": release_admin_id})
         if release_admin is None:
             release_admin = {}
         res['release_admin'] = release_admin
 
         # 添加delete_admin对象:
         delete_admin_id = res['delete_admin_id']
-        delete_admin = dao.AdminDao.get(ctx=ctx, query={"id": delete_admin_id})
+        delete_admin = dao.UserDao.get(ctx=ctx, query={"id": delete_admin_id})
         if delete_admin is None:
             delete_admin = {}
         res['delete_admin'] = delete_admin
@@ -67,21 +67,21 @@ class VideoController(easyapi.BaseController):
 
             # 添加upload_admin对象:
             upload_admin_id = res_data['upload_admin_id']
-            upload_admin = dao.AdminDao.get(ctx=ctx, query={"id": upload_admin_id})
+            upload_admin = dao.UserDao.get(ctx=ctx, query={"id": upload_admin_id})
             if upload_admin is None:
                 upload_admin = {}
             res_data['upload_admin'] = upload_admin
 
             # 添加release_admin对象:
             release_admin_id = res_data['release_admin_id']
-            release_admin = dao.AdminDao.get(ctx=ctx, query={"id": release_admin_id})
+            release_admin = dao.UserDao.get(ctx=ctx, query={"id": release_admin_id})
             if release_admin is None:
                 release_admin = {}
             res_data['release_admin'] = release_admin
 
             # 添加delete_admin对象:
             delete_admin_id = res_data['delete_admin_id']
-            delete_admin = dao.AdminDao.get(ctx=ctx, query={"id": delete_admin_id})
+            delete_admin = dao.UserDao.get(ctx=ctx, query={"id": delete_admin_id})
             if delete_admin is None:
                 delete_admin = {}
             res_data['delete_admin'] = delete_admin
@@ -115,19 +115,20 @@ class VideoController(easyapi.BaseController):
         # 加密
         key = util.ranstr(32)
         res = rpc.en_file_by_path(origin_file, key, encrypt_file)
-        res = 0
+        #res = 0
         if res > 0:
             raise easyapi.BusinessError(code=500, http_code=200, err_info="加密失败")
 
         video_id = dao.VideoDao.insert(ctx=easyapi.EasyApiContext(),
-                                       data={"title": title, "uuid": uuid_1,
-                                             "original_file_size": original_file_size,
-                                             "allow_play_time": datetime.now(),
-                                             "delete_admin_id": 1,
-                                             "release_time": datetime.now(),
-                                             "release_admin_id": 1,
-                                             "upload_admin_id": 1,
+                                       data={"title": title,
+                                             "uuid": uuid_1,
                                              "upload_organization_id": 1,
+                                             "upload_admin_id": 1,
+                                             "allow_play_time": datetime.now(),
+                                             "original_file_size": original_file_size,
+                                             "release_allow": 1,
+                                             "release_admin_id": 1,
+                                             "release_time": datetime.now(),
                                              "secret_key": key
                                              })
         return video_id
