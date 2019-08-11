@@ -5,15 +5,6 @@
       <div class="title-container">
         <h3 class="title">Login Form</h3>
       </div>
-
-
-      <el-form-item style="background-color: transparent">
-        <el-radio-group v-model="loginForm.type" style="width:100%;">
-          <el-radio-button label="user">普通用户</el-radio-button>
-          <el-radio-button label="admin">管理员</el-radio-button>
-        </el-radio-group>
-      </el-form-item>
-
       <el-form-item prop="username">
         <span class="svg-container">
           <svg-icon icon-class="user" />
@@ -84,7 +75,6 @@ export default {
       loginForm: {
         username: 'admin',
         password: '111111',
-        type: 'user'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
