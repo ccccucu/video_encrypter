@@ -161,47 +161,45 @@
         const video_name = row.uuid+'.mp4'
         const path = Path.resolve('./', video_name)
         const water_path = Path.resolve('./', 'water_'+video_name)
-        const writer = FS.createWriteStream(path)
+        let writer = FS.createWriteStream(path)
         var respp_id
         this.progressStatus.value = 10
 
-            if(fs.existsSync(path)){
-                this.progressStatus.value = 100
-                this.playerOptions.sources[0].src = Rpc.readLocalUrl(water_path)
-                this.player.load()
-                console.log(this.player)
-            }else {
-              // 下载视频
-              videoDownload(row.id).then((resp) => {
-                this.progressStatus.value = 30
-                writer.on('finish', () =>{
-                  // 存入本地完成后 加水印
-                  let water_mark =  get_uuid()
-                  postWaterMark(row.id, water_mark).then((respp) => {
-                      Rpc.clientReadVideo(path, row.secret_key, water_mark,water_path).then((resp)=>{
-                        if (resp.data.result) {
-                          // 加水印成功
-                          this.progressStatus.value = 100
-                          this.playerOptions.sources[0].src = Rpc.readLocalUrl(water_path)
-                          this.player.load()
-                          console.log(this.player)
-                          this.loading = false
-                        } else {
-                          // 失败
-                          this.progressStatus.status = 'exception'
-                        }
-                      })
-                  }),
-                
+        if(FS.existsSync(water_path)){
+            this.progressStatus.value = 100
+            this.playerOptions.sources[0].src = Rpc.readLocalUrl(water_path, row.secret_key)
+            this.player.load()
+            this.loading = false
+        }else {
+          // 下载视频
+          videoDownload(row.id).then((download_resp) => {
+            this.progressStatus.value = 30
 
-                  this.progressStatus.value = 50
+            writer.on('finish', () =>{
+              // 存入本地完成后 加水印                  
+              let water_mark =  get_uuid()
+              this.progressStatus.value = 50
+              postWaterMark(row.id, water_mark).then((water_mark_resp) => {
+                  Rpc.clientReadVideo(path, row.secret_key, water_mark,water_path).then((client_read_vide_resp)=>{
+                    if (client_read_vide_resp.data.result) {
+                      // 加水印成功
+                      this.progressStatus.value = 100
+                      this.playerOptions.sources[0].src = Rpc.readLocalUrl(water_path, row.secret_key)
+                      this.player.load()
+                      this.loading = false
+                    } else {
+                      // 失败
+                      this.progressStatus.status = 'exception'
+                    }
+                  })
+              })
+            });
 
-                });
-                resp.data.pipe(writer)
-              }).catch((err) => {
-                debugger
-              });
-            }
+            download_resp.data.pipe(writer)
+          }).catch((err) => {
+            debugger
+          });
+        }
 
 
 

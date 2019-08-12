@@ -48,13 +48,13 @@ Rpc.clientReadVideo = function(path, key, watermark, outpath) {
   })
 }
 
-Rpc.readLocalFile = function(path){
+Rpc.readVideoFile = function(path){
     //console.log(`${BASE_URL}/api/read_file`)
-    return axios.get(`${BASE_URL}/rpc/read_file`, { params: {'path': path} })
+    return axios.get(`${BASE_URL}/rpc/read_videos`, { params: {'path': path} })
 }
 
-Rpc.readLocalUrl = function(path){
-  return `file://${path}`
+Rpc.readLocalUrl = function(path, key){
+  return `${BASE_URL}/read_video?path=${path}&key=${key}`
 }
 
 

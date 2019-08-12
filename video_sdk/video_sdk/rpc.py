@@ -3,6 +3,7 @@ from flask_jsonrpc import JSONRPC
 from flask_cors import CORS
 
 import os
+import io
 from  . import screen
 from .water_mark import *
 
@@ -89,11 +90,19 @@ def client_read_video(path, key, watermark, outpath):
     :return:无
     """
     (base_path, encrpty_file) = os.path.split(path)
+    
     origin_file = 'raw_'+ encrpty_file
     origin_file_path = os.path.join(base_path, origin_file)
+
+    watermark_file = 'raw_water' + encrpty_file
+    watermark_path = os.path.join(base_path, watermark_file)
+
     de_file_by_path(path=path, key=key, outpath=origin_file_path)
-    en_water_mark_by_path(path=origin_file_path, content=watermark, outpath=outpath)
+    en_water_mark_by_path(path=origin_file_path, content=watermark, outpath=watermark_path)
+    en_file_by_path(path=watermark_path, key=key, outpath=outpath)
+    os.remove(watermark_path) # 删除明文的水印文件
     os.remove(origin_file_path) # 删除原始文件
+    os.remove(path)
     return outpath
 
 
@@ -107,9 +116,19 @@ def get_thumbnail_by_path(path, outpath):
     """
     screen.GetScreen(path, outpath)
 
-@app.route('/rpc/read_file', methods=['GET'])
+@app.route('/read_video', methods=['GET'])
 def read_file():
     path=request.args.get('path')
+    key = request.args.get('key', '')
     if not path or not os.path.isabs(path):
         return jsonify(code=404, msg='没有对应的文件'), 200
-    return send_file(path)
+    (base_path, encrpty_file) = os.path.split(path)
+    watermark_file = 'raw_water' + encrpty_file
+    watermark_path = os.path.join(base_path, watermark_file)
+    de_file_by_path(path, key, watermark_file)
+    buf = None
+    with open(watermark_file, 'rb') as f:
+        buf = io.BytesIO(f.read())
+        buf.seek(0)
+    os.remove(watermark_file)
+    return send_file(buf, mimetype='video/mp4')
