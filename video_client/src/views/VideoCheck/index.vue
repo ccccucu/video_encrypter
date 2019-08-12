@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+      <div class="app-container">
     <el-card>
       <div slot="header" class="clearfix">
         <span>水印解析</span>
@@ -28,16 +28,15 @@
         <span>解析结果</span>
       </div>
       <el-table
-        :data="tableData">
+        :data="waterMarkInfo">
         <el-table-column
           prop="key"
           label="属性"
-          width="80">
+          width="180">
         </el-table-column>
         <el-table-column
           prop="value"
-          label="值"
-          width="180">
+          label="值">
         </el-table-column>
       </el-table>
     </el-card>
@@ -46,20 +45,13 @@
 </template>
 
 <script>
+  import Rpc from '@/rpc/index'
 
   export default {
     data() {
       return {
-        curent_file: "",
-        tableData: [
-          {
-            key: 'IP',
-            value: '0.0.0.0',
-          },
-          {
-            key: '用户',
-            value: '测试用户',
-          }
+        current_file: "",
+        waterMarkInfo: [
         ]
       }
     },
@@ -69,10 +61,21 @@
       handleUpload(file, fileList) {
         // 上传新的文件的回调
         console.log(file)
-        this.curent_file = file.raw.path
+        this.current_file = file.raw.path
       },
       handleParserClick() {
-        // 解析水印的回调
+        Rpc.deWaterMarkByPath(this.current_file).then((resp)=>{
+          if (resp.data.code) {
+            // 出错
+          }
+          if (resp.data.result) {
+            this.waterMarkInfo.push({
+              key :'原始内容',
+              value: resp.data.result
+            })
+            console.log(resp)
+          }
+        })
       }
     }
   }

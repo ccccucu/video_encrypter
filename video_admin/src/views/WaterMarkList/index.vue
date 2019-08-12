@@ -6,8 +6,8 @@
       <br>
       <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
         <el-form :inline="true" v-model="query">
-          <el-form-item label="视频标题：">
-            <el-input v-model="query._like_nick_name" placeholder="昵称"></el-input>
+          <el-form-item label="水印标题：">
+            <el-input v-model="query.watermark" placeholder="水印标题"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onSearch">查询</el-button>
@@ -18,44 +18,55 @@
         </el-form>
       </el-col>
       <el-table
-        :data="tableData">
+        :data="data"
+        v-loading="tableLoading"
+        @sort-change="onSort">
         <el-table-column
           prop="id"
           label="编号"
+          sortable
           width="80">
         </el-table-column>
         <el-table-column
-          prop="water_mark"
+          prop="watermark"
           label="水印"
+          sortable
           width="180">
         </el-table-column>
         <el-table-column
-          prop="video"
-          label="视频标题">
+          prop="video.title"
+          label="视频标题"
+          sortable>
         </el-table-column>
         <el-table-column
-          prop="unit"
-          label="单位">
+          prop="organization.name"
+          label="单位"
+          sortable>
         </el-table-column>
         <el-table-column
-          prop="created_by"
-          label="用户">
+          prop="user.name"
+          label="用户"
+          sortable>
         </el-table-column>
         <el-table-column
           prop="ip"
-          label="IP">
+          label="IP"
+          sortable>
         </el-table-column>
         <el-table-column
-          prop="created_at"
-          label="时间">
+          prop="time"
+          label="时间"
+          sortable>
         </el-table-column>
-        <el-table-column label="操作">
-          <template slot-scope="scope">
-            <el-button
-              size="mini"
-              type="primary">查看</el-button>
-          </template>
-        </el-table-column>
+
+        <!--<el-table-column label="操作">-->
+          <!--<template slot-scope="scope">-->
+            <!--<el-button-->
+              <!--size="mini"-->
+              <!--type="primary">查看</el-button>-->
+          <!--</template>-->
+        <!--</el-table-column>-->
+
       </el-table>
 
       <el-col :span="24" class="toolbar">
@@ -72,25 +83,32 @@
 </template>
 
 <script>
-
+  //mixin
+  import commonTable from '@/mixins/table'
+  //水印接口
+  import { queryWatermarkLogs, deleteWatermarkLog, updateWatermarkLog, getWatermarkLog, createWatermarkLog } from '@/api/watermark_log'
   export default {
+    mixins: [commonTable],
     data() {
       return {
-        total: 1,
-        query: {},
-        pages: {
-          _per_page:30,
-          _page: 1
+
+        //配置minxin种curd api方法：
+        newMethod: createWatermarkLog,
+        deleteMethod: deleteWatermarkLog,
+        updateMethod: updateWatermarkLog,
+        getMethod: getWatermarkLog,
+        queryMethod: queryWatermarkLogs,
+
+        //配置resource_name
+        resource_name: 'watermark_log',
+
+        //配置mixin query
+        query: {  //条件查询 dict  //api查询条件dict
+          //_like_watermark: undefined,
         },
-        tableData: [{
-          id: 1,
-          water_mark: "xxxx",
-          video: '测试视频',
-          unit: '测试单位',
-          ip: '0.0.0.0',
-          created_by: '测试管理员',
-          created_at: '2019-01-01 12:00:00'
-        }]
+
+        data: [],  //列表
+
       }
     },
     created() {

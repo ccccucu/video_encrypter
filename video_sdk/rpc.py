@@ -1,6 +1,4 @@
-from flask import Flask, request, jsonify, send_file
-from flask_jsonrpc import JSONRPC
-from flask_cors import CORS
+from video_sdk.rpc import app
 
 import os
 
@@ -99,6 +97,3 @@ def read_file():
     if not path or not os.path.isabs(path):
         return jsonify(code=404, msg='没有对应的文件'), 200
     return send_file(path)
-
-if __name__ == "__main__":
-    app.run(port=10086)

@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, Blueprint
+from flask import Flask, Blueprint, jsonify
 import easyapi
 import app.handler as handler
 from flask_cors import CORS
@@ -13,7 +13,6 @@ app = Flask(__name__, template_folder=os.path.join(os.getcwd(), 'templates'),
             static_folder=os.path.join(os.getcwd(), 'static'))
 app.config.from_object(Config)
 
-app.register_blueprint(handler.admin_bp)
 app.register_blueprint(handler.user_bp)
 app.register_blueprint(handler.login_log_bp)
 
@@ -30,6 +29,10 @@ CORS(app, supports_credentials=True)
 jwt = jwt_init()
 jwt.init_app(app)
 app.logger.addHandler(consoleHandler)
+
+@app.route('/ping')
+def ping_handler():
+    return jsonify({"msg":"pong", "code":200}), 200
 
 if __name__ != '__main__':
     gunicorn_logger = logging.getLogger('gunicorn.error')

@@ -6,7 +6,8 @@ const state = {
   token: getToken(),
   name: '',
   avatar: '',
-  roles: []
+  roles: [],
+  info: {}
 }
 
 const mutations = {
@@ -21,15 +22,19 @@ const mutations = {
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
+  },
+
+  SET_INFO: (state, info) =>{
+    state.info = info
   }
 }
 
 const actions = {
   // user login
   login({ commit }, userInfo) {
-    const { username, password } = userInfo
+    const { username, password, type } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
+      login({ username: username.trim(), password: password, type:type }).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
         setToken(data.token)
@@ -50,18 +55,19 @@ const actions = {
           reject('Verification failed, please Login again.')
         }
 
-        const { nick_name, avatar_url } = data.current_user
+        const { name, avatar_url } = data.current_user
 
-        let roles = ['admin']
+        let roles = [data.role]
 
         // roles must be a non-empty array
         if (!roles || roles.length <= 0) {
           reject('getInfo: roles must be a non-null array!')
         }
 
-        commit('SET_ROLES', ['admin'])
-        commit('SET_NAME', nick_name)
+        commit('SET_ROLES', roles)
+        commit('SET_NAME', name)
         commit('SET_AVATAR', avatar_url)
+        commit('SET_INFO', data.current_user)
         resolve({...data.current_user, roles: ['admin']})
       }).catch(error => {
         reject(error)
@@ -75,6 +81,7 @@ const actions = {
       logout(state.token).then(() => {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
+        commit('SET_INFO', {})
         removeToken()
         resetRouter()
         resolve()

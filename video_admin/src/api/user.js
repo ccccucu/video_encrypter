@@ -1,24 +1,26 @@
 import axios from '@/utils/request'
 
-export function login(data) {
-  let d = {'type':'admin', 'password':'123456'}
-  return axios({
-    url: '/api/login',
-    method: 'post',
-    data: d
-  })
+//获取列表信息（GET）
+export const queryUsers = (params) => {
+  return axios.post('/api/users', { _method: 'GET', _args: params })
 }
 
-export function getInfo(token) {
-  return axios({
-    url: '/api/current_user',
-    method: 'get',
-  })
+//删除单条信息
+export const deleteUser = (id) => {
+  return axios.delete(`/api/users/${id}`)
 }
 
-export function logout() {
-  return axios({
-    url: '/user/logout',
-    method: 'post'
-  })
+//更细单条信息
+export const updateUser = (id, params) => {
+  return axios.put(`/api/users/${id}`, params)
+}
+
+//获取单条信息
+export const getUser = (id) => {
+  return axios.get(`/api/users/${id}`)
+}
+
+//新增一条数据（POST）
+export const createUser = (params) => {
+  return axios.post('/api/users', params)
 }

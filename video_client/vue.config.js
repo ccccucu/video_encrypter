@@ -34,7 +34,7 @@ module.exports = {
       // change xxx-api/login => mock/login
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       '/api': {
-        target: 'http://47.104.148.221:8082/', // 接口的域名  //http://47.92.110.74:8085/
+        target: 'http://0.0.0.0:5005/', // 接口的域名  //http://47.92.110.74:8085/
         secure: false, // 如果是https接口，需要配置这个参数
         changeOrigin: true, // 如果接口跨域，需要进行这个参数配置
         pathRewrite: { '^/api': '' },
@@ -49,6 +49,16 @@ module.exports = {
     },
     after: require('./mock/mock-server.js')
   },
+  pluginOptions:{
+    electronBuilder: {
+      builderOptions: {
+          extraFiles: {
+            from: "./rpc.exe",
+            to: "./rpc.exe"
+          }
+      }
+    }
+  },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
     // it can be accessed in index.html to inject the correct title.
@@ -59,6 +69,7 @@ module.exports = {
       }
     }
   },
+
   chainWebpack(config) {
     config.plugins.delete('preload') // TODO: need test
     config.plugins.delete('prefetch') // TODO: need test

@@ -1,0 +1,1 @@
+ALTER TABLE `distribut_videos` ADD COLUMN `video_id`  int(11) NOT NULL DEFAULT 0 AFTER `id`;

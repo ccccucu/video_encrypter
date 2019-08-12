@@ -1,17 +1,18 @@
+/* eslint-disable prefer-const */
 import axios from '@/utils/request'
+import {SERVER_URL} from './index'
 
 export function login(data) {
-  let d = {'type':'admin', 'password':'123456'}
   return axios({
-    url: '/api/login',
+    url: `${SERVER_URL}/login`,
     method: 'post',
-    data: d
+    data: data
   })
 }
 
 export function getInfo(token) {
   return axios({
-    url: '/api/current_user',
+    url: `${SERVER_URL}/current_user`,
     method: 'get',
   })
 }
@@ -22,3 +23,4 @@ export function logout() {
     method: 'post'
   })
 }
+

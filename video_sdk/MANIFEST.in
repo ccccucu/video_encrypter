@@ -1,0 +1,3 @@
+include video_sdk/target/linux/*.so
+include video_sdk/target/macos/*.so
+include video_sdk/target/windows/*.dll
