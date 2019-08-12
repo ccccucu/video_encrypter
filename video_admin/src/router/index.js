@@ -94,12 +94,13 @@ export const asyncRoutes = [
     component: Layout,
     redirect: 'list',
     meta: { title: '单位管理'},
-    children: [{
-      path: 'list',
-      name: 'organization_list',
-      component: () => import('@/views/OrganizationList/index'),
-      meta: { title: "单位列表"}
-    },
+    children: [
+    //   {
+    //   path: 'list',
+    //   name: 'organization_list',
+    //   component: () => import('@/views/OrganizationList/index'),
+    //   meta: { title: "单位列表"}
+    // },
     {
       path: 'pople',
       name: 'unit_people',
