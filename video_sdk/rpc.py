@@ -39,12 +39,10 @@ def en_water_mark_by_path(path,conent, outpath):
     wavNameNew = workplace+'/audio'
     strcmd = "ffmpeg -i " + path + " -f wav " + wavNameNew + ".m4a" + " -y"
     subprocess.call(strcmd, shell=True)
-    
     file_temp =workplace+ '/temp.mp4'
     file_264=workplace+ '/H_264.mp4'
     strcmd1="ffmpeg -i "+ file_temp+" -vcodec h264 " + file_264
-    subprocess.call(strcmd1, shell=True)
-    
+    subprocess.call(strcmd1, shell=True)   
     wavNameNew1 = workplace + '/audio.m4a'
     strcmd2 = "ffmpeg -i " + file_264 + " -i " + wavNameNew1 + " -c:v copy -c:a aac -strict experimental " + outpath
     subprocess.call(strcmd2, shell=True)
