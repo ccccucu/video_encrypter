@@ -18,9 +18,15 @@ def jwt_init():
         try:
             account = kwargs.get('username', None)
             password = kwargs.get('password', None)
-            user = dao.UserDao.get(query={'account': account})
-            password_hash = user['password']
 
+            if account is None:
+                raise JWTError('Bad Request', '请输入用户名')
+
+            user = dao.UserDao.get(query={'account': account})
+            if not user:
+                raise JWTError('Bad Request', '未找到此用户')
+
+            password_hash = user['password']
             if not check_password_hash(password_hash, password):
                 raise JWTError('Bad Request', '用户名或密码错误')
             return dict(user)
