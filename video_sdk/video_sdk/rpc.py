@@ -125,10 +125,10 @@ def read_file():
     (base_path, encrpty_file) = os.path.split(path)
     watermark_file = 'raw_water' + encrpty_file
     watermark_path = os.path.join(base_path, watermark_file)
-    de_file_by_path(path, key, watermark_file)
+    de_file_by_path(path, key, watermark_path)
     buf = None
-    with open(watermark_file, 'rb') as f:
+    with open(watermark_path, 'rb') as f:
         buf = io.BytesIO(f.read())
         buf.seek(0)
-    os.remove(watermark_file)
+    os.remove(watermark_path)
     return send_file(buf, mimetype='video/mp4')
