@@ -24,7 +24,7 @@ def en_water_mark_by_path(path, content, outpath):
     :param outpath: 输出路径
     :return: 是否成功
     """
-    msg = 'bjfu' + conent
+    msg = 'bjfu' + content
     secret = ''
     for i in range(len(msg)):
         s = bin(ord(msg[i])).replace('0b', '')
