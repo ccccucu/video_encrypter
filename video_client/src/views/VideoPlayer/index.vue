@@ -61,7 +61,7 @@
 <script>
   import './style.css'
   import Rpc from '@/rpc/index'
-  import {videoDownload, queryVideos, postWaterMark, get_uuid} from '@/api/video'
+  import {videoDownload, queryVideos, postWaterMark, get_uuid, pingServer} from '@/api/video'
   import FS from 'fs'
   import Path from 'path'
   import UserMixin from '@/mixins/UserMixin'
@@ -80,6 +80,7 @@
           status: '',
           err: 'ERROR'
         },
+        ping_server: undefined,
         // videojs options
         videoPlayer: {
           src: ""
@@ -110,6 +111,13 @@
       this.$nextTick(()=>{
         this.addWaterMark()
       })
+      this.ping_server = setInterval(()=>{
+        pingServer().catch(()=>{
+          this.playerOptions.sources[0].src = ''
+          this.player.load()
+          this.player.stop()
+        })
+      }, 3000)
     },
     mounted() {
     },
@@ -200,9 +208,6 @@
             debugger
           });
         }
-
-
-
       }
     }
   }

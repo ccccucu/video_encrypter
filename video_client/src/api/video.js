@@ -42,3 +42,9 @@ export function postWaterMark (video_id, watemark)  {
     })
 
 }
+
+export function pingServer() {
+  return axios.get(`${SERVER_URL}/ping`, {
+    timeout: 1000
+  })
+}

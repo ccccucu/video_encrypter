@@ -32,7 +32,7 @@ app.logger.addHandler(consoleHandler)
 
 @app.route('/ping')
 def ping_handler():
-    return jsonfy({"msg":"pong", "code":200}), 200
+    return jsonify({"msg":"pong", "code":200}), 200
 
 if __name__ != '__main__':
     gunicorn_logger = logging.getLogger('gunicorn.error')
