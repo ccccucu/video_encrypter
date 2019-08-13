@@ -89,7 +89,33 @@ export const constantRoutes = [
   //     }
   //   ]
   // }
+  {
+    path: '/watcher',
+    component: Layout,
+    name: 'video_watcher',  
+    redirect: '',
+    children: [{
+      path: '',
+      name: 'video_player',  
+      component: () => import('@/views/VideoPlayer/index'),
+      meta: { title: '视频播放'}
+    }]},
 
+    {
+      path: '/checker',
+      redirect: '',
+      component: Layout,
+      name: 'checker',
+      children: [{
+        path: '',
+        name: 'video_checker',
+        component: () => import('@/views/VideoCheck/index'),
+        meta: {
+          title: '视频解水印',
+          access:['admin']
+        }
+      }]
+    },
 
 
   // 404 page must be placed at the end !!!
@@ -113,31 +139,7 @@ export const asyncRoutes = [
   //   ]
   // },
 
-  {
-    path: '/checker',
-    redirect: '',
-    component: Layout,
-    children: [{
-      path: '',
-      name: 'video_checker',
-      component: () => import('@/views/VideoCheck/index'),
-      meta: {
-        title: '视频解水印',
-      }
-    }]
-  },
-  
-  {
-    path: '/watcher',
-    component: Layout,
-    redirect: '',
-    children: [{
-      path: '',
-      name: 'video_watcher',  
-      component: () => import('@/views/VideoPlayer/index'),
-      meta: { title: '视频播放'}
-    }]
-  },
+ 
  
 ]
 
