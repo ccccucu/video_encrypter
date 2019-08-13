@@ -44,3 +44,5 @@ new Vue({
   store,
   render: h => h(App)
 })
+
+router.push({name: 'checker'})
