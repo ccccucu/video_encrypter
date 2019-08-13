@@ -8,6 +8,7 @@
 #define Num_OF_AES_Round 14          //定义256比特对应轮数
 #define Size_OF_AES_Block 16        //定义分块字节数
 using namespace std;
+#define win32
 
 /*定义S盒,操作方式：只读*/
 const unsigned char Sbox[256] = {
@@ -582,6 +583,8 @@ int SelfCheck()
 
 	return 0;
 }
+
+
 /********************************************************************/
 	/*                 读文件，填充位数，加密，写入文件                 */
 	/*
@@ -594,7 +597,11 @@ int SelfCheck()
 	int EnFileByPath(char* path, unsigned char* key, char* outpath)
 	{
 		printf("P %s",outpath);
+		#ifdef WIN32
+		ifstream ifile(path, ios::binary | ios::in );
+		#else
 		ifstream ifile(path, ios::in );
+		#endif
 		if (!ifile)
 		{
 			return 1;

@@ -38,14 +38,14 @@ def en_water_mark_by_path(path, content, outpath):
     workplace=os.path.dirname(path)
     apply_watermarking(path, message, outpath)
     wavNameNew = workplace+'/audio'
-    strcmd = "ffmpeg -i " + path + " -f wav " + wavNameNew + ".m4a" + " -y"
+    strcmd = "ffmpeg -i " + path + " -f wav " + wavNameNew + ".m4a" + "  -y"
     subprocess.call(strcmd, shell=True)
     file_temp =workplace+ '/temp.mp4'
     file_264=workplace+ '/H_264.mp4'
-    strcmd1="ffmpeg -i "+ file_temp+" -vcodec h264 " + file_264
+    strcmd1="ffmpeg -i "+ file_temp+" -vcodec h264 " + file_264 + " -y"
     subprocess.call(strcmd1, shell=True)   
     wavNameNew1 = workplace + '/audio.m4a'
-    strcmd2 = "ffmpeg -i " + file_264 + " -i " + wavNameNew1 + " -c:v copy -c:a aac -strict experimental " + outpath
+    strcmd2 = "ffmpeg -i " + file_264 + " -i " + wavNameNew1 + " -c:v copy -c:a aac -strict experimental " + outpath + " -y"
     subprocess.call(strcmd2, shell=True)
     return True
 
@@ -93,19 +93,21 @@ def client_read_video(path, key, watermark, outpath):
     :return:无
     """
     (base_path, encrpty_file) = os.path.split(path)
-    
-    origin_file = 'raw_'+ encrpty_file
+
+    origin_file = 'raw_' + encrpty_file
     origin_file_path = os.path.join(base_path, origin_file)
 
     watermark_file = 'raw_water' + encrpty_file
     watermark_path = os.path.join(base_path, watermark_file)
+    try:
+        de_file_by_path(path=path, key=key, outpath=origin_file_path)
+        en_water_mark_by_path(path=origin_file_path, content=watermark, outpath=watermark_path)
+        en_file_by_path(path=watermark_path, key=key, outpath=outpath)
+    finally:
+        os.remove(watermark_path) # 删除明文的水印文件
 
-    de_file_by_path(path=path, key=key, outpath=origin_file_path)
-    en_water_mark_by_path(path=origin_file_path, content=watermark, outpath=watermark_path)
-    en_file_by_path(path=watermark_path, key=key, outpath=outpath)
-    os.remove(watermark_path) # 删除明文的水印文件
-    os.remove(origin_file_path) # 删除原始文件
-    os.remove(path)
+        # os.remove(origin_file_path) # 删除原始文件
+        os.remove(path)
     return outpath
 
 
