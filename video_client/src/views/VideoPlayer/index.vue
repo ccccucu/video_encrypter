@@ -14,7 +14,7 @@
         </div>
         <div v-show="loading" style="text-align: center"  >
           <el-progress type="circle" :percentage="progressStatus.value" :status="progressStatus.status"></el-progress>
-          <div v-if="progressStatus.status === ''">视频解密中, 请稍后</div>
+          <div v-if="progressStatus.status === ''">视频加载中, 请稍后</div>
           <div v-if="progressStatus.status === 'exception'">{{progressStatus.err}}</div>
         </div>
       </div>
@@ -121,12 +121,6 @@
           this.player.stop()
         })
       }, 3000)
-      setInterval(()=>{
-        Rpc.Ping(path).catch((err)=>{
-          this.player.stop()
-          this.$message.error('本地服务错误，请检查系统状态');
-        })
-      }, 2630)
     },
     mounted() {
     },
@@ -199,8 +193,7 @@
               let water_mark =  get_uuid()
               this.progressStatus.value = 50
 
-              //50%
-              setTimeout(()=>{
+              //50
                 postWaterMark(row.id, water_mark).then((water_mark_resp) => {
                   this.progressStatus.value = 70
 
@@ -209,19 +202,9 @@
                     this.progressStatus.value = 80
 
                     if (client_read_vide_resp.data.result) {
-
-                      setTimeout(()=>{
-                        this.progressStatus.value = 100
-                        this.progressStatus.status = "success"
-                      },100)
-
-                      setTimeout(()=>{
-                        // 加水印成功
                         this.playerOptions.sources[0].src = Rpc.readLocalUrl(water_path, row.secret_key)
                         this.player.load()
                         this.loading = false
-                      },600)
-
                     } else {
                       // 失败
                       this.progressStatus.status = 'warning'
@@ -246,36 +229,7 @@
 
                   })
                 })
-              },800)
-
-
-              // postWaterMark(row.id, water_mark).then((water_mark_resp) => {
-              //   this.progressStatus.value = 70
-              //
-              //     Rpc.clientReadVideo(path, row.secret_key, water_mark,water_path).then((client_read_vide_resp)=>{
-              //
-              //       this.progressStatus.value = 80
-              //
-              //       if (client_read_vide_resp.data.result) {
-              //         this.progressStatus.value = 100
-              //         this.progressStatus.status = "success"
-              //
-              //         setTimeout(()=>{
-              //           // 加水印成功
-              //           this.playerOptions.sources[0].src = Rpc.readLocalUrl(water_path, row.secret_key)
-              //           this.player.load()
-              //           this.loading = false
-              //         },600)
-              //
-              //       } else {
-              //         // 失败
-              //         this.progressStatus.value = 0
-              //         this.progressStatus.status = 'warning'
-              //       }
-              //     })
-              // })
             });
-
             download_resp.data.pipe(writer)
           }).catch((err) => {
             debugger

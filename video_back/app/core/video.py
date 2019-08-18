@@ -153,7 +153,7 @@ class VideoController(easyapi.BaseController):
                                     },
                              pager=pager,
                              sorter=sorter)
-
+                            
 
 class WatermarkLogController(easyapi.BaseController):
     __dao__ = dao.WatermarkLogDao
@@ -222,6 +222,21 @@ class WatermarkLogController(easyapi.BaseController):
         data['user_id'] = current_identity['id']
         data['organization_id'] = current_identity['organization_id']
         return super().insert(ctx=ctx, data=data)
+
+    @classmethod
+    def search_watermark(cls, ctx:EasyApiContext=None, query=''):
+        if not ctx:
+            ctx = EasyApiContext()
+        water = dao.VideoDao.get(ctx=ctx, query={
+            'content': query
+        })
+        if not water:
+            raise easyapi.BusinessError(
+                http_code=200,
+                code=404,
+                err_info="没有找到对应水印"
+            )
+
 
 
 class DownloadLogController(easyapi.BaseController):
