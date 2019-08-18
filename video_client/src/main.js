@@ -45,4 +45,4 @@ new Vue({
   render: h => h(App)
 })
 
-router.push({name: 'checker'})
+router.push({name: 'video_watcher'})

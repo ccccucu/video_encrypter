@@ -103,6 +103,9 @@
         }
       }
     },
+    beforeCreate(){
+
+    },
     created() {
       queryVideos({}).then((resp) => {
         this.tableData = resp.data.videos
@@ -118,6 +121,12 @@
           this.player.stop()
         })
       }, 3000)
+      setInterval(()=>{
+        Rpc.Ping(path).catch((err)=>{
+          this.player.stop()
+          this.$message.error('本地服务错误，请检查系统状态');
+        })
+      }, 2630)
     },
     mounted() {
     },
@@ -165,6 +174,8 @@
       },
       handleListPlayClick(row) {
         // 点击播放按钮的回调
+        this.progressStatus.status = ''
+        this.progressStatus.value = 0
         this.loading = true
         const video_name = row.uuid+'.mp4'
         const path = Path.resolve('./', video_name)
@@ -187,20 +198,82 @@
               // 存入本地完成后 加水印                  
               let water_mark =  get_uuid()
               this.progressStatus.value = 50
-              postWaterMark(row.id, water_mark).then((water_mark_resp) => {
+
+              //50%
+              setTimeout(()=>{
+                postWaterMark(row.id, water_mark).then((water_mark_resp) => {
+                  this.progressStatus.value = 70
+
                   Rpc.clientReadVideo(path, row.secret_key, water_mark,water_path).then((client_read_vide_resp)=>{
+
+                    this.progressStatus.value = 80
+
                     if (client_read_vide_resp.data.result) {
-                      // 加水印成功
-                      this.progressStatus.value = 100
-                      this.playerOptions.sources[0].src = Rpc.readLocalUrl(water_path, row.secret_key)
-                      this.player.load()
-                      this.loading = false
+
+                      setTimeout(()=>{
+                        this.progressStatus.value = 100
+                        this.progressStatus.status = "success"
+                      },100)
+
+                      setTimeout(()=>{
+                        // 加水印成功
+                        this.playerOptions.sources[0].src = Rpc.readLocalUrl(water_path, row.secret_key)
+                        this.player.load()
+                        this.loading = false
+                      },600)
+
                     } else {
                       // 失败
-                      this.progressStatus.status = 'exception'
+                      this.progressStatus.status = 'warning'
                     }
+                  }).catch((err)=>{
+                    var errtext = '加载失败，请检查网络环境';
+                    // this.$message.error('服务器错误，请检查连接状态');
+                    // alert(err);
+                    this.$alert(errtext, '读取失败', {
+                      confirmButtonText: '确定',
+                      callback: action => {
+                        this.$message({
+                          type: 'info',
+                          message: `action: ${action}`
+                        });
+                      }
+                    });
+
+                    // this.progressStatus.value = 0
+                    this.progressStatus.status = 'exception'
+                  }).finally(()=>{
+
                   })
-              })
+                })
+              },800)
+
+
+              // postWaterMark(row.id, water_mark).then((water_mark_resp) => {
+              //   this.progressStatus.value = 70
+              //
+              //     Rpc.clientReadVideo(path, row.secret_key, water_mark,water_path).then((client_read_vide_resp)=>{
+              //
+              //       this.progressStatus.value = 80
+              //
+              //       if (client_read_vide_resp.data.result) {
+              //         this.progressStatus.value = 100
+              //         this.progressStatus.status = "success"
+              //
+              //         setTimeout(()=>{
+              //           // 加水印成功
+              //           this.playerOptions.sources[0].src = Rpc.readLocalUrl(water_path, row.secret_key)
+              //           this.player.load()
+              //           this.loading = false
+              //         },600)
+              //
+              //       } else {
+              //         // 失败
+              //         this.progressStatus.value = 0
+              //         this.progressStatus.status = 'warning'
+              //       }
+              //     })
+              // })
             });
 
             download_resp.data.pipe(writer)
