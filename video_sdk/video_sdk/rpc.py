@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, current_app
 from flask_jsonrpc import JSONRPC
 from flask_cors import CORS
 
@@ -6,6 +6,7 @@ import os
 import io
 from  . import screen
 from .water_mark import *
+import logging
 
 from . import aes
 import traceback
@@ -18,8 +19,11 @@ ffmepg_path = os.path.abspath(os.path.join(baae_path,  'ffmpeg.exe'))
 app = Flask(__name__)
 jsonrpc = JSONRPC(app, '/rpc')
 CORS(app)
-
-
+file_handler = logging.FileHandler('flask.log')
+file_handler.setLevel(logging.DEBUG)
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.INFO)
+log.addHandler(file_handler)
 
 @jsonrpc.method('EnWaterMakerByPath')
 def en_water_mark_by_path(path, content, outpath):
@@ -64,7 +68,13 @@ def de_water_mark_by_path(path):
     :return: 水印内容
     """
     video = VideoFileClip(path)
-    msg = extract_message_from_video(path,video)
+    c = Dispacher(extract_message_from_video, path,video)
+    c.join(10000)
+    if c.isAlive():
+        print("无水印")
+    elif c.error:
+        print(c.error[1])
+    msg = c.result   
     print(msg)
     return msg
 
@@ -89,6 +99,17 @@ def de_file_by_path(path, key, outpath):
     :return:
     """
     return aes.aes_decrypt_by_path(path, key, outpath)
+
+@jsonrpc.method('Ping')
+def ping_server():
+    """
+    解密
+    :param path:
+    :param key: 秘钥
+    :param outpath:
+    :return:
+    """
+    return 'ok'
 
 @jsonrpc.method('ClientReadVideo')
 def client_read_video(path, key, watermark, outpath):
