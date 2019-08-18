@@ -95,7 +95,7 @@ def de_file_by_path(path, key, outpath):
     return aes.aes_decrypt_by_path(path, key, outpath)
 
 @jsonrpc.method('Ping')
-def ping_server(path, key, outpath):
+def ping_server():
     """
     解密
     :param path:

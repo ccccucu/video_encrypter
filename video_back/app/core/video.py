@@ -228,7 +228,7 @@ class WatermarkLogController(easyapi.BaseController):
         if not ctx:
             ctx = EasyApiContext()
         water = dao.VideoDao.get(ctx=ctx, query={
-            'content': query
+            'watermark': query
         })
         if not water:
             raise easyapi.BusinessError(
