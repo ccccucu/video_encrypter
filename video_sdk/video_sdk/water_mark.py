@@ -5,8 +5,27 @@ import os
 import cv2
 import numpy as np
 import sys
+import threading
 import subprocess
 from moviepy.video.io.VideoFileClip import VideoFileClip
+
+class Dispacher(threading.Thread):
+    def __init__(self, fun, args1,args2):
+        threading.Thread.__init__(self)
+        self.setDaemon(True)
+        self.result = None
+        self.error = None
+        self.fun = fun
+        self.args1 = args1
+        self.args2= args2
+
+        self.start()
+
+    def run(self):
+        try:
+            self.result = self.fun(self.args1,self.args2)
+        except:
+            self.error = sys.exc_info()
 
 
 def readColorImage(filename):
