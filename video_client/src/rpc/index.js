@@ -57,6 +57,10 @@ Rpc.readLocalUrl = function(path, key){
   return `${BASE_URL}/read_video?path=${path}&key=${key}`
 }
 
-
+Rpc.Ping = function (path) {
+  return callRpc('Ping', {
+    'path': path
+  })
+}
 
 export default Rpc;

@@ -103,6 +103,9 @@
         }
       }
     },
+    beforeCreate(){
+
+    },
     created() {
       queryVideos({}).then((resp) => {
         this.tableData = resp.data.videos
@@ -118,6 +121,12 @@
           this.player.stop()
         })
       }, 3000)
+      setInterval(()=>{
+        Rpc.Ping(path).catch((err)=>{
+          this.player.stop()
+          this.$message.error('本地服务错误，请检查系统状态');
+        })
+      }, 2630)
     },
     mounted() {
     },
@@ -166,6 +175,7 @@
       handleListPlayClick(row) {
         // 点击播放按钮的回调
         this.progressStatus.status = ''
+        this.progressStatus.value = 0
         this.loading = true
         const video_name = row.uuid+'.mp4'
         const path = Path.resolve('./', video_name)
@@ -199,8 +209,11 @@
                     this.progressStatus.value = 80
 
                     if (client_read_vide_resp.data.result) {
-                      this.progressStatus.value = 100
-                      this.progressStatus.status = "success"
+
+                      setTimeout(()=>{
+                        this.progressStatus.value = 100
+                        this.progressStatus.status = "success"
+                      },100)
 
                       setTimeout(()=>{
                         // 加水印成功
@@ -211,12 +224,29 @@
 
                     } else {
                       // 失败
-                      this.progressStatus.value = 0
                       this.progressStatus.status = 'warning'
                     }
+                  }).catch((err)=>{
+                    var errtext = '加载失败，请检查网络环境';
+                    // this.$message.error('服务器错误，请检查连接状态');
+                    // alert(err);
+                    this.$alert(errtext, '读取失败', {
+                      confirmButtonText: '确定',
+                      callback: action => {
+                        this.$message({
+                          type: 'info',
+                          message: `action: ${action}`
+                        });
+                      }
+                    });
+
+                    // this.progressStatus.value = 0
+                    this.progressStatus.status = 'exception'
+                  }).finally(()=>{
+
                   })
                 })
-              },600)
+              },800)
 
 
               // postWaterMark(row.id, water_mark).then((water_mark_resp) => {
