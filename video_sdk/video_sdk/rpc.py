@@ -62,7 +62,13 @@ def de_water_mark_by_path(path):
     :return: 水印内容
     """
     video = VideoFileClip(path)
-    msg = extract_message_from_video(path,video)
+    c = Dispacher(extract_message_from_video, path,video)
+    c.join(10000)
+    if c.isAlive():
+        print("无水印")
+    elif c.error:
+        print(c.error[1])
+    msg = c.result   
     print(msg)
     return msg
 
