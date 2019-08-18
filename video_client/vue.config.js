@@ -52,10 +52,13 @@ module.exports = {
   pluginOptions:{
     electronBuilder: {
       builderOptions: {
-          extraFiles: {
+          extraFiles: [{
             from: "./rpc.exe",
             to: "./rpc.exe"
-          }
+          },{
+            from: "./opencv_ffmpeg343_64.dll",
+            to: "./opencv_ffmpeg343_64.dll"
+          }]
       }
     }
   },

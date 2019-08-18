@@ -101,21 +101,21 @@ export const constantRoutes = [
       meta: { title: '视频播放'}
     }]},
 
-    {
-      path: '/checker',
-      redirect: '',
-      component: Layout,
-      name: 'checker',
-      children: [{
-        path: '',
-        name: 'video_checker',
-        component: () => import('@/views/VideoCheck/index'),
-        meta: {
-          title: '视频解水印',
-          access:['admin']
-        }
-      }]
-    },
+    // {
+    //   path: '/checker',
+    //   redirect: '',
+    //   component: Layout,
+    //   name: 'checker',
+    //   children: [{
+    //     path: '',
+    //     name: 'video_checker',
+    //     component: () => import('@/views/VideoCheck/index'),
+    //     meta: {
+    //       title: '视频解水印',
+    //       access:['admin']
+    //     }
+    //   }]
+    // },
 
 
   // 404 page must be placed at the end !!!

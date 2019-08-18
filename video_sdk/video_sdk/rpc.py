@@ -8,6 +8,12 @@ from  . import screen
 from .water_mark import *
 
 from . import aes
+import traceback
+baae_path = ''
+if getattr(sys, 'frozen', False):
+    baae_path = os.path.abspath(sys._MEIPASS)
+
+ffmepg_path = os.path.abspath(os.path.join(baae_path,  'ffmpeg.exe'))
 
 app = Flask(__name__)
 jsonrpc = JSONRPC(app, '/rpc')
@@ -38,14 +44,14 @@ def en_water_mark_by_path(path, content, outpath):
     workplace=os.path.dirname(path)
     apply_watermarking(path, message, outpath)
     wavNameNew = workplace+'/audio'
-    strcmd = "ffmpeg -i " + path + " -f wav " + wavNameNew + ".m4a" + "  -y"
+    strcmd = ffmepg_path + " -i " + path + " -f wav " + wavNameNew + ".m4a" + "  -y"
     subprocess.call(strcmd, shell=True)
     file_temp =workplace+ '/temp.mp4'
     file_264=workplace+ '/H_264.mp4'
-    strcmd1="ffmpeg -i "+ file_temp+" -vcodec h264 " + file_264 + " -y"
+    strcmd1=ffmepg_path + " -i "+ file_temp+" -vcodec h264 " + file_264 + " -y"
     subprocess.call(strcmd1, shell=True)   
     wavNameNew1 = workplace + '/audio.m4a'
-    strcmd2 = "ffmpeg -i " + file_264 + " -i " + wavNameNew1 + " -c:v copy -c:a aac -strict experimental " + outpath + " -y"
+    strcmd2 = ffmepg_path+" -i " + file_264 + " -i " + wavNameNew1 + " -c:v copy -c:a aac -strict experimental " + outpath + " -y"
     subprocess.call(strcmd2, shell=True)
     return True
 
@@ -103,6 +109,8 @@ def client_read_video(path, key, watermark, outpath):
         de_file_by_path(path=path, key=key, outpath=origin_file_path)
         en_water_mark_by_path(path=origin_file_path, content=watermark, outpath=watermark_path)
         en_file_by_path(path=watermark_path, key=key, outpath=outpath)
+    except Exception as e:
+        traceback.print_exc()
     finally:
         os.remove(watermark_path) # 删除明文的水印文件
 
