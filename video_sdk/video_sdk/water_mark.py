@@ -74,12 +74,12 @@ def extract_image_from_clip(path,clip, t):
 
 def add_watermark(path,video,message):
     frames_dict = {}
-    time = 1.0
-    for i in range(2):
+    time =0.0
+    for i in range(10):
         image_file = extract_image_from_clip(path,video, time)
         frames_dict[time] = image_file
         encode_image(path,image_file, message)
-        time += 2.0
+        time += 1.0
     return frames_dict
 
 def encode_image(path,image_file, message):
