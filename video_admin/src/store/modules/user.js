@@ -56,22 +56,7 @@ const actions = {
           reject('Verification failed, please Login again.')
         }
 
-        // console.log(data)
-        // console.log(data.current_user)
-        // data.current_user = {
-        //   "account": "admin",
-        //   ​"created_at": null,
-        //   ​"created_by": "00",
-        //   ​"deleted_at": null,
-        //   ​"disable": 0,
-        //   ​"id": 1,
-        //   ​"name": "管理员",
-        //   ​"organization_account": "00",
-        //   ​"organization_id": 0,
-        //   ​"password": "11111",
-        //   ​"updated_at": null,
-        //   ​"updated_by": "",
-        // }
+        // console.log(data.current_user)    data.current_user = { "account": "admin", "disable": 0, ​"id": 1, ​"name": "管理员",​"organization_account": "00", "organization_id": 0,"password": "11111", create_at等daoBussiness字段}
 
         //当前用户信息
         const current_user = data.current_user
@@ -100,16 +85,12 @@ const actions = {
 
   // user logout
   logout({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
-        commit('SET_TOKEN', '')
-        commit('SET_ROLES', [])
-        removeToken()
-        resetRouter()
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
+    return new Promise((resolve) => {
+      commit('SET_TOKEN', '')
+      commit('SET_ROLES', [])
+      removeToken()
+      resetRouter()
+      resolve()
     })
   },
 

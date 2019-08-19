@@ -21,7 +21,7 @@ export function getInfo(token) {
 //登出
 export function logout() {
   return axios({
-    url: '/user/logout',
-    method: 'post'
+    url: '/api/logout',
+    method: 'get'
   })
 }
