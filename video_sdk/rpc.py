@@ -1,3 +1,3 @@
 from video_sdk.rpc import app
 
-app.run(port=10086, host='0.0.0.0')
+app.run(host='127.0.0.1', port=10086)

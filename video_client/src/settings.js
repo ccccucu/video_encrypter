@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: '日历管理后台',
+  title: '视频分发系统客户端',
 
   /**
    * @type {boolean} true | false

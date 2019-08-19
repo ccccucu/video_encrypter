@@ -5,8 +5,27 @@ import os
 import cv2
 import numpy as np
 import sys
+import threading
 import subprocess
 from moviepy.video.io.VideoFileClip import VideoFileClip
+
+class Dispacher(threading.Thread):
+    def __init__(self, fun, args1,args2):
+        threading.Thread.__init__(self)
+        self.setDaemon(True)
+        self.result = None
+        self.error = None
+        self.fun = fun
+        self.args1 = args1
+        self.args2= args2
+
+        self.start()
+
+    def run(self):
+        try:
+            self.result = self.fun(self.args1,self.args2)
+        except:
+            self.error = sys.exc_info()
 
 
 def readColorImage(filename):
@@ -55,12 +74,12 @@ def extract_image_from_clip(path,clip, t):
 
 def add_watermark(path,video,message):
     frames_dict = {}
-    time = 1.0
-    for i in range(2):
+    time =0.0
+    for i in range(10):
         image_file = extract_image_from_clip(path,video, time)
         frames_dict[time] = image_file
         encode_image(path,image_file, message)
-        time += 2.0
+        time += 1.0
     return frames_dict
 
 def encode_image(path,image_file, message):
@@ -128,7 +147,7 @@ def reconstruct_video(path,  frames_dict):
     videoCapture = cv2.VideoCapture(path)
     fps = videoCapture.get(cv2.CAP_PROP_FPS)
     #fourcc = int(videoCapture.get(cv2.CAP_PROP_FOURCC))
-    fourcc = cv2.VideoWriter_fourcc(*'X264')
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')
     size = (int(1344), int(525))
     vw = cv2.VideoWriter(os.path.dirname(path)+'/temp.mp4', fourcc, fps, size)
     frame_num=[]
