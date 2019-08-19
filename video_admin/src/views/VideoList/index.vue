@@ -126,15 +126,6 @@
     created() {
     },
     methods: {
-      //Rewrite minxin onReset()  查询条件重置
-      onReset() {
-        this.query = {  //条件查询 dict
-          _like_title: undefined
-        }
-        this.order = { _order_by: 'id', _desc: true } //order 在
-        this.pages._page = 1
-        this.fetchData()
-      },
 
     },
     mounted() {

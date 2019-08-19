@@ -66,7 +66,7 @@ export const asyncRoutes = [
   {
     path: '/video',
     component: Layout,
-    // redirect: 'upload',
+    redirect: 'manager',
     meta: { title: '视频管理'},
     children: [{
       path: 'upload',

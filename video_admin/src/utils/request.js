@@ -21,7 +21,10 @@ service.interceptors.request.use(
       // please modify it according to the actual situation
 
       //config.headers['X-Token'] = getToken()
+
+      //flask_jwt needs:
       config.headers['Authorization'] = 'Bearer ' + getToken()
+
     }
     return config
   },
