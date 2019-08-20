@@ -36,6 +36,11 @@ def en_water_mark_by_path(path, content, outpath):
     message = list(map(int, secret))
 
     workplace=os.path.dirname(path)
+    try:
+        if os.path.exists(workplace)==0:
+            raise Exception("读入视频路径不存在")
+    except Exception as e:
+        print(e)
     apply_watermarking(path, message, outpath)
     wavNameNew = workplace+'/audio'
     strcmd = "ffmpeg -i " + path + " -f wav " + wavNameNew + ".m4a" + " -y"
