@@ -96,7 +96,9 @@ def encode_image(path,image_file, message):
         mark = message.reshape((32, 32))
 
         rgb_data = readColorImage(image_file)
-        rgb_data=cv2.resize(rgb_data,(1344,525),interpolation=cv2.INTER_CUBIC)
+        rgb_data_height=rgb_data.shape[0]
+        rgb_data_width=rgb_data.shape[1]
+        rgb_data=cv2.resize(rgb_data,(int(rgb_data_width*0.7),int(rgb_data_height*0.7)),interpolation=cv2.INTER_CUBIC)
         crop = rgb_data[0:256, 0:256]
         ycc_data = rgb2ycc(crop)
         y_data = get_y(ycc_data)
@@ -148,7 +150,7 @@ def reconstruct_video(path,  frames_dict):
     fps = videoCapture.get(cv2.CAP_PROP_FPS)
     #fourcc = int(videoCapture.get(cv2.CAP_PROP_FOURCC))
     fourcc = cv2.VideoWriter_fourcc(*'X264')
-    size = (int(1344), int(525))
+    size = (int(videoCapture.get(cv2.CAP_PROP_FRAME_WIDTH )*0.7), int(videoCapture.get(cv2.CAP_PROP_FRAME_HEIGHT)*0.7))
     vw = cv2.VideoWriter(os.path.dirname(path)+'/temp.mp4', fourcc, fps, size)
     frame_num=[]
     frame_file=[]
@@ -167,7 +169,7 @@ def reconstruct_video(path,  frames_dict):
                 vw.write(img)
                 flag=1
         if flag==0:
-            frame = cv2.resize(frame, (1344, 525), interpolation=cv2.INTER_CUBIC)
+            frame = cv2.resize(frame, (int(frame.shape[1]*0.7), int(frame.shape[0]*0.7)), interpolation=cv2.INTER_CUBIC)
             vw.write(frame)
 
         # 读取视频下一帧的内容
