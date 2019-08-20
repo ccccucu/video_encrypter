@@ -67,6 +67,7 @@ export default {
           });
         } else {
           searchWaterMark(resp.data.result).then(search_resp => {
+            if (search_resp.data.code === 200) {
             this.waterMarkInfo.push({
               key: "单位名称",
               value: this.search_resp.data.water_mark.organization_id
@@ -83,6 +84,9 @@ export default {
               key: "视频标题",
               value: this.search_resp.data.water_mark.video.title
             });
+            } else {
+              this.$message('找不到水印')
+            }
           });
           this.waterMarkInfo.push({
             key: "原始内容",
