@@ -58,6 +58,13 @@ export default {
       this.current_file = file.raw.path;
     },
     handleParserClick() {
+      if(this.current_file === ""){
+        this.$message({
+          message: "未选择文件",
+          type: "error"
+        });
+        return false;
+      }
       Rpc.deWaterMarkByPath(this.current_file).then(resp => {
         if (resp.data.error) {
           // 出错
