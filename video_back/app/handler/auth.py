@@ -24,9 +24,7 @@ token_bp = Blueprint(name='tokens', import_name='tokens', url_prefix='')
 # 需要注意的是，登录接口的传值要使用 application/json 形式
 
 
-# @token_bp.route('/logout', methods=['GET'])
-# def refresh_token():
-#     return jsonify({ "msg": "安全退出成功", 'code': 200}), 200
+
 
 
 
@@ -50,3 +48,8 @@ def get_current_user():
         return jsonify({'current_user': current_user, 'msg': '','code': 200}), 200
     raise easyapi.BusinessError(code=500, http_code=200, err_info="请先登录")
 
+
+
+# @token_bp.route('/logout', methods=['GET'])
+# def refresh_token():
+#     return jsonify({ "msg": "安全退出成功", 'code': 200}), 200
