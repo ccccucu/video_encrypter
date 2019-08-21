@@ -139,11 +139,10 @@ def encode_image(path,image_file, message):
                 ycc_data[i][j][0] = E[i][j]
         embeded_rgb_data = ycc2rgb(ycc_data)
         writeImage(os.path.dirname(path)+'/temp.jpg', embeded_rgb_data)
-	try:
-	    if os.path.exists(os.path.dirname('F:\Watermark\input1.mp4')+'/temp.jpg') == 0:
+	
+	if os.path.exists(os.path.dirname('F:\Watermark\input1.mp4')+'/temp.jpg') == 0:
 		raise Exception("添加水印不成功")
-	except Exception as e:
-	    print(e)
+
         img = readColorImage(os.path.dirname(path)+'/temp.jpg')
         for i in range(256):
            for j in range(256):
@@ -154,7 +153,7 @@ def reconstruct_video(path,  frames_dict):
     videoCapture = cv2.VideoCapture(path)
     fps = videoCapture.get(cv2.CAP_PROP_FPS)
     #fourcc = int(videoCapture.get(cv2.CAP_PROP_FOURCC))
-    fourcc = cv2.VideoWriter_fourcc(*'X264')
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')
     size = (int(videoCapture.get(cv2.CAP_PROP_FRAME_WIDTH )*0.7), int(videoCapture.get(cv2.CAP_PROP_FRAME_HEIGHT)*0.7))
     vw = cv2.VideoWriter(os.path.dirname(path)+'/temp.mp4', fourcc, fps, size)
     frame_num=[]
