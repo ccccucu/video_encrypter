@@ -1,23 +1,22 @@
-import {ipcMain} from 'electron'
-import axios from '@/utils/request'
-import httpAdapter from '@/utils/http'
-import {SERVER_URL} from './index'
+import { ipcMain } from "electron";
+import axios from "@/utils/request";
+import httpAdapter from "@/utils/http";
+import { SERVER_URL } from "./index";
 
 export function videoDownload(videoId) {
-    return axios({
-      url: `${SERVER_URL}/videos/download/${videoId}`,
-      method: 'get',
-      responseType: 'stream',
-      adapter:httpAdapter
-    })
-  }
+  return axios({
+    url: `${SERVER_URL}/videos/download/${videoId}`,
+    method: "get",
+    responseType: "stream",
+    adapter: httpAdapter
+  });
+}
 
-export function queryVideos (args)  {
-    return axios.post(`${SERVER_URL}/videos`,
-      {"_method": "GET", "_args": args})
-  }
+export function queryVideos(args) {
+  return axios.post(`${SERVER_URL}/videos`, { _method: "GET", _args: args });
+}
 
-export function get_uuid(){
+export function get_uuid() {
   var s = [];
   var hexDigits = "0123456789abcdef";
   for (var i = 0; i < 36; i++) {
@@ -31,20 +30,21 @@ export function get_uuid(){
   return uuid;
 }
 
-
-export function postWaterMark (video_id, watemark)  {
+export function postWaterMark(video_id, watemark) {
   var time = new Date();
-  return axios.post(`${SERVER_URL}/watermark_logs`,
-    {
-      "video_id": video_id,
-      // "ip": user_info.ip,
-      "watermark": get_uuid(),
-    })
-
+  return axios.post(`${SERVER_URL}/watermark_logs`, {
+    video_id: video_id,
+    // "ip": user_info.ip,
+    watermark: get_uuid()
+  });
 }
 
 export function pingServer() {
   return axios.get(`${SERVER_URL}/ping`, {
     timeout: 1000
-  })
+  });
+}
+
+export function searchWaterMark(q) {
+  return axios.get(`${SERVER_URL}/watermark_logs/search?q=${q}`, {});
 }

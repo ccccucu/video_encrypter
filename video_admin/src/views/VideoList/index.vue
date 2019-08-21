@@ -25,18 +25,19 @@
         v-loading="tableLoading"
         @sort-change="onSort">
 
-        <el-table-column
-          type="expand"
-          label="分发单位"
-          width="80">
-          <template slot-scope="props">
-            <el-card>
-              <DistributeTable
-                :video_id="props.row.id">
-              </DistributeTable>
-            </el-card>
-          </template>
-        </el-table-column>
+        <!--&lt;!&ndash;隐藏分发单位功能，上传视频后都能看&ndash;&gt;-->
+        <!--<el-table-column-->
+          <!--type="expand"-->
+          <!--label="分发单位"-->
+          <!--width="80">-->
+          <!--<template slot-scope="props">-->
+            <!--<el-card>-->
+              <!--<DistributeTable-->
+                <!--:video_id="props.row.id">-->
+              <!--</DistributeTable>-->
+            <!--</el-card>-->
+          <!--</template>-->
+        <!--</el-table-column>-->
 
         <el-table-column
           prop="id"
@@ -126,15 +127,6 @@
     created() {
     },
     methods: {
-      //Rewrite minxin onReset()  查询条件重置
-      onReset() {
-        this.query = {  //条件查询 dict
-          _like_title: undefined
-        }
-        this.order = { _order_by: 'id', _desc: true } //order 在
-        this.pages._page = 1
-        this.fetchData()
-      },
 
     },
     mounted() {

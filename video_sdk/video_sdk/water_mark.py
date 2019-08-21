@@ -154,7 +154,9 @@ def reconstruct_video(path,  frames_dict):
     fps = videoCapture.get(cv2.CAP_PROP_FPS)
     #fourcc = int(videoCapture.get(cv2.CAP_PROP_FOURCC))
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
+
     size = (int(videoCapture.get(cv2.CAP_PROP_FRAME_WIDTH )*0.7), int(videoCapture.get(cv2.CAP_PROP_FRAME_HEIGHT)*0.7))
+
     vw = cv2.VideoWriter(os.path.dirname(path)+'/temp.mp4', fourcc, fps, size)
     frame_num=[]
     frame_file=[]

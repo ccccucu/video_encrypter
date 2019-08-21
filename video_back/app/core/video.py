@@ -12,6 +12,7 @@ from easyapi.sql import Pager, Sorter
 from easyapi import EasyApiContext
 from datetime import datetime, timedelta
 from flask_jwt import jwt_required, current_identity
+from flask import request
 
 class VideoController(easyapi.BaseController):
     __dao__ = dao.VideoDao
@@ -92,7 +93,7 @@ class VideoController(easyapi.BaseController):
     ALLOW_TYPE = ['video/mp4', 'video/mpeg']
 
     @classmethod
-    def upload_video(cls, file: FileStorage, origin_path: str, encrpty_path: str, thumnail_path: str):
+    def upload_video(cls, file: FileStorage, origin_path: str, encrpty_path: str, thumnail_path: str, ctx: EasyApiContext=None):
         """
         上传视频并且加密 提取缩略图
         :param file:
@@ -115,19 +116,20 @@ class VideoController(easyapi.BaseController):
         # 加密
         key = util.ranstr(32)
         res = rpc.en_file_by_path(origin_file, key, encrypt_file)
-        #res = 0
+        # res = 0
         if res > 0:
             raise easyapi.BusinessError(code=500, http_code=200, err_info="加密失败")
 
-        video_id = dao.VideoDao.insert(ctx=easyapi.EasyApiContext(),
+        user = ctx.read('user')  # 当前用户 current_identity
+        video_id = dao.VideoDao.insert(ctx=ctx,
                                        data={"title": title,
                                              "uuid": uuid_1,
-                                             "upload_organization_id": 1,
-                                             "upload_admin_id": 1,
+                                             "upload_organization_id": user.get('organization_id',0),
+                                             "upload_admin_id": user.get('id',0),
                                              "allow_play_time": datetime.now(),
                                              "original_file_size": original_file_size,
-                                             "release_allow": 1,
-                                             "release_admin_id": 1,
+                                             "release_allow": 0,
+                                             "release_admin_id": 0,
                                              "release_time": datetime.now(),
                                              "secret_key": key
                                              })
@@ -153,7 +155,7 @@ class VideoController(easyapi.BaseController):
                                     },
                              pager=pager,
                              sorter=sorter)
-
+                            
 
 class WatermarkLogController(easyapi.BaseController):
     __dao__ = dao.WatermarkLogDao
@@ -218,10 +220,29 @@ class WatermarkLogController(easyapi.BaseController):
 
     @classmethod
     def insert(cls, ctx: EasyApiContext = None, data: dict = None):
-        print(current_identity)
+        # print(current_identity)
         data['user_id'] = current_identity['id']
         data['organization_id'] = current_identity['organization_id']
+        remote_ip = request.remote_addr
+        if remote_ip :
+            data['ip'] = remote_ip
+        data['time'] = datetime.now()
         return super().insert(ctx=ctx, data=data)
+
+    @classmethod
+    def search_watermark(cls, ctx:EasyApiContext=None, query=''):
+        if not ctx:
+            ctx = EasyApiContext()
+        water = dao.VideoDao.get(ctx=ctx, query={
+            'watermark': query
+        })
+        if not water:
+            raise easyapi.BusinessError(
+                http_code=200,
+                code=404,
+                err_info="没有找到对应水印"
+            )
+
 
 
 class DownloadLogController(easyapi.BaseController):

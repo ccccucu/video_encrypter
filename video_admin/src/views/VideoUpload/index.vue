@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
 
-    <el-form ref="form" label-width="80px">
+    <el-form ref="form" label-width="80px" >
       <!--:model="form"-->
       <el-form-item label="视频标题:">
       <el-input v-model="query.title" placeholder="请输入视频标题"></el-input>
@@ -13,13 +13,18 @@
         ref="upload"
         drag
         :auto-upload="false"
+        :headers ="upload_headers"
         action="/api/videos/upload"
         accept="audio/mp4,video/mp4"
         :limit="1"
+
         :on-success = "handleSuccess"
         :on-change= "handleFileChange"
         :multiple = "false"
       >
+
+
+
         <!--:file-list="uploadFileList"-->
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将视频拖到此处，或<em>点击上传</em></div>
@@ -41,6 +46,7 @@
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
   //mixin
   import commonTable from '@/mixins/table'
   //视频接口
@@ -68,19 +74,31 @@
 
         videoId: undefined,
 
-        // uploadFileList: [],//上传文件列表
 
+      }
+    },
+    computed: {
+      ...mapGetters([
+        'token',
+      ]),
+
+      upload_headers(){
+        return {
+          'Authorization': 'Bearer ' + this.token
+        }
       }
     },
     created() {
     },
     methods: {
+
       // 上传前改变文件名字
       handleFileChange(file, fileList) {
           if (file.status === 'ready') {
             this.query.title = file.raw.name
           }
       },
+
       //当文件上传成功后
       handleSuccess(response, file, fileList){
         var type = ''

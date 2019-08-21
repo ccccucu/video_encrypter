@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, current_app
 from flask_jsonrpc import JSONRPC
 from flask_cors import CORS
 
@@ -6,14 +6,24 @@ import os
 import io
 from  . import screen
 from .water_mark import *
+import logging
 
 from . import aes
+import traceback
+baae_path = ''
+if getattr(sys, 'frozen', False):
+    baae_path = os.path.abspath(sys._MEIPASS)
+
+ffmepg_path = os.path.abspath(os.path.join(baae_path,  'ffmpeg.exe'))
 
 app = Flask(__name__)
 jsonrpc = JSONRPC(app, '/rpc')
 CORS(app)
-
-
+file_handler = logging.FileHandler('flask.log')
+file_handler.setLevel(logging.DEBUG)
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.INFO)
+log.addHandler(file_handler)
 
 @jsonrpc.method('EnWaterMakerByPath')
 def en_water_mark_by_path(path, content, outpath):
@@ -53,6 +63,7 @@ def en_water_mark_by_path(path, content, outpath):
     strcmd1=ffmepg_path + " -i "+ file_temp+" -vcodec h264 " + file_264 + " -y"
     subprocess.call(strcmd1, shell=True)   
     wavNameNew1 = workplace + '/audio.m4a'
+
    
     if os.path.exists(file_264)==0:
         raise Exception("保存的视频格式转换为h.264不成功")
@@ -105,6 +116,17 @@ def de_file_by_path(path, key, outpath):
     """
     return aes.aes_decrypt_by_path(path, key, outpath)
 
+@jsonrpc.method('Ping')
+def ping_server():
+    """
+    解密
+    :param path:
+    :param key: 秘钥
+    :param outpath:
+    :return:
+    """
+    return 'ok'
+
 @jsonrpc.method('ClientReadVideo')
 def client_read_video(path, key, watermark, outpath):
     """
@@ -114,19 +136,23 @@ def client_read_video(path, key, watermark, outpath):
     :return:无
     """
     (base_path, encrpty_file) = os.path.split(path)
-    
-    origin_file = 'raw_'+ encrpty_file
+
+    origin_file = 'raw_' + encrpty_file
     origin_file_path = os.path.join(base_path, origin_file)
 
     watermark_file = 'raw_water' + encrpty_file
     watermark_path = os.path.join(base_path, watermark_file)
+    try:
+        de_file_by_path(path=path, key=key, outpath=origin_file_path)
+        en_water_mark_by_path(path=origin_file_path, content=watermark, outpath=watermark_path)
+        en_file_by_path(path=watermark_path, key=key, outpath=outpath)
+    except Exception as e:
+        traceback.print_exc()
+    finally:
+        os.remove(watermark_path) # 删除明文的水印文件
 
-    de_file_by_path(path=path, key=key, outpath=origin_file_path)
-    en_water_mark_by_path(path=origin_file_path, content=watermark, outpath=watermark_path)
-    en_file_by_path(path=watermark_path, key=key, outpath=outpath)
-    os.remove(watermark_path) # 删除明文的水印文件
-    os.remove(origin_file_path) # 删除原始文件
-    os.remove(path)
+        # os.remove(origin_file_path) # 删除原始文件
+        os.remove(path)
     return outpath
 
 
@@ -149,10 +175,10 @@ def read_file():
     (base_path, encrpty_file) = os.path.split(path)
     watermark_file = 'raw_water' + encrpty_file
     watermark_path = os.path.join(base_path, watermark_file)
-    de_file_by_path(path, key, watermark_file)
+    de_file_by_path(path, key, watermark_path)
     buf = None
-    with open(watermark_file, 'rb') as f:
+    with open(watermark_path, 'rb') as f:
         buf = io.BytesIO(f.read())
         buf.seek(0)
-    os.remove(watermark_file)
+    os.remove(watermark_path)
     return send_file(buf, mimetype='video/mp4')

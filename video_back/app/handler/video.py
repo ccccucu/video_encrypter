@@ -18,28 +18,32 @@ easyapi.register_api(app=video_bp, view=VideoHandler, endpoint='video_api', url=
 
 
 @video_bp.route('/videos/upload', methods=['POST'])  # 不写,methods=['GET','POST'] 默认是get
+@jwt_required()
 def video_upload():
-
     try:
+        user = current_identity
+        # 封装上下文：
+        ctx = easyapi.EasyApiContext()
+        ctx.set('user', user)
+
         file = request.files['file']
         id = controller.VideoController.upload_video(file=file,
-                                                origin_path=Config.ORIGIN_VIDEO_UPLOAD_PATH,
-                                                encrpty_path=Config.ENCRYPT_VIDEO_PATH,
-                                                thumnail_path=Config.VIDEO_THUMBNAIL_PATH
-                                                )
+                                                     origin_path=Config.ORIGIN_VIDEO_UPLOAD_PATH,
+                                                     encrpty_path=Config.ENCRYPT_VIDEO_PATH,
+                                                     thumnail_path=Config.VIDEO_THUMBNAIL_PATH,
+                                                     ctx=ctx)
 
     except easyapi.BusinessError as e:
         return jsonify(**{
             'msg': e.err_info,
             'code': e.code,
         }), e.http_code
-    #return jsonify(code=200, msg='上传成功')
+    # return jsonify(code=200, msg='上传成功')
     return jsonify(**{
         'msg': '上传成功',
         'code': 200,
         'id': id
     })
-
 
 
 @video_bp.route('/videos/download/<int:id>', methods=['GET', 'POST'])  # 不写,methods=['GET','POST'] 默认是get
@@ -92,10 +96,28 @@ class WatermarkLogHandler(easyapi.FlaskBaseHandler):
     def post(self, *args, **kwargs):
         return super().post()
 
+
 watermark_log_bp = Blueprint(name='watermark_logs', import_name='watermark_logs', url_prefix='')
 
 easyapi.register_api(app=watermark_log_bp, view=WatermarkLogHandler, endpoint='watermark_log_api',
                      url='/watermark_logs')
+
+
+@watermark_log_bp.route("/watermark_logs/search")
+def watermark_logs_search():
+    try:
+        q = request.args.get('q', '')
+        water = controller.WatermarkLogController.search_watermark(None, q)
+        return jsonify(**{
+            'msg': "",
+            'code': 200,
+            'water_mark': water,
+        })
+    except easyapi.BusinessError as e:
+        return jsonify(**{
+            'msg': e.err_info,
+            'code': e.code,
+        }), e.http_code
 
 
 class DownloadLogHandler(easyapi.FlaskBaseHandler):
