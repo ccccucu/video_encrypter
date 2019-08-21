@@ -141,7 +141,7 @@ def encode_image(path,image_file, message):
         embeded_rgb_data = ycc2rgb(ycc_data)
         writeImage(os.path.dirname(path)+'/temp.jpg', embeded_rgb_data)
 	
-	if os.path.exists(os.path.dirname('F:\Watermark\input1.mp4')+'/temp.jpg') == 0:
+	if os.path.exists(os.path.dirname(path)+'/temp.jpg') == 0:
 		raise Exception("添加水印不成功")
 
         img = readColorImage(os.path.dirname(path)+'/temp.jpg')
