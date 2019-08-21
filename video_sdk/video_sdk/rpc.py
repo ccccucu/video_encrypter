@@ -46,15 +46,31 @@ def en_water_mark_by_path(path, content, outpath):
     message = list(map(int, secret))
 
     workplace=os.path.dirname(path)
+   
+    if os.path.exists(workplace)==0:
+        raise Exception("读入视频路径不存在")
+
     apply_watermarking(path, message, outpath)
     wavNameNew = workplace+'/audio'
     strcmd = ffmepg_path + " -i " + path + " -f wav " + wavNameNew + ".m4a" + "  -y"
     subprocess.call(strcmd, shell=True)
     file_temp =workplace+ '/temp.mp4'
+   
+    if os.path.exists(file_temp)==0:
+        raise Exception("加水印后保存视频不成功")
+    
     file_264=workplace+ '/H_264.mp4'
     strcmd1=ffmepg_path + " -i "+ file_temp+" -vcodec h264 " + file_264 + " -y"
     subprocess.call(strcmd1, shell=True)   
     wavNameNew1 = workplace + '/audio.m4a'
+
+   
+    if os.path.exists(file_264)==0:
+        raise Exception("保存的视频格式转换为h.264不成功")
+
+    if os.path.exists(wavNameNew1)==0:
+        raise Exception("从原视频中保存音频不成功")
+ 
     strcmd2 = ffmepg_path+" -i " + file_264 + " -i " + wavNameNew1 + " -c:v copy -c:a aac -strict experimental " + outpath + " -y"
     subprocess.call(strcmd2, shell=True)
     return True

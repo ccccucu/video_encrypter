@@ -19,3 +19,9 @@ export function validUsername(str) {
   // return valid_map.indexOf(str.trim()) >= 0
   return true
 }
+
+/* 判空验证 */
+export function isEmpty(str) {
+  const reg = /^\s*$/g;
+  return reg.test(str);
+}
