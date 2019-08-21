@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
 
-    <el-form ref="form" label-width="80px">
+    <el-form ref="form" label-width="80px" >
       <!--:model="form"-->
       <el-form-item label="视频标题:">
       <el-input v-model="query.title" placeholder="请输入视频标题"></el-input>
@@ -75,10 +75,6 @@
         videoId: undefined,
 
 
-        // upload_header: 'Bearer ' + this.token
-
-        // uploadFileList: [],//上传文件列表
-
       }
     },
     computed: {
@@ -95,19 +91,6 @@
     created() {
     },
     methods: {
-      // //上传之前：
-      // beforeUpload(file) {
-      //   let form_data = new Formdata()
-      //   form_data.append('key', file.raw, 'fileName')
-      //
-      //   axios.post('/api/videos/upload', form_data, {
-      //     // headers
-      //     headers: {
-      //       Authorization: 'Bearer ' + this.token
-      //     }
-      //   })
-      //   return false // 返回false不会自动上传
-      // },
 
       // 上传前改变文件名字
       handleFileChange(file, fileList) {
