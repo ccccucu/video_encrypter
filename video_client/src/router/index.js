@@ -97,25 +97,30 @@ export const constantRoutes = [
     children: [{
       path: '',
       name: 'video_player',  
+
       component: () => import('@/views/VideoPlayer/index'),
-      meta: { title: '视频播放'}
+      meta: {
+         title: '视频播放' ,
+      icon: 'eye' //设置该路由的图标    
+    }
     }]},
 
-    // {
-    //   path: '/checker',
-    //   redirect: '',
-    //   component: Layout,
-    //   name: 'checker',
-    //   children: [{
-    //     path: '',
-    //     name: 'video_checker',
-    //     component: () => import('@/views/VideoCheck/index'),
-    //     meta: {
-    //       title: '视频解水印',
-    //       access:['admin']
-    //     }
-    //   }]
-    // },
+    {
+      path: '/checker',
+      redirect: '',
+      component: Layout,
+      name: 'checker',
+      children: [{
+        path: '',
+        name: 'video_checker',
+        component: () => import('@/views/VideoCheck/index'),
+        meta: {
+          title: '视频解水印',
+          icon: 'tree', //设置该路由的图标    
+          access:['admin']
+        }
+      }]
+    },
 
 
   // 404 page must be placed at the end !!!

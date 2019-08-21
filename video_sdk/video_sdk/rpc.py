@@ -127,9 +127,9 @@ def client_read_video(path, key, watermark, outpath):
     watermark_file = 'raw_water' + encrpty_file
     watermark_path = os.path.join(base_path, watermark_file)
     try:
-        de_file_by_path(path=path, key=key, outpath=origin_file_path)
+        de = de_file_by_path(path=path, key=key, outpath=origin_file_path)
         en_water_mark_by_path(path=origin_file_path, content=watermark, outpath=watermark_path)
-        en_file_by_path(path=watermark_path, key=key, outpath=outpath)
+        en = en_file_by_path(path=watermark_path, key=key, outpath=outpath)
     except Exception as e:
         traceback.print_exc()
     finally:
@@ -165,4 +165,4 @@ def read_file():
         buf = io.BytesIO(f.read())
         buf.seek(0)
     os.remove(watermark_path)
-    return send_file(buf, mimetype='video/mp4')
+    return send_file(buf, mimetype='video/mp4', conditional=True)

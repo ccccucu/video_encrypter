@@ -34,9 +34,10 @@
           label="标题"
           width="180">
         </el-table-column>
-        <el-table-column
-          prop="upload_unit"
-          label="上传单位">
+       <el-table-column
+          prop="upload_organization.name"
+          label="上传单位"
+          sortable>
         </el-table-column>
         <el-table-column
           prop="created_at"
@@ -81,6 +82,7 @@
           err: 'ERROR'
         },
         ping_server: undefined,
+        ping_timer: 0,
         // videojs options
         videoPlayer: {
           src: ""
@@ -106,6 +108,9 @@
     beforeCreate(){
 
     },
+    beforeDestroy() {
+    clearInterval(this.ping_server);
+    },
     created() {
       queryVideos({}).then((resp) => {
         this.tableData = resp.data.videos
@@ -115,12 +120,15 @@
         this.addWaterMark()
       })
       this.ping_server = setInterval(()=>{
-        pingServer().catch(()=>{
-          this.playerOptions.sources[0].src = ''
-          this.player.load()
-          this.player.stop()
+        pingServer().then(()=>{
+          this.ping_timer = 0
+        }).catch(()=>{
+          this.ping_timer = this.ping_timer + 1
+          if (this.ping_timer >= 3){
+            this.player.reset()
+          }
         })
-      }, 3000)
+      }, 4000)
     },
     mounted() {
     },
@@ -168,6 +176,7 @@
       },
       handleListPlayClick(row) {
         // 点击播放按钮的回调
+        this.player.reset()
         this.progressStatus.status = ''
         this.progressStatus.value = 0
         this.loading = true
@@ -196,35 +205,31 @@
               //50
                 postWaterMark(row.id, water_mark).then((water_mark_resp) => {
                   this.progressStatus.value = 70
-
                   Rpc.clientReadVideo(path, row.secret_key, water_mark,water_path).then((client_read_vide_resp)=>{
 
                     this.progressStatus.value = 80
-
                     if (client_read_vide_resp.data.result) {
                         this.playerOptions.sources[0].src = Rpc.readLocalUrl(water_path, row.secret_key)
                         this.player.load()
                         this.loading = false
                     } else {
                       // 失败
-                      this.progressStatus.status = 'warning'
+                         this.progressStatus.status = 'exception'
+                          this.$message({
+                            type: 'error',
+                            message: '视频加载失败，请重试'
+                          });
                     }
                   }).catch((err)=>{
                     var errtext = '加载失败，请检查网络环境';
                     // this.$message.error('服务器错误，请检查连接状态');
                     // alert(err);
-                    this.$alert(errtext, '读取失败', {
-                      confirmButtonText: '确定',
-                      callback: action => {
-                        this.$message({
-                          type: 'info',
-                          message: `action: ${action}`
-                        });
-                      }
-                    });
-
-                    // this.progressStatus.value = 0
-                    this.progressStatus.status = 'exception'
+                    this.$message({
+                            type: 'info',
+                            message: '视频加载失败，请重试'
+                      });
+                      this.progressStatus.value = 0
+                      this.progressStatus.status = 'exception'
                   }).finally(()=>{
 
                   })
