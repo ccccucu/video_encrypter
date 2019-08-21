@@ -72,10 +72,11 @@ def extract_image_from_clip(path,clip, t):
     clip.save_frame(file_name, t, withmask=True)
     return file_name
 
-def add_watermark(path,video,message):
+def add_watermark(path,video,message,video_time):
     frames_dict = {}
     time =0.0
-    for i in range(10):
+    num=int(video_time/2)
+    for i in range(num):
         image_file = extract_image_from_clip(path,video, time)
         frames_dict[time] = image_file
         encode_image(path,image_file, message)
@@ -185,7 +186,8 @@ def reconstruct_video(path,  frames_dict):
 
 def apply_watermarking(path,message, outpath):
     video = VideoFileClip(path)
-    frames_dict = add_watermark(path,video, message)
+    video_time=video.duration
+    frames_dict = add_watermark(path,video, message,video_time)
     reconstruct_video(path,  frames_dict)
 
 def extract_message_from_video(path,video):
