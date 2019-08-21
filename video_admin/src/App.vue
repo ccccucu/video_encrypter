@@ -17,9 +17,6 @@ export default {
       removeToken()
     }
   },
-  beforeDestroy() {
-    removeToken()
-  }
 
 }
 </script>
