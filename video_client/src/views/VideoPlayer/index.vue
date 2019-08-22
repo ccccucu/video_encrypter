@@ -245,7 +245,16 @@
 </script>
 
 <style>
+.vjs-custom-skin > .video-js .vjs-tech {
+  width: auto !important;
+  height: auto !important;
+  position: relative;
+         
+}
 .vjs-custom-skin > .video-js {
+  display: flex;
+      justify-content: center;
+    align-items: center;
    margin: 0 auto;
   font-family: "PingFang SC","Helvetica Neue","Hiragino Sans GB","Segoe UI","Microsoft YaHei","微软雅黑",sans-serif;
 }
