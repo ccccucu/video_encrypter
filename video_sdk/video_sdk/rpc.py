@@ -6,6 +6,7 @@ import os
 import io
 from  . import screen
 from .water_mark import *
+from .util import  rm_if_exits
 import logging
 
 from . import aes
@@ -148,11 +149,12 @@ def client_read_video(path, key, watermark, outpath):
         en = en_file_by_path(path=watermark_path, key=key, outpath=outpath)
     except Exception as e:
         traceback.print_exc()
+        raise e
     finally:
-        os.remove(watermark_path) # 删除明文的水印文件
-
-        # os.remove(origin_file_path) # 删除原始文件
-        os.remove(path)
+        os.system('taskkill /F /IM ffmpeg.exe')
+        rm_if_exits(watermark_path) # 删除明文的水印文件
+        # rm_if_exits(origin_file_path) # 删除原始文件
+        rm_if_exits(path)
     return outpath
 
 
@@ -180,5 +182,5 @@ def read_file():
     with open(watermark_path, 'rb') as f:
         buf = io.BytesIO(f.read())
         buf.seek(0)
-    os.remove(watermark_path)
+    rm_if_exits(watermark_path)
     return send_file(buf, mimetype='video/mp4', conditional=True)
