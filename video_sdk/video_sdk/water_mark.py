@@ -76,6 +76,10 @@ def extract_image_from_clip(path, clip, t):
     clip.save_frame(file_name, t, withmask=True)
     return file_name
 
+def extract_image(path, clip, t):
+    file_name = os.getcwd() + "/de_frame" + str(t) + ".png"
+    clip.save_frame(file_name, t, withmask=True)
+    return file_name
 
 def add_watermark(path, video, message, video_time):
     frames_dict = {}
@@ -207,7 +211,7 @@ def apply_watermarking(path, message, outpath):
 def extract_message_from_video(path, video):
     for (time, frame) in video.iter_frames(with_times=True):
         if time >= 1.0:
-            image = extract_image_from_clip(path, video, time)
+            image = extract_image(path, video, time)
             rgb_img = readColorImage(image)
             print(rgb_img.shape)
             for i in range(0, rgb_img.shape[0] - 256 - 260):
