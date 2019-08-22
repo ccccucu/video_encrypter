@@ -156,7 +156,7 @@ def encode_image(path, image_file, message):
     img = readColorImage(os.path.dirname(path) + '/temp.jpg')
     for i in range(0, 256):
         for j in range(0, 256):
-            rgb_data[i][j] = img[i - 100][j - 100]
+            rgb_data[i][j] = img[i ][j ]
     writeImage(image_file, rgb_data)
 
 
