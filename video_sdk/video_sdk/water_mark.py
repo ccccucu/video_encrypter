@@ -210,12 +210,12 @@ def apply_watermarking(path, message, outpath):
 
 def extract_message_from_video(path, video):
     for (time, frame) in video.iter_frames(with_times=True):
-        if time >= 1.0:
+        if time >= 0.0:
             image = extract_image(path, video, time)
             rgb_img = readColorImage(image)
             print(rgb_img.shape)
-            for i in range(0, rgb_img.shape[0] - 256 - 260):
-                for j in range(0, rgb_img.shape[1] - 256 - 1078):
+            for i in range(0, 10):
+                for j in range(0, 10):
 
                     size = 256
                     K = 8
