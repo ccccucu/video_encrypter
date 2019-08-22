@@ -99,6 +99,8 @@ def encode_image(path,image_file, message):
         rgb_data = readColorImage(image_file)
         rgb_data_height=rgb_data.shape[0]
         rgb_data_width=rgb_data.shape[1]
+	if int(rgb_data_height*0.7)<256 or int(rgb_data_width*0.7)<256:
+            raise Exception("视频尺寸太小，不符合要求")
         rgb_data=cv2.resize(rgb_data,(int(rgb_data_width*0.7),int(rgb_data_height*0.7)),interpolation=cv2.INTER_CUBIC)
         crop = rgb_data[0:256, 0:256]
         ycc_data = rgb2ycc(crop)
@@ -141,7 +143,7 @@ def encode_image(path,image_file, message):
         embeded_rgb_data = ycc2rgb(ycc_data)
         writeImage(os.path.dirname(path)+'/temp.jpg', embeded_rgb_data)
 	
-	if os.path.exists(os.path.dirname('F:\Watermark\input1.mp4')+'/temp.jpg') == 0:
+	if os.path.exists(os.path.dirname(path)+'/temp.jpg') == 0:
 		raise Exception("添加水印不成功")
 
         img = readColorImage(os.path.dirname(path)+'/temp.jpg')
