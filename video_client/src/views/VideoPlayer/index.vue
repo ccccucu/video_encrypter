@@ -176,7 +176,7 @@
         console.log(event)
       },
       handleListPlayClick(row) {
-        this.openIsDisabled = "true"
+        this.openIsDisabled = true
         // 点击播放按钮的回调
         this.player.reset()
         this.progressStatus.status = ''
@@ -190,15 +190,16 @@
         this.progressStatus.value = 10
 
         if(FS.existsSync(water_path)){
-            this.openIsDisabled = "false"
             this.progressStatus.value = 100
             this.playerOptions.sources[0].src = Rpc.readLocalUrl(water_path, row.secret_key)
             this.player.load()
-            this.loading = false
+            //this.loading = false
 
         }else {
           // 下载视频
           videoDownload(row.id).then((download_resp) => {
+
+
             this.progressStatus.value = 30
 
             writer.on('finish', () =>{
@@ -206,11 +207,13 @@
               let water_mark =  get_uuid()
               this.progressStatus.value = 50
 
+
               //50
                 postWaterMark(row.id, water_mark).then((water_mark_resp) => {
                   this.progressStatus.value = 70
+
                   Rpc.clientReadVideo(path, row.secret_key, water_mark,water_path).then((client_read_vide_resp)=>{
-                    this.openIsDisabled = "false"
+                    this.openIsDisabled = false
                     this.progressStatus.value = 80
                     if (client_read_vide_resp.data.result) {
 
@@ -228,7 +231,7 @@
                           });
                     }
                   }).catch((err)=>{
-                    this.openIsDisabled = "false"
+                    this.openIsDisabled = false
                     var errtext = '加载失败，请检查网络环境';
                     // this.$message.error('服务器错误，请检查连接状态');
                     // alert(err);
@@ -238,23 +241,19 @@
                       });
                       this.progressStatus.value = 0
                       this.progressStatus.status = 'exception'
-                  }).finally(()=>{
-                    this.openIsDisabled = "false"
                   })
-                }).finally(()=>{
-                  this.openIsDisabled = "false"
                 })
             });
 
             download_resp.data.pipe(writer)
           }).catch((err) => {
-            this.openIsDisabled = "false"
+            this.openIsDisabled = false
             debugger
           }).finally(()=>{
-            this.openIsDisabled = "false"
+            //this.openIsDisabled = false
           });
         }
-        this.openIsDisabled = "false"
+        //this.openIsDisabled = false
       }
     }
   }
