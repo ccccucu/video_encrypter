@@ -49,6 +49,7 @@
               size="mini"
               type="primary"
               @click="handleListPlayClick(scope.row)"
+              :disabled="openIsDisabled"
             >播放
             </el-button>
           </template>
@@ -174,6 +175,7 @@
         console.log(event)
       },
       handleListPlayClick(row) {
+        this.openIsDisabled = "true"
         // 点击播放按钮的回调
         this.player.reset()
         this.progressStatus.status = ''
@@ -239,6 +241,7 @@
             debugger
           });
         }
+        this.openIsDisabled = "false"
       }
     }
   }
