@@ -79,7 +79,7 @@ def de_water_mark_by_path(path):
     """
     video = VideoFileClip(path)
     c = Dispacher(extract_message_from_video, path,video)
-    c.join(10000)
+    c.join(15000)
     if c.isAlive():
         print("无水印")
     elif c.error:
