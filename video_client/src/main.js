@@ -17,6 +17,7 @@ import '@/permission' // permission control
 import VueVideoPlayer from 'vue-video-player'
 require('videojs-flash');
 
+
 /**
  * If you don't want to use mock-server
  * you want to use mockjs for request interception

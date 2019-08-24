@@ -73,6 +73,10 @@ module.exports = {
           },{
             from: "./opencv_ffmpeg343_64.dll",
             to: "./opencv_ffmpeg343_64.dll"
+          },
+          {
+            from: "./openh264-1.7.0-win64.dll",
+            to: "./openh264-1.7.0-win64.dll"
           }]
       }
     }

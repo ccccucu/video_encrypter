@@ -6,6 +6,7 @@ import {
   installVueDevtools
 } from "vue-cli-plugin-electron-builder/lib";
 
+
 const { execFile, exec } = require("child_process");
 
 const isDevelopment = process.env.NODE_ENV !== "production";
@@ -27,10 +28,12 @@ function createWindow() {
     fullscreen: false,
     movable: false,
     minimizable: false,
-    resizable: false,
+    resizable: true,
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
-      webSecurity: false
+      webSecurity: false,
+      'overlay-fullscreen-video': true,
     }
   });
 
@@ -50,7 +53,7 @@ function createWindow() {
   });
 
   win.on("resize", () => {
-    win.maximize();
+    // win.maximize();
   });
 
   if (process.platform === "win32") {
@@ -75,6 +78,9 @@ app.on("window-all-closed", () => {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== "darwin") {
+    if (process.platform === "win32") {
+      exec("taskkill /F /IM rpc.exe" );
+    }
     app.quit();
   }
 });
@@ -103,9 +109,7 @@ app.on("ready", async () => {
 });
 
 app.on("quit", () => {
-  if (process.platform === "win32") {
-    exec("taskkill /F /pid " + rpc.pid);
-  }
+
 });
 
 // Exit cleanly on request from parent process in development mode.
@@ -125,4 +129,9 @@ if (isDevelopment) {
 
 ipcMain.on("Video.ResetartSDK", (event, args) => {
   rpc = execFile("./rpc.exe");
+});
+
+
+ipcMain.on("setFullScreen", (event, args) => {
+  // win.setFullScreen(args.flag)
 });
