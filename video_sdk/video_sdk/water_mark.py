@@ -6,6 +6,7 @@ import numpy as np
 import sys
 import threading
 import subprocess
+import win32api,win32con
 from moviepy.video.io.VideoFileClip import VideoFileClip
 
 
@@ -84,12 +85,12 @@ def extract_image(path, clip, t):
 def add_watermark(path, video, message, video_time):
     frames_dict = {}
     time = 0.0
-    num = int(video_time / 2)
+    num = int(video_time / 3)
     for i in range(num):
         image_file = extract_image_from_clip(path, video, time)
         frames_dict[time] = image_file
         encode_image(path, image_file, message)
-        time += 1.0
+        time += 3
     return frames_dict
 
 
@@ -109,11 +110,19 @@ def encode_image(path, image_file, message):
     rgb_data = readColorImage(image_file)
     rgb_data_height = rgb_data.shape[0]
     rgb_data_width = rgb_data.shape[1]
-    if int(rgb_data_height * 0.7) < 256 or int(rgb_data_width * 0.7) < 256:
-        raise Exception("视频尺寸太小，不符合要求")
-    rgb_data = cv2.resize(rgb_data, (int(rgb_data_width * 0.7), int(rgb_data_height * 0.7)),
+    screen_width=win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
+    screen_height=win32api.GetSystemMetrics(win32con.SM_CYSCREEN)
+
+    if rgb_data_width/rgb_data_height >screen_width/screen_height:
+        rgb_data = cv2.resize(rgb_data, (int(screen_width), int(screen_width / (rgb_data_width/rgb_data_height))),
                           interpolation=cv2.INTER_CUBIC)
-    crop = rgb_data[0:256, 0:256]
+    else:
+        rgb_data=cv2.resize(rgb_data, (int(screen_height* (rgb_data_width/rgb_data_height)), int(screen_height )),
+                          interpolation=cv2.INTER_CUBIC)
+    start_h=int((rgb_data.shape[0]-256)/2)
+    start_w=int((rgb_data.shape[1]-256)/2)
+
+    crop = rgb_data[start_h:start_h+256, start_w:start_w+256]
     ycc_data = rgb2ycc(crop)
     y_data = get_y(ycc_data)
     image = PIL.Image.fromarray(y_data)
@@ -158,9 +167,9 @@ def encode_image(path, image_file, message):
         raise Exception("添加水印不成功")
 
     img = readColorImage(os.path.dirname(path) + '/temp.jpg')
-    for i in range(0, 256):
-        for j in range(0, 256):
-            rgb_data[i][j] = img[i ][j ]
+    for i in range(start_h,start_h+256):
+        for j in range(start_w,start_w+256):
+            rgb_data[i][j] = img[i-start_h][j-start_w]
     writeImage(image_file, rgb_data)
 
 
@@ -168,10 +177,15 @@ def reconstruct_video(path, frames_dict):
     videoCapture = cv2.VideoCapture(path)
     fps = videoCapture.get(cv2.CAP_PROP_FPS)
     # fourcc = int(videoCapture.get(cv2.CAP_PROP_FOURCC))
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')
-
-    size = (
-    int(videoCapture.get(cv2.CAP_PROP_FRAME_WIDTH) * 0.7), int(videoCapture.get(cv2.CAP_PROP_FRAME_HEIGHT) * 0.7))
+    fourcc = cv2.VideoWriter_fourcc(*'X264')
+    screen_width = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
+    screen_height = win32api.GetSystemMetrics(win32con.SM_CYSCREEN)
+    frame_width=videoCapture.get(cv2.CAP_PROP_FRAME_WIDTH)
+    frame_heigth=videoCapture.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    if frame_width / frame_heigth > screen_width / screen_height:
+        size = (int(screen_width), int(screen_width/(frame_width/frame_heigth) ))
+    else:
+        size=(int(screen_height*(frame_width/frame_heigth)),int(screen_height ))
 
     vw = cv2.VideoWriter(os.path.dirname(path) + '/temp.mp4', fourcc, fps, size)
     frame_num = []
@@ -191,7 +205,13 @@ def reconstruct_video(path, frames_dict):
                 vw.write(img)
                 flag = 1
         if flag == 0:
-            frame = cv2.resize(frame, (int(frame.shape[1] * 0.7), int(frame.shape[0] * 0.7)),
+            screen_width = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
+            screen_height = win32api.GetSystemMetrics(win32con.SM_CYSCREEN)
+            if frame.shape[1]/frame.shape[0]>screen_width / screen_height:
+                frame = cv2.resize(frame, (int(screen_width), int(screen_width/(frame.shape[1]/frame.shape[0]))),
+                               interpolation=cv2.INTER_CUBIC)
+            else:
+                frame=cv2.resize(frame, (int(screen_height*(frame.shape[1]/frame.shape[0])), int(screen_height)),
                                interpolation=cv2.INTER_CUBIC)
             vw.write(frame)
 
@@ -208,61 +228,115 @@ def apply_watermarking(path, message, outpath):
     reconstruct_video(path, frames_dict)
 
 
+def de_watermark(rgb_img,i,j):
+    size = 256
+    K = 8
+    Key1 = np.array([1, 2, 3, 4, 5, 6, 7, 8])
+    Key2 = np.array([8, 7, 6, 5, 4, 3, 2, 1])
+    rgb_cover = rgb_img[i:i + 256, j:j + 256]
+    print(i, j)
+
+    ycc_cover = rgb2ycc(rgb_cover)
+    y_cover = get_y(ycc_cover)
+    picture = np.array(y_cover)
+
+    Pmark = np.zeros([32, 32], dtype=int)
+    pp = np.zeros(8)
+    for p in range(int(size / K)):
+        for q in range(int(size / K)):
+            x = p * K
+            y = q * K
+            img_B = np.float32(picture[x:x + K, y:y + K])
+
+            I_dct1 = cv2.dct(img_B)
+
+            pp[0] = I_dct1[0, 7]
+            pp[1] = I_dct1[1, 6]
+            pp[2] = I_dct1[2, 5]
+            pp[3] = I_dct1[3, 4]
+            pp[4] = I_dct1[4, 3]
+            pp[5] = I_dct1[5, 2]
+            pp[6] = I_dct1[6, 1]
+            pp[7] = I_dct1[7, 0]
+
+            # %计算两个矩阵的相似度，越接近1相似度越大
+            if np.corrcoef(pp, Key1)[0][1] <= np.corrcoef(pp, Key2)[0][1]:
+                Pmark[p, q] = 1
+
+    msg = Pmark.flatten()
+    # print(list(map(int, msg)))
+    secret_msg = ''
+    k = 0
+    while k < len(msg):
+        arr = msg[k:(k + 8)]
+        k += 8
+        s = ''.join(str(l) for l in arr)
+        s = chr(int(s, 2))
+
+        secret_msg += s
+    return secret_msg
+
 def extract_message_from_video(path, video):
     for (time, frame) in video.iter_frames(with_times=True):
         if time >= 0.0:
             image = extract_image(path, video, time)
             rgb_img = readColorImage(image)
             print(rgb_img.shape)
-            for i in range(0, 10):
-                for j in range(0, 10):
 
-                    size = 256
-                    K = 8
-                    Key1 = np.array([1, 2, 3, 4, 5, 6, 7, 8])
-                    Key2 = np.array([8, 7, 6, 5, 4, 3, 2, 1])
-                    rgb_cover = rgb_img[i:i + 256, j:j + 256]
-                    print(i, j)
+            len = rgb_img.shape[0] * rgb_img.shape[1]
+            indexi = int(rgb_img.shape[0] / 2)
+            indexj = int(rgb_img.shape[1] / 2)
+            secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+            if (secret_msg.startswith('bjfu')):
+                return (secret_msg[4:])
+            count = 1
+            num = 1
+            while (num < len):
+                n = count
+                while (n > 0):
+                    indexi = indexi - 1
+                    if indexi >= 0 and indexj < rgb_img.shape[1]:
+                        secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+                        if (secret_msg.startswith('bjfu')):
+                            return (secret_msg[4:])
+                        n = n - 1
+                        num = num + 1
+                if num >= len: break
 
-                    ycc_cover = rgb2ycc(rgb_cover)
-                    y_cover = get_y(ycc_cover)
-                    picture = np.array(y_cover)
+                n = count
+                while (n > 0):
+                    indexj = indexj - 1
+                    if indexj >= 0 and indexi >= 0:
+                        secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+                        if (secret_msg.startswith('bjfu')):
+                            return (secret_msg[4:])
+                        n = n - 1
+                        num = num + 1
+                if num >= len: break
 
-                    Pmark = np.zeros([32, 32], dtype=int)
-                    pp = np.zeros(8)
-                    for p in range(int(size / K)):
-                        for q in range(int(size / K)):
-                            x = p * K
-                            y = q * K
-                            img_B = np.float32(picture[x:x + K, y:y + K])
+                count = count + 1
 
-                            I_dct1 = cv2.dct(img_B)
+                n = count
+                while (n > 0):
+                    indexi = indexi + 1
+                    if indexi < rgb_img.shape[0] and indexj >= 0:
+                        secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+                        if (secret_msg.startswith('bjfu')):
+                            return (secret_msg[4:])
+                        n = n - 1
+                        num = num + 1
+                if num >= len: break
 
-                            pp[0] = I_dct1[0, 7]
-                            pp[1] = I_dct1[1, 6]
-                            pp[2] = I_dct1[2, 5]
-                            pp[3] = I_dct1[3, 4]
-                            pp[4] = I_dct1[4, 3]
-                            pp[5] = I_dct1[5, 2]
-                            pp[6] = I_dct1[6, 1]
-                            pp[7] = I_dct1[7, 0]
+                n = count
+                while (n > 0):
+                    indexj = indexj + 1
+                    if indexi < rgb_img.shape[0] and indexj < rgb_img.shape[1]:
+                        secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+                        if (secret_msg.startswith('bjfu')):
+                            return (secret_msg[4:])
+                        n = n - 1
+                        num = num + 1
+                if num >= len: break
 
-                            # %计算两个矩阵的相似度，越接近1相似度越大
-                            if np.corrcoef(pp, Key1)[0][1] <= np.corrcoef(pp, Key2)[0][1]:
-                                Pmark[p, q] = 1
-
-                    msg = Pmark.flatten()
-                    # print(list(map(int, msg)))
-                    secret_msg = ''
-                    k = 0
-                    while k < len(msg):
-                        arr = msg[k:(k + 8)]
-                        k += 8
-                        s = ''.join(str(l) for l in arr)
-                        s = chr(int(s, 2))
-
-                        secret_msg += s
-
-                    if (secret_msg.startswith('bjfu')):
-                        return (secret_msg[4:])
+                count = count + 1
 
