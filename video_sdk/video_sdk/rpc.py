@@ -67,6 +67,14 @@ def en_water_mark_by_path(path, content, outpath):
 
     strcmd2 = "ffmpeg -i " + file_temp + " -i " + wavNameNew1 + " -c:v copy -c:a aac -strict experimental " + outpath + " -y"
     subprocess.call(strcmd2, shell=True)
+    
+    #销毁中间过程保存的图片、视频和音频
+    os.remove(file_temp)
+    os.remove(wavNameNew1)
+    for root, dirs, files in os.walk(workplace):
+        for name in files:
+            if name.endswith(".png") or name.endswith(".jpg"):  
+                os.remove(os.path.join(root, name))
     return True
 
 
@@ -79,13 +87,17 @@ def de_water_mark_by_path(path):
     """
     video = VideoFileClip(path)
     c = Dispacher(extract_message_from_video, path,video)
-    c.join(15000)
+    c.join(30000)
     if c.isAlive():
         print("无水印")
     elif c.error:
         print(c.error[1])
     msg = c.result   
     print(msg)
+    for root, dirs, files in os.walk(os.getcwd()):
+        for name in files:
+            if name.endswith(".png") or name.endswith(".jpg"):  # 填写规则
+                os.remove(os.path.join(root, name))
     return msg
 
 @jsonrpc.method('EnFileByPath')
