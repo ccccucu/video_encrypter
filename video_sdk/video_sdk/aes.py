@@ -6,7 +6,7 @@ import time
 mock = False
 SYS_PLATFORM = platform.system()
 SYS_ARCHITECTURE = platform.architecture()[0]
-LIBMYAES_PATH = os.path.join(r'E:\Project\video\video_encrypter\video_sdk\libmyaes.dll')
+LIBMYAES_PATH = os.path.join(r'/Users/suchang/Code/cold/video_encrypter/video_sdk/video_sdk/target/macos/libmyaes.so')
 print(LIBMYAES_PATH)
 
 # if SYS_PLATFORM == 'Linux'  and SYS_ARCHITECTURE == '64bit':
@@ -19,7 +19,7 @@ print(LIBMYAES_PATH)
 #     raise ImportError("不支持的平台")
 LIB_MYAES = None
 try:
-    LIB_MYAES = ctypes.cdll.LoadLibrary('libmyaes')
+    LIB_MYAES = ctypes.cdll.LoadLibrary(LIBMYAES_PATH)
 except Exception as e:
     print(e)
     import time;time.sleep(11)

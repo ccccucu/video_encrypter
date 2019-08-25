@@ -86,8 +86,6 @@
           src: ""
         },
         playerOptions: {
-          height: '525',
-          width: '1344',
           autoplay: true,
           muted: false,
           language: 'en',
@@ -222,11 +220,9 @@
                         });
                       }
                     });
-
                     // this.progressStatus.value = 0
                     this.progressStatus.status = 'exception'
                   }).finally(()=>{
-
                   })
                 })
             });

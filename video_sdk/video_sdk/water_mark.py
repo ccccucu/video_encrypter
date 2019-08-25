@@ -29,53 +29,54 @@ class Dispacher(threading.Thread):
 
 
 def readColorImage(filename):
-	img = cv2.imread(filename, cv2.IMREAD_COLOR)
-	return img
+    img = cv2.imread(filename, cv2.IMREAD_COLOR)
+    return img
 
 def writeImage(filename, img):
-	cv2.imwrite(filename, img)
+    cv2.imwrite(filename, img)
 
     
 def rgb2ycc(img):
-	height = img.shape[0]
-	width  = img.shape[1]
-	ycc_data = np.empty([height,width,3])
-	for i in np.arange(height):
-		for j in np.arange(width):
-			ycc_data[i][j][0] =  0.299*img[i][j][2] + 0.587*img[i][j][1] + 0.114*img[i][j][0] #Y
-			ycc_data[i][j][1] = -0.169*img[i][j][2] - 0.331*img[i][j][1] + 0.500*img[i][j][0] #Cb
-			ycc_data[i][j][2] =  0.500*img[i][j][2] - 0.419*img[i][j][1] - 0.081*img[i][j][0] #Cr
-	return ycc_data
+    height = img.shape[0]
+    width  = img.shape[1]
+    ycc_data = np.empty([height,width,3])
+    for i in np.arange(height):
+        for j in np.arange(width):
+            ycc_data[i][j][0] =  0.299*img[i][j][2] + 0.587*img[i][j][1] + 0.114*img[i][j][0] #Y
+            ycc_data[i][j][1] = -0.169*img[i][j][2] - 0.331*img[i][j][1] + 0.500*img[i][j][0] #Cb
+            ycc_data[i][j][2] =  0.500*img[i][j][2] - 0.419*img[i][j][1] - 0.081*img[i][j][0] #Cr
+    return ycc_data
 
 def ycc2rgb(img):
-	height = img.shape[0]
-	width  = img.shape[1]
-	rgb_data = np.empty([height,width,3])
-	for i in np.arange(height):
-		for j in np.arange(width):
-			rgb_data[i][j][0] = img[i][j][0] + 1.772*img[i][j][1] #B
-			rgb_data[i][j][1] = img[i][j][0] - 0.344*img[i][j][1] - 0.714*img[i][j][2] #G
-			rgb_data[i][j][2] = img[i][j][0] + 1.402*img[i][j][2] #R
-	return rgb_data
+    height = img.shape[0]
+    width  = img.shape[1]
+    rgb_data = np.empty([height,width,3])
+    for i in np.arange(height):
+        for j in np.arange(width):
+            rgb_data[i][j][0] = img[i][j][0] + 1.772*img[i][j][1] #B
+            rgb_data[i][j][1] = img[i][j][0] - 0.344*img[i][j][1] - 0.714*img[i][j][2] #G
+            rgb_data[i][j][2] = img[i][j][0] + 1.402*img[i][j][2] #R
+    return rgb_data
 
 def get_y(img):
-	height = img.shape[0]
-	width  = img.shape[1]
-	y_data = np.empty([height,width])
-	for i in np.arange(height):
-		for j in np.arange(width):
-			y_data[i][j] = img[i][j][0]
-	return y_data
+    height = img.shape[0]
+    width  = img.shape[1]
+    y_data = np.empty([height,width])
+    for i in np.arange(height):
+        for j in np.arange(width):
+            y_data[i][j] = img[i][j][0]
+    return y_data
 
 def extract_image_from_clip(path,clip, t):
     file_name =os.path.dirname(path)+ "/frame" + str(t) + ".png"
     clip.save_frame(file_name, t, withmask=True)
     return file_name
 
-def add_watermark(path,video,message):
+def add_watermark(path,video,message,video_time):
     frames_dict = {}
     time =0.0
-    for i in range(10):
+    num=int(video_time/2)
+    for i in range(num):
         image_file = extract_image_from_clip(path,video, time)
         frames_dict[time] = image_file
         encode_image(path,image_file, message)
@@ -96,7 +97,9 @@ def encode_image(path,image_file, message):
         mark = message.reshape((32, 32))
 
         rgb_data = readColorImage(image_file)
-        rgb_data=cv2.resize(rgb_data,(1344,525),interpolation=cv2.INTER_CUBIC)
+        rgb_data_height=rgb_data.shape[0]
+        rgb_data_width=rgb_data.shape[1]
+        rgb_data=cv2.resize(rgb_data,(int(rgb_data_width*0.7),int(rgb_data_height*0.7)),interpolation=cv2.INTER_CUBIC)
         crop = rgb_data[0:256, 0:256]
         ycc_data = rgb2ycc(crop)
         y_data = get_y(ycc_data)
@@ -137,10 +140,14 @@ def encode_image(path,image_file, message):
                 ycc_data[i][j][0] = E[i][j]
         embeded_rgb_data = ycc2rgb(ycc_data)
         writeImage(os.path.dirname(path)+'/temp.jpg', embeded_rgb_data)
+    
+        if os.path.exists(os.path.dirname('F:\Watermark\input1.mp4')+'/temp.jpg') == 0:
+            raise Exception("添加水印不成功")
+
         img = readColorImage(os.path.dirname(path)+'/temp.jpg')
         for i in range(256):
-           for j in range(256):
-              rgb_data[i][j] = img[i][j]
+            for j in range(256):
+                rgb_data[i][j] = img[i][j]
         writeImage(image_file, rgb_data)
 
 def reconstruct_video(path,  frames_dict):
@@ -148,7 +155,9 @@ def reconstruct_video(path,  frames_dict):
     fps = videoCapture.get(cv2.CAP_PROP_FPS)
     #fourcc = int(videoCapture.get(cv2.CAP_PROP_FOURCC))
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    size = (int(1344), int(525))
+
+    size = (int(videoCapture.get(cv2.CAP_PROP_FRAME_WIDTH )*0.7), int(videoCapture.get(cv2.CAP_PROP_FRAME_HEIGHT)*0.7))
+
     vw = cv2.VideoWriter(os.path.dirname(path)+'/temp.mp4', fourcc, fps, size)
     frame_num=[]
     frame_file=[]
@@ -167,7 +176,7 @@ def reconstruct_video(path,  frames_dict):
                 vw.write(img)
                 flag=1
         if flag==0:
-            frame = cv2.resize(frame, (1344, 525), interpolation=cv2.INTER_CUBIC)
+            frame = cv2.resize(frame, (int(frame.shape[1]*0.7), int(frame.shape[0]*0.7)), interpolation=cv2.INTER_CUBIC)
             vw.write(frame)
 
         # 读取视频下一帧的内容
@@ -177,7 +186,8 @@ def reconstruct_video(path,  frames_dict):
 
 def apply_watermarking(path,message, outpath):
     video = VideoFileClip(path)
-    frames_dict = add_watermark(path,video, message)
+    video_time=video.duration
+    frames_dict = add_watermark(path,video, message,video_time)
     reconstruct_video(path,  frames_dict)
 
 def extract_message_from_video(path,video):
