@@ -98,6 +98,7 @@ def de_water_mark_by_path(path):
         for name in files:
             if name.endswith(".png") or name.endswith(".jpg"):  # 填写规则
                 os.remove(os.path.join(root, name))
+    video.close()
     return msg
 
 @jsonrpc.method('EnFileByPath')
