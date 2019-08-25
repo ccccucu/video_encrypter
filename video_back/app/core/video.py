@@ -13,7 +13,7 @@ from easyapi import EasyApiContext
 from datetime import datetime, timedelta
 from flask_jwt import jwt_required, current_identity
 from flask import request
-
+from sqlalchemy.sql import text
 class VideoController(easyapi.BaseController):
     __dao__ = dao.VideoDao
 
@@ -233,15 +233,17 @@ class WatermarkLogController(easyapi.BaseController):
     def search_watermark(cls, ctx:EasyApiContext=None, query=''):
         if not ctx:
             ctx = EasyApiContext()
-        water = dao.VideoDao.get(ctx=ctx, query={
-            'watermark': query
-        })
+        water = dao.WatermarkLogDao.execute(ctx, sql=text("""
+            SELECT * FROM watermark_logs WHERE  watermark LIKE :query  LIMIT 1
+        """), query='%'+query+'%').fetchone()
         if not water:
             raise easyapi.BusinessError(
                 http_code=200,
                 code=404,
                 err_info="没有找到对应水印"
             )
+        water = dao.WatermarkLogDao.formatter(ctx,water)
+        return water
 
 
 
