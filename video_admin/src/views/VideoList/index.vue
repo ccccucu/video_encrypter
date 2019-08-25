@@ -77,6 +77,7 @@
 
       <el-col :span="24" class="toolbar">
         <el-pagination
+          @current-change="onPageChange"
           :current-page="pages._page"
           :page-size="pages._per_page"
           layout="total, prev, pager, next"
@@ -124,14 +125,6 @@
 
       }
     },
-    created() {
-    },
-    methods: {
-
-    },
-    mounted() {
-
-    }
 
   }
 </script>
