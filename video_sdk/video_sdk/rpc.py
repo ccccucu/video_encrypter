@@ -73,7 +73,7 @@ def en_water_mark_by_path(path, content, outpath):
     os.remove(wavNameNew1)
     for root, dirs, files in os.walk(workplace):
         for name in files:
-            if name.endswith(".png") or name.endswith(".jpg"):  
+            if name.endswith(".png") or name.endswith(".jpg") and name.startswith('frame'):  
                 os.remove(os.path.join(root, name))
     return True
 
@@ -96,8 +96,9 @@ def de_water_mark_by_path(path):
     print(msg)
     for root, dirs, files in os.walk(os.getcwd()):
         for name in files:
-            if name.endswith(".png") or name.endswith(".jpg"):  # 填写规则
+            if name.endswith(".png") or name.endswith(".jpg") and name.startswith('de_frame'):  
                 os.remove(os.path.join(root, name))
+    video.close()
     return msg
 
 @jsonrpc.method('EnFileByPath')
