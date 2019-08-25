@@ -287,6 +287,7 @@ def apply_watermarking(path, message, outpath):
     video_time = video.duration#获取视频时长
     frames_dict = add_watermark(path, video, message, video_time)#加水印
     reconstruct_video(path, frames_dict)#重构视频
+    video.close()
 
 
 def de_watermark(rgb_img,i,j):
