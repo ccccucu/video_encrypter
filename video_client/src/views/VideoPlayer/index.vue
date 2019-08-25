@@ -94,11 +94,10 @@
         },
         videoEvent: ['fullscreenchange'],
         playerOptions: {
-
+          width: 290,
           autoplay: true,
           muted: false,
           language: 'en',
-          playbackRates: [0.7, 1.0, 1.5, 2.0],
           sources: [{
             type: "video/mp4",
             // mp4
@@ -255,11 +254,16 @@
 </script>
 
 <style>
-.vjs-custom-skin > .video-js .vjs-tech {
+.vjs-custom-skin > .video-js  .vjs-tech {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.vjs-custom-skin > .vjs-fullscreen >.vjs-tech {
   width: auto !important;
   height: auto !important;
   position: relative;
-         
 }
 .vjs-custom-skin > .video-js {
   display: flex;

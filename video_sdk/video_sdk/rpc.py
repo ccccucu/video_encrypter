@@ -54,7 +54,7 @@ def en_water_mark_by_path(path, content, outpath):
 
     apply_watermarking(path, message, outpath)
     wavNameNew = workplace +'/audio'
-    strcmd = "ffmpeg -i "  + path + " -f wav " + wavNameNew + ".m4a" + "  -y"
+    strcmd = ffmepg_path+" -i "  + path + " -f wav " + wavNameNew + ".m4a" + "  -y"
     subprocess.call(strcmd, shell=True)
     file_temp =workplace + '/temp.mp4'
 
@@ -65,7 +65,7 @@ def en_water_mark_by_path(path, content, outpath):
     if os.path.exists(wavNameNew1) == 0:
         raise Exception("从原视频中保存音频不成功")
 
-    strcmd2 = "ffmpeg -i " + file_temp + " -i " + wavNameNew1 + " -c:v copy -c:a aac -strict experimental " + outpath + " -y"
+    strcmd2 = ffmepg_path + " -i " + file_temp + " -i " + wavNameNew1 + " -c:v copy -c:a aac -strict experimental " + outpath + " -y"
     subprocess.call(strcmd2, shell=True)
     return True
 

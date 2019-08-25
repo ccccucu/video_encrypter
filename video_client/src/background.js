@@ -57,7 +57,7 @@ function createWindow() {
   });
 
   if (process.platform === "win32") {
-    rpc = execFile("./rpc.exe");
+    rpc = execFile("./rpc/rpc.exe");
     // rpc.on('close', ()=>{
     //   app.quit()
     // })
@@ -128,7 +128,7 @@ if (isDevelopment) {
 }
 
 ipcMain.on("Video.ResetartSDK", (event, args) => {
-  rpc = execFile("./rpc.exe");
+  rpc = execFile("./rpc/rpc.exe");
 });
 
 
