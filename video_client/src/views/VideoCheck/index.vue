@@ -1,6 +1,10 @@
 <template>
   <div class="app-container">
-    <el-card>
+    <el-card
+      v-loading="loading"
+    element-loading-text="水印解析中"
+    element-loading-spinner="el-icon-loading"
+    >
       <div slot="header" class="clearfix">
         <span>水印解析</span>
       </div>
@@ -49,7 +53,8 @@ export default {
     return {
       current_file: "",
       waterMarkInfo: [],
-      fileList: []
+      fileList: [],
+      loading: false
     };
   },
   created() {},
@@ -71,7 +76,9 @@ export default {
         });
         return false;
       }
+      this.loading = true
       Rpc.deWaterMarkByPath(this.current_file).then(resp => {
+          this.loading = false
         if (resp.data.error) {
           // 出错
           this.$message({
