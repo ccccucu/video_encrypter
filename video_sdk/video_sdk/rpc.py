@@ -71,10 +71,10 @@ def en_water_mark_by_path(path, content, outpath):
     #销毁中间过程保存的图片、视频和音频
     os.remove(file_temp)
     os.remove(wavNameNew1)
-    for root, dirs, files in os.walk(workplace):
-        for name in files:
-            if name.endswith(".png") or name.endswith(".jpg") and name.startswith('frame'):  
-                os.remove(os.path.join(root, name))
+    os.remove(workplace+'/temp.jpg')
+    for name in os.listdir(workplace):
+        if  name.startswith('frame'):  
+            os.remove(os.path.join(workplace, name))
     return True
 
 
@@ -94,10 +94,9 @@ def de_water_mark_by_path(path):
         print(c.error[1])
     msg = c.result   
     print(msg)
-    for root, dirs, files in os.walk(os.getcwd()):
-        for name in files:
-            if name.endswith(".png") or name.endswith(".jpg") and name.startswith('de_frame'):  
-                os.remove(os.path.join(root, name))
+    for name in os.listdir(os.getcwd()):
+        if  name.startswith('de_frame'):  
+            os.remove(os.path.join(os.getcwd(), name))
     video.close()
     return msg
 
