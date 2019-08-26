@@ -222,26 +222,12 @@
                     var errtext = '加载失败，请检查网络环境';
                     // this.$message.error('服务器错误，请检查连接状态');
                     // alert(err);
-<<<<<<< HEAD
-                    this.$alert(errtext, '读取失败', {
-                      confirmButtonText: '确定',
-                      callback: action => {
-                        this.$message({
-                          type: 'info',
-                          message: `action: ${action}`
-                        });
-                      }
-                    });
-                    // this.progressStatus.value = 0
-                    this.progressStatus.status = 'exception'
-=======
                     this.$message({
                             type: 'info',
                             message: '视频加载失败，请重试'
                       });
                       this.progressStatus.value = 0
                       this.progressStatus.status = 'exception'
->>>>>>> bb302049d5374de4fd08b9dc202af5c80b98eed5
                   }).finally(()=>{
                   })
                 })
