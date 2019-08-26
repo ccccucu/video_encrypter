@@ -1,31 +1,18 @@
-from flask import Flask, request, jsonify, send_file, current_app
+from flask import Flask, request, jsonify, send_file
 from flask_jsonrpc import JSONRPC
 from flask_cors import CORS
-import time
 
 import os
-import io
 from  . import screen
 from .water_mark import *
-from .util import  rm_if_exits
-import logging
 
 from . import aes
-import traceback
-baae_path = ''
-if getattr(sys, 'frozen', False):
-    baae_path = os.path.abspath(sys._MEIPASS)
-
-ffmepg_path = 'ffmpeg'
 
 app = Flask(__name__)
 jsonrpc = JSONRPC(app, '/rpc')
 CORS(app)
-file_handler = logging.FileHandler('flask.log')
-file_handler.setLevel(logging.DEBUG)
-log = logging.getLogger('werkzeug')
-log.setLevel(logging.INFO)
-log.addHandler(file_handler)
+
+
 
 @jsonrpc.method('EnWaterMakerByPath')
 def en_water_mark_by_path(path, content, outpath):
@@ -47,40 +34,15 @@ def en_water_mark_by_path(path, content, outpath):
         secret += s
     message = list(map(int, secret))
 
-<<<<<<< HEAD
     workplace=os.path.dirname(path)
-   
-    if os.path.exists(workplace)==0:
-=======
-    workplace =os.path.dirname(path)
-
-    if os.path.exists(workplace )==0:
->>>>>>> bb302049d5374de4fd08b9dc202af5c80b98eed5
-        raise Exception("读入视频路径不存在")
-
     apply_watermarking(path, message, outpath)
-    wavNameNew = workplace +'/audio'
-    strcmd = "ffmpeg -i "  + path + " -f wav " + wavNameNew + ".m4a" + "  -y"
+    wavNameNew = workplace+'/audio'
+    strcmd = "ffmpeg -i " + path + " -f wav " + wavNameNew + ".m4a" + " -y"
     subprocess.call(strcmd, shell=True)
-    file_temp =workplace + '/temp.mp4'
-
-    if os.path.exists(file_temp) == 0:
-        raise Exception("加水印后保存视频不成功")
-
+    file = workplace + '/temp.mp4'
     wavNameNew1 = workplace + '/audio.m4a'
-    if os.path.exists(wavNameNew1) == 0:
-        raise Exception("从原视频中保存音频不成功")
-
-    strcmd2 = "ffmpeg -i " + file_temp + " -i " + wavNameNew1 + " -c:v copy -c:a aac -strict experimental " + outpath + " -y"
-    subprocess.call(strcmd2, shell=True)
-    
-    #销毁中间过程保存的图片、视频和音频
-    os.remove(file_temp)
-    os.remove(wavNameNew1)
-    os.remove(workplace+'/temp.jpg')
-    for name in os.listdir(workplace):
-        if  name.startswith('frame'):  
-            os.remove(os.path.join(workplace, name))
+    strcmd1 = "ffmpeg -i " + file + " -i " + wavNameNew1 + " -c:v copy -c:a aac -strict experimental " + outpath + " -y"
+    subprocess.call(strcmd1, shell=True)
     return True
 
 
@@ -92,18 +54,8 @@ def de_water_mark_by_path(path):
     :return: 水印内容
     """
     video = VideoFileClip(path)
-    c = Dispacher(extract_message_from_video, path,video)
-    c.join(30000)
-    if c.isAlive():
-        print("无水印")
-    elif c.error:
-        print(c.error[1])
-    msg = c.result   
+    msg = extract_message_from_video(path,video)
     print(msg)
-    for name in os.listdir(os.getcwd()):
-        if  name.startswith('de_frame'):  
-            os.remove(os.path.join(os.getcwd(), name))
-    video.close()
     return msg
 
 @jsonrpc.method('EnFileByPath')
@@ -128,17 +80,6 @@ def de_file_by_path(path, key, outpath):
     """
     return aes.aes_decrypt_by_path(path, key, outpath)
 
-@jsonrpc.method('Ping')
-def ping_server():
-    """
-    解密
-    :param path:
-    :param key: 秘钥
-    :param outpath:
-    :return:
-    """
-    return 'ok'
-
 @jsonrpc.method('ClientReadVideo')
 def client_read_video(path, key, watermark, outpath):
     """
@@ -148,25 +89,11 @@ def client_read_video(path, key, watermark, outpath):
     :return:无
     """
     (base_path, encrpty_file) = os.path.split(path)
-
-    origin_file = 'raw_' + encrpty_file
+    origin_file = 'raw_'+ encrpty_file
     origin_file_path = os.path.join(base_path, origin_file)
-
-    watermark_file = 'raw_water' + encrpty_file
-    watermark_path = os.path.join(base_path, watermark_file)
-    try:
-        de = de_file_by_path(path=path, key=key, outpath=origin_file_path)
-        en_water_mark_by_path(path=origin_file_path, content=watermark, outpath=watermark_path)
-        en = en_file_by_path(path=watermark_path, key=key, outpath=outpath)
-    except Exception as e:
-        traceback.print_exc()
-        raise e
-    finally:
-        os.system('taskkill /F /IM ffmpeg.exe')
-        time.sleep(1)
-        # rm_if_exits(watermark_path) # 删除明文的水印文件
-        # rm_if_exits(origin_file_path) # 删除原始文件
-        # rm_if_exits(path)
+    de_file_by_path(path=path, key=key, outpath=origin_file_path)
+    en_water_mark_by_path(path=origin_file_path, content=watermark, outpath=outpath)
+    os.remove(origin_file_path) # 删除原始文件
     return outpath
 
 
@@ -180,19 +107,9 @@ def get_thumbnail_by_path(path, outpath):
     """
     screen.GetScreen(path, outpath)
 
-@app.route('/read_video', methods=['GET'])
+@app.route('/rpc/read_file', methods=['GET'])
 def read_file():
     path=request.args.get('path')
-    key = request.args.get('key', '')
     if not path or not os.path.isabs(path):
         return jsonify(code=404, msg='没有对应的文件'), 200
-    (base_path, encrpty_file) = os.path.split(path)
-    watermark_file = 'raw_water' + encrpty_file
-    watermark_path = os.path.join(base_path, watermark_file)
-    de_file_by_path(path, key, watermark_path)
-    buf = None
-    with open(watermark_path, 'rb') as f:
-        buf = io.BytesIO(f.read())
-        buf.seek(0)
-    rm_if_exits(watermark_path)
-    return send_file(buf, mimetype='video/mp4', conditional=True)
+    return send_file(path)
