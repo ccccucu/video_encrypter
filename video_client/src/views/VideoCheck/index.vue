@@ -10,7 +10,8 @@
             class="upload-demo"
             drag
             action="/"
-            :on-change="handleUpload"
+              :on-change="handleUpload"
+            :file-list="fileList"
             :auto-upload="false"
           >
             <i class="el-icon-upload"></i>
@@ -47,7 +48,8 @@ export default {
   data() {
     return {
       current_file: "",
-      waterMarkInfo: []
+      waterMarkInfo: [],
+      fileList: []
     };
   },
   created() {},
@@ -55,6 +57,9 @@ export default {
     handleUpload(file, fileList) {
       // 上传新的文件的回调
       console.log(file);
+      debugger
+      this.fileList = []
+      this.fileList = [file]
       this.current_file = file.raw.path;
     },
     handleParserClick() {

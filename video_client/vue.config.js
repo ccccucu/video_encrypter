@@ -51,7 +51,22 @@ module.exports = {
   },
   pluginOptions:{
     electronBuilder: {
+      nsis: {
+        oneClick: true,
+        createDesktopShortcut: true,
+        allowToChangeInstallationDirectory: true,
+        createStartMenuShortcut: true
+       },
       builderOptions: {
+        // artifactName : '播放器 v1.0.exe',
+        // productName: "播放器",
+         artifactName : '解码器 v1.0.exe',
+         productName: "解码器",
+         nsis: {
+          oneClick: true,
+          createDesktopShortcut: true,
+          createStartMenuShortcut: true
+         },
           extraFiles: [{
             from: "./rpc.exe",
             to: "./rpc.exe"
