@@ -122,13 +122,13 @@ def add_watermark(path, video, message, video_time):
     :return:返回保存帧名称的数组
     '''
     frames_dict = {}
-    time = 0.0
-    num = int(video_time / 8)#每3秒加一帧水印，num为需要加的水印总数
+    time = 2.5
+    num = int(video_time / 3)#每3秒加一帧水印，num为需要加的水印总数
     for i in range(num):
         image_file = extract_image_from_clip(path, video, time)#用帧所在的时间给其命名
         frames_dict[time] = image_file#把帧名称保存在数组里，数组索引为帧在原视频的时间
         encode_image(path, image_file, message)#加水印
-        time += 8
+        time += 3
     return frames_dict
 
 
@@ -350,7 +350,7 @@ def de_watermark(rgb_img,i,j):
 
 def extract_message_from_video(path, video):
     for (time, frame) in video.iter_frames(with_times=True):#从头遍历所有视频帧，time为该帧在视频中对应的时间，frame为帧
-        if time<=8.0:#如果没有裁剪就在简单模式下解水印，只找中间的正方形,这个时间对应加水印的间隔时间
+        if time<=6.0:#如果没有裁剪就在简单模式下解水印，只找中间的正方形,这个时间对应加水印的间隔时间
             image = extract_image(path, video, time)
             rgb_img = readColorImage(image)
             print(time)
@@ -365,9 +365,9 @@ def extract_message_from_video(path, video):
 
         else:
             print("切换到复杂模式寻找")#裁剪后中心点变了，所以从裁剪后的中心向外螺旋查找
-            image = extract_image(path, video, time-8.0)
+            image = extract_image(path, video, time-3.0)
             rgb_img = readColorImage(image)
-            print(time-8.0)
+            print(time-3.0)
 
             len = rgb_img.shape[0] * rgb_img.shape[1]
             indexi = int(rgb_img.shape[0] / 2)
