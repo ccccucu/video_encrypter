@@ -8,6 +8,13 @@ import threading
 import subprocess
 import win32api,win32con
 from moviepy.video.io.VideoFileClip import VideoFileClip
+from . import aes
+import traceback
+baae_path = ''
+if getattr(sys, 'frozen', False):
+    baae_path = os.path.abspath(sys._MEIPASS)
+
+ffmepg_path = os.path.abspath(os.path.join(baae_path,  'ffmpeg.exe'))
 
 #用线程的方式来限制函数执行时间
 class Dispacher(threading.Thread):
@@ -98,11 +105,15 @@ def get_y(img):
     return y_data
 
 
-def extract_image_from_clip(path, clip, t):#加水印时调用
-    #根据帧所在的时间命名帧
-    file_name = os.path.dirname(path) + "/frame" + str(t) + ".png"
+def extract_image_from_clip(path,  num):#加水印时调用
+    #根据帧所在的帧数命名帧
+    file_name = os.path.dirname(path) + "/frame" + str(num) + ".png"
     # 保存该帧（中间过程需要，后面会统一销毁），保存路径为输入视频的目录
-    clip.save_frame(file_name, t, withmask=True)
+    #clip.save_frame(file_name, t, withmask=True)
+    cap = cv2.VideoCapture(path)  # 读入文件
+    cap.set(cv2.CAP_PROP_POS_FRAMES, num)
+    success, frame = cap.read()
+    cv2.imwrite(file_name,frame)
     return file_name
 
 def extract_image(path, clip, t):#解水印时调用
@@ -112,23 +123,65 @@ def extract_image(path, clip, t):#解水印时调用
     clip.save_frame(file_name, t, withmask=True)
     return file_name
 
-def add_watermark(path, video, message, video_time):
+def atoi(s):
+    s = s[::-1]
+    num = 0
+    for i, v in enumerate(s):
+        for j in range(0, 10):
+            if v == str(j):
+                num += j * (10 ** i)
+    return num
+
+def add_watermark(path, message):
     '''
     均匀的从视频中抽取帧加水印
     :param path: 输入视频的目录
     :param video: moviepy读取的视频格式
     :param message: 编码后的水印
-    :param video_time: 视频总时长
     :return:返回保存帧名称的数组
     '''
     frames_dict = {}
-    time = 2.5
-    num = int(video_time / 3)#每3秒加一帧水印，num为需要加的水印总数
-    for i in range(num):
-        image_file = extract_image_from_clip(path, video, time)#用帧所在的时间给其命名
-        frames_dict[time] = image_file#把帧名称保存在数组里，数组索引为帧在原视频的时间
-        encode_image(path, image_file, message)#加水印
-        time += 3
+
+
+    # f = open('C:/Users/Liyefan/Desktop/test_video/frame_index.txt', 'rb')
+    #
+    # line = f.readline()  # 调用文件的 readline()方法
+    # while line:
+    #     end = line.decode('utf8').find(':')
+    #     n=line.decode('utf8')[0:end]
+    #     time=atoi(n)/video_fps
+    #     image_file = extract_image_from_clip(path, video, time)  # 用帧所在的时间给其命名
+    #     frames_dict[time] = image_file  # 把帧名称保存在数组里，数组索引为帧在原视频的时间
+    #     encode_image(path, image_file, message)  # 加水印
+    #     line = f.readline()
+    #
+    # f.close()
+    keyframe_path = os.path.dirname(path)+"/keyframe_list.txt"
+    if os.path.exists(keyframe_path) == 1:
+        os.remove(keyframe_path)
+    strcmd = ffmepg_path+" i " + path + " -vf select='eq(pict_type\,I)' -vsync 2 -s 1920*1080 -f " \
+                                   "image2 keyframe-%02d.jpeg -loglevel debug 2>&1| for /f \"tokens=4  delims=. \" %d " \
+                                   "in ('findstr \"pict_type:I\" ') do echo %d>> " + keyframe_path
+
+    subprocess.call(strcmd, shell=True)
+    f = open(keyframe_path, 'rb')
+    line = f.readline()  # 调用文件的 readline()方法
+    while line:
+        if line.decode('utf8').startswith('n') == 0:
+            line = f.readline()
+            continue
+        begin = line.decode('utf8').find(':')
+        n = line.decode('utf8')[begin:]
+        num = int(atoi(n) / 1000)
+        image_file = extract_image_from_clip(path, num)  # 用帧所在的时间给其命名
+        frames_dict[num] = image_file  # 把帧名称保存在数组里，数组索引为帧在原视频的帧数
+        encode_image(path, image_file, message)  # 加水印
+        line = f.readline()
+
+    f.close()
+
+
+
     return frames_dict
 
 
@@ -155,16 +208,16 @@ def encode_image(path, image_file, message):
     rgb_data_height = rgb_data.shape[0]
     rgb_data_width = rgb_data.shape[1]#获取视频帧的尺寸
 
-    screen_width=win32api.GetSystemMetrics(win32con.SM_CXSCREEN)#获取屏幕的X方向大小
-    screen_height=win32api.GetSystemMetrics(win32con.SM_CYSCREEN)#Y方向
-
-    #让原视频按照原比例适应屏幕尺寸，
-    if rgb_data_width/rgb_data_height >screen_width/screen_height:
-        rgb_data = cv2.resize(rgb_data, (int(screen_width), int(screen_width / (rgb_data_width/rgb_data_height))),
-                          interpolation=cv2.INTER_CUBIC)
-    else:
-        rgb_data=cv2.resize(rgb_data, (int(screen_height* (rgb_data_width/rgb_data_height)), int(screen_height )),
-                          interpolation=cv2.INTER_CUBIC)
+    # screen_width=win32api.GetSystemMetrics(win32con.SM_CXSCREEN)#获取屏幕的X方向大小
+    # screen_height=win32api.GetSystemMetrics(win32con.SM_CYSCREEN)#Y方向
+    #
+    # #让原视频按照原比例适应屏幕尺寸，
+    # if rgb_data_width/rgb_data_height >screen_width/screen_height:
+    #     rgb_data = cv2.resize(rgb_data, (int(screen_width), int(screen_width / (rgb_data_width/rgb_data_height))),
+    #                       interpolation=cv2.INTER_CUBIC)
+    # else:
+    #     rgb_data=cv2.resize(rgb_data, (int(screen_height* (rgb_data_width/rgb_data_height)), int(screen_height )),
+    #                       interpolation=cv2.INTER_CUBIC)
 
     start_h=int((rgb_data.shape[0]-256)/2)#加水印的起始像素点，从该点横向纵向256个像素取一个正方形
     start_w=int((rgb_data.shape[1]-256)/2)#水印正方形中心对应整个帧的中心
@@ -235,25 +288,26 @@ def reconstruct_video(path, frames_dict):
     # fourcc = int(videoCapture.get(cv2.CAP_PROP_FOURCC))
     fourcc = cv2.VideoWriter_fourcc(*'X264')#选择编码方式
 
-    screen_width = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)#获取屏幕尺寸
-    screen_height = win32api.GetSystemMetrics(win32con.SM_CYSCREEN)
-
-    frame_width=videoCapture.get(cv2.CAP_PROP_FRAME_WIDTH)
-    frame_heigth=videoCapture.get(cv2.CAP_PROP_FRAME_HEIGHT)#获取视频帧尺寸
-
-    if frame_width / frame_heigth > screen_width / screen_height:#生成的视频适应屏幕尺寸
-        size = (int(screen_width), int(screen_width/(frame_width/frame_heigth) ))
-    else:
-        size=(int(screen_height*(frame_width/frame_heigth)),int(screen_height ))
+    # screen_width = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)#获取屏幕尺寸
+    # screen_height = win32api.GetSystemMetrics(win32con.SM_CYSCREEN)
+    #
+    # frame_width=videoCapture.get(cv2.CAP_PROP_FRAME_WIDTH)
+    # frame_heigth=videoCapture.get(cv2.CAP_PROP_FRAME_HEIGHT)#获取视频帧尺寸
+    #
+    # if frame_width / frame_heigth > screen_width / screen_height:#生成的视频适应屏幕尺寸
+    #     size = (int(screen_width), int(screen_width/(frame_width/frame_heigth) ))
+    # else:
+    #     size=(int(screen_height*(frame_width/frame_heigth)),int(screen_height ))
+    size=(1920,1080)
 
     vw = cv2.VideoWriter(os.path.dirname(path) + '/temp.mp4', fourcc, fps, size)
 
     frame_num = []
     frame_file = []
 
-    for time in frames_dict:#这样做是因为frames_dict数组的索引不是连续的，让frame_num和frame_file一一对应
-        frame_num.append(time * fps)#计算time时间对应的是视频里的第几帧
-        frame_file.append(frames_dict[time])
+    for num in frames_dict:#这样做是因为frames_dict数组的索引不是连续的，让frame_num和frame_file一一对应
+        frame_num.append(num)
+        frame_file.append(frames_dict[num])
 
     j = 0
     success, frame = videoCapture.read()
@@ -265,14 +319,14 @@ def reconstruct_video(path, frames_dict):
                 vw.write(img)#把加了水印的帧写进去替代原来的帧
                 flag = 1
         if flag == 0:#没有加水印的帧正常写进去
-            screen_width = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
-            screen_height = win32api.GetSystemMetrics(win32con.SM_CYSCREEN)
-            if frame.shape[1]/frame.shape[0]>screen_width / screen_height:
-                frame = cv2.resize(frame, (int(screen_width), int(screen_width/(frame.shape[1]/frame.shape[0]))),
-                               interpolation=cv2.INTER_CUBIC)
-            else:
-                frame=cv2.resize(frame, (int(screen_height*(frame.shape[1]/frame.shape[0])), int(screen_height)),
-                               interpolation=cv2.INTER_CUBIC)
+            # screen_width = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
+            # screen_height = win32api.GetSystemMetrics(win32con.SM_CYSCREEN)
+            # if frame.shape[1]/frame.shape[0]>screen_width / screen_height:
+            #     frame = cv2.resize(frame, (int(screen_width), int(screen_width/(frame.shape[1]/frame.shape[0]))),
+            #                    interpolation=cv2.INTER_CUBIC)
+            # else:
+            #     frame=cv2.resize(frame, (int(screen_height*(frame.shape[1]/frame.shape[0])), int(screen_height)),
+            #                    interpolation=cv2.INTER_CUBIC)
 
             vw.write(frame)
 
@@ -283,11 +337,9 @@ def reconstruct_video(path, frames_dict):
 
 
 def apply_watermarking(path, message, outpath):
-    video = VideoFileClip(path)
-    video_time = video.duration#获取视频时长
-    frames_dict = add_watermark(path, video, message, video_time)#加水印
+    frames_dict = add_watermark(path,  message)#加水印
     reconstruct_video(path, frames_dict)#重构视频
-    video.close()
+
 
 
 def de_watermark(rgb_img,i,j):
@@ -350,84 +402,94 @@ def de_watermark(rgb_img,i,j):
 
 def extract_message_from_video(path, video):
     for (time, frame) in video.iter_frames(with_times=True):#从头遍历所有视频帧，time为该帧在视频中对应的时间，frame为帧
-        if time<=6.0:#如果没有裁剪就在简单模式下解水印，只找中间的正方形,这个时间对应加水印的间隔时间
-            image = extract_image(path, video, time)
-            rgb_img = readColorImage(image)
-            print(time)
 
-            indexi = int(rgb_img.shape[0] / 2)
-            indexj = int(rgb_img.shape[1] / 2)#中心像素
-            secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
-            if (secret_msg.startswith('bjfu')):#匹配开头的四个字符
-                secret_msg=secret_msg[4:]
-                return (secret_msg.strip())
+        image = extract_image(path, video, time)
+        rgb_img = readColorImage(image)
+        rgb_img=cv2.resize(rgb_img,(1920,1080))
+        print(time)
+
+        indexi = int(rgb_img.shape[0] / 2)
+        indexj = int(rgb_img.shape[1] / 2)#中心像素
+        secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+        print(secret_msg)
+        sum = 0
+        word='bjfu'
+        for i in range(4):
+            for j in range(4):
+                if secret_msg[i] == word[j]:
+                    sum = sum + 1
+        #print(sum)
+        if sum>=2:
+            secret_msg = secret_msg[4:]
+            return (secret_msg.strip())
 
 
-        else:
-            print("切换到复杂模式寻找")#裁剪后中心点变了，所以从裁剪后的中心向外螺旋查找
-            image = extract_image(path, video, time-3.0)
-            rgb_img = readColorImage(image)
-            print(time-3.0)
 
-            len = rgb_img.shape[0] * rgb_img.shape[1]
-            indexi = int(rgb_img.shape[0] / 2)
-            indexj = int(rgb_img.shape[1] / 2)
-            secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
-            if (secret_msg.startswith('bjfu')):
-                secret_msg = secret_msg[4:]
-                return (secret_msg.strip())
-
-            count = 1
-            num = 1
-            while (num < len):
-                n = count
-                while (n > 0):
-                    indexi = indexi - 1#向上走
-                    if indexi-128 >= 0 and indexj < rgb_img.shape[1]:
-                        secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
-                        if (secret_msg.startswith('bjfu')):
-                            secret_msg = secret_msg[4:]
-                            return (secret_msg.replace(" ", ""))
-                        n = n - 1
-                        num = num + 1
-                if num >= len: break
-
-                n = count
-                while (n > 0):
-                    indexj = indexj - 1#向左走
-                    if indexj-128 >= 0 and indexi-128 >= 0:
-                        secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
-                        if (secret_msg.startswith('bjfu')):
-                            secret_msg = secret_msg[4:]
-                            return (secret_msg.replace(" ", ""))
-                        n = n - 1
-                        num = num + 1
-                if num >= len: break
-
-                count = count + 1
-
-                n = count
-                while (n > 0):
-                    indexi = indexi + 1#向下走
-                    if indexi < rgb_img.shape[0] and indexj -128>= 0:
-                        secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
-                        if (secret_msg.startswith('bjfu')):
-                            secret_msg = secret_msg[4:]
-                            return (secret_msg.replace(" ", ""))
-                        n = n - 1
-                        num = num + 1
-                if num >= len: break
-
-                n = count
-                while (n > 0):
-                    indexj = indexj + 1#向右走
-                    if indexi < rgb_img.shape[0] and indexj < rgb_img.shape[1]:
-                        secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
-                        if (secret_msg.startswith('bjfu')):
-                            secret_msg = secret_msg[4:]
-                            return (secret_msg.replace(" ", ""))
-                        n = n - 1
-                        num = num + 1
-                if num >= len: break
-
-                count = count + 1
+        # else:
+        #     print("切换到复杂模式寻找")#裁剪后中心点变了，所以从裁剪后的中心向外螺旋查找
+        #     image = extract_image(path, video, time-3.0)
+        #     rgb_img = readColorImage(image)
+        #     print(time-3.0)
+        #
+        #     len = rgb_img.shape[0] * rgb_img.shape[1]
+        #     indexi = int(rgb_img.shape[0] / 2)
+        #     indexj = int(rgb_img.shape[1] / 2)
+        #     secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+        #     if (secret_msg.startswith('b')):
+        #         secret_msg = secret_msg[4:]
+        #         return (secret_msg.strip())
+        #
+        #     count = 1
+        #     num = 1
+        #     while (num < len):
+        #         n = count
+        #         while (n > 0):
+        #             indexi = indexi - 1#向上走
+        #             if indexi-128 >= 0 and indexj < rgb_img.shape[1]:
+        #                 secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+        #                 if (secret_msg.startswith('bjfu')):
+        #                     secret_msg = secret_msg[4:]
+        #                     return (secret_msg.replace(" ", ""))
+        #                 n = n - 1
+        #                 num = num + 1
+        #         if num >= len: break
+        #
+        #         n = count
+        #         while (n > 0):
+        #             indexj = indexj - 1#向左走
+        #             if indexj-128 >= 0 and indexi-128 >= 0:
+        #                 secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+        #                 if (secret_msg.startswith('bjfu')):
+        #                     secret_msg = secret_msg[4:]
+        #                     return (secret_msg.replace(" ", ""))
+        #                 n = n - 1
+        #                 num = num + 1
+        #         if num >= len: break
+        #
+        #         count = count + 1
+        #
+        #         n = count
+        #         while (n > 0):
+        #             indexi = indexi + 1#向下走
+        #             if indexi < rgb_img.shape[0] and indexj -128>= 0:
+        #                 secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+        #                 if (secret_msg.startswith('bjfu')):
+        #                     secret_msg = secret_msg[4:]
+        #                     return (secret_msg.replace(" ", ""))
+        #                 n = n - 1
+        #                 num = num + 1
+        #         if num >= len: break
+        #
+        #         n = count
+        #         while (n > 0):
+        #             indexj = indexj + 1#向右走
+        #             if indexi < rgb_img.shape[0] and indexj < rgb_img.shape[1]:
+        #                 secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+        #                 if (secret_msg.startswith('bjfu')):
+        #                     secret_msg = secret_msg[4:]
+        #                     return (secret_msg.replace(" ", ""))
+        #                 n = n - 1
+        #                 num = num + 1
+        #         if num >= len: break
+        #
+        #         count = count + 1
