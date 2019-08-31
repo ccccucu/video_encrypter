@@ -12,11 +12,6 @@ import logging
 
 from . import aes
 import traceback
-baae_path = ''
-if getattr(sys, 'frozen', False):
-    baae_path = os.path.abspath(sys._MEIPASS)
-
-ffmepg_path = os.path.abspath(os.path.join(baae_path,  'ffmpeg.exe'))
 
 app = Flask(__name__)
 jsonrpc = JSONRPC(app, '/rpc')
@@ -54,7 +49,7 @@ def en_water_mark_by_path(path, content, outpath):
 
     apply_watermarking(path, message, outpath)
     wavNameNew = workplace +'/audio'
-    strcmd = ffmepg_path+" -i "  + path + " -f wav " + wavNameNew + ".m4a" + "  -y"
+    strcmd =ffmepg_path+ " -i "  + path + " -f wav " + wavNameNew + ".m4a" + "  -y"
     subprocess.call(strcmd, shell=True)
     file_temp =workplace + '/temp.mp4'
 
@@ -65,15 +60,16 @@ def en_water_mark_by_path(path, content, outpath):
     if os.path.exists(wavNameNew1) == 0:
         raise Exception("从原视频中保存音频不成功")
 
-    strcmd2 = ffmepg_path + " -i " + file_temp + " -i " + wavNameNew1 + " -c:v copy -c:a aac -strict experimental " + outpath + " -y"
+    strcmd2 =ffmepg_path+ " -i " + file_temp + " -i " + wavNameNew1 + " -c:v copy -c:a aac -strict experimental " + outpath + " -y"
     subprocess.call(strcmd2, shell=True)
-    
+
     #销毁中间过程保存的图片、视频和音频
     os.remove(file_temp)
     os.remove(wavNameNew1)
     os.remove(workplace+'/temp.jpg')
+    os.remove(os.path.dirname(path)+"/keyframe_list.txt")
     for name in os.listdir(workplace):
-        if  name.startswith('frame'):  
+        if  name.startswith('frame'):
             os.remove(os.path.join(workplace, name))
     return True
 
@@ -92,10 +88,10 @@ def de_water_mark_by_path(path):
         print("无水印")
     elif c.error:
         print(c.error[1])
-    msg = c.result   
+    msg = c.result
     print(msg)
     for name in os.listdir(os.getcwd()):
-        if  name.startswith('de_frame'):  
+        if  name.startswith('de_frame'):
             os.remove(os.path.join(os.getcwd(), name))
     video.close()
     return msg
