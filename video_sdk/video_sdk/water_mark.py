@@ -159,7 +159,7 @@ def add_watermark(path, message):
     keyframe_path = os.path.dirname(path)+"/keyframe_list.txt"
     if os.path.exists(keyframe_path) == 1:
         os.remove(keyframe_path)
-    strcmd = ffmepg_path+" i " + path + " -vf select='eq(pict_type\,I)' -vsync 2 -s 1920*1080 -f " \
+    strcmd = ffmepg_path+" -i " + path + " -vf select='eq(pict_type\,I)' -vsync 2 -s 1920*1080 -f " \
                                    "image2 keyframe-%02d.jpeg -loglevel debug 2>&1| for /f \"tokens=4  delims=. \" %d " \
                                    "in ('findstr \"pict_type:I\" ') do echo %d>> " + keyframe_path
 
