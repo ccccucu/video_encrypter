@@ -156,11 +156,10 @@ def client_read_video(path, key, watermark, outpath):
         traceback.print_exc()
         raise e
     finally:
-        os.system('taskkill /F /IM ffmpeg.exe')
         time.sleep(1)
-        # rm_if_exits(watermark_path) # 删除明文的水印文件
-        # rm_if_exits(origin_file_path) # 删除原始文件
-        # rm_if_exits(path)
+        rm_if_exits(watermark_path) # 删除明文的水印文件
+        rm_if_exits(origin_file_path) # 删除原始文件
+        rm_if_exits(path)
     return outpath
 
 
