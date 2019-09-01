@@ -175,13 +175,15 @@ def read_file():
     key = request.args.get('key', '')
     if not path or not os.path.isabs(path):
         return jsonify(code=404, msg='没有对应的文件'), 200
-    (base_path, encrpty_file) = os.path.split(path)
+    (enfile_path, encrpty_file) = os.path.split(path)
     watermark_file = 'raw_water' + encrpty_file
-    watermark_path = os.path.join(base_path, watermark_file)
-    de_file_by_path(path, key, watermark_path)
-    buf = None
-    with open(watermark_path, 'rb') as f:
-        buf = io.BytesIO(f.read())
-        buf.seek(0)
-    rm_if_exits(watermark_path)
-    return send_file(buf, mimetype='video/mp4', conditional=True)
+    watermark_path = os.path.join(enfile_path, watermark_file)
+    if os.path.exists(watermark_path):
+        return send_file(watermark_path, mimetype='video/mp4', conditional=True)
+    else:
+        de_file_by_path(path, key, watermark_path)
+        buf = None
+        with open(watermark_path, 'rb') as f:
+            buf = io.BytesIO(f.read())
+            buf.seek(0)
+        return send_file(buf, mimetype='video/mp4', conditional=True)
