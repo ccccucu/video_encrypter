@@ -298,7 +298,7 @@ def reconstruct_video(path, frames_dict):
     #     size = (int(screen_width), int(screen_width/(frame_width/frame_heigth) ))
     # else:
     #     size=(int(screen_height*(frame_width/frame_heigth)),int(screen_height ))
-    size=(1920,1080)
+    size=(1920,750)
 
     vw = cv2.VideoWriter(os.path.dirname(path) + '/temp.mp4', fourcc, fps, size)
 
@@ -405,7 +405,12 @@ def extract_message_from_video(path, video):
 
         image = extract_image(path, video, time)
         rgb_img = readColorImage(image)
-        rgb_img=cv2.resize(rgb_img,(1920,1080))
+        height=rgb_img.shape[0]
+        width=rgb_img.shape[1]
+        if width/height >1920/750:
+            rgb_img = cv2.resize(rgb_img, (int(750*(width / height)), 750))
+        else:
+            rgb_img=cv2.resize(rgb_img,(1920,int(1920/(width/height))))
         print(time)
 
         indexi = int(rgb_img.shape[0] / 2)
@@ -414,82 +419,82 @@ def extract_message_from_video(path, video):
         print(secret_msg)
         sum = 0
         word='bjfu'
-        for i in range(4):
-            for j in range(4):
-                if secret_msg[i] == word[j]:
-                    sum = sum + 1
-        #print(sum)
-        if sum>=2:
+        if len(secret_msg)>4:
+            for i in range(4):
+                for j in range(4):
+                    if secret_msg[i] == word[j]:
+                        sum = sum + 1
+            #print(sum)
+            if sum>=2:
+                secret_msg = secret_msg[4:]
+                return (secret_msg.strip())
+            
+    for (time, frame) in video.iter_frames(with_times=True):
+ 
+        print("切换到复杂模式寻找")#裁剪后中心点变了，所以从裁剪后的中心向外螺旋查找
+        image = extract_image(path, video, time)
+        rgb_img = readColorImage(image)
+        print(time)
+
+        len = rgb_img.shape[0] * rgb_img.shape[1]
+        indexi = int(rgb_img.shape[0] / 2)
+        indexj = int(rgb_img.shape[1] / 2)
+        secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+        if (secret_msg.startswith('b')):
             secret_msg = secret_msg[4:]
             return (secret_msg.strip())
 
+        count = 1
+        num = 1
+        while (num < len):
+            n = count
+            while (n > 0):
+                indexi = indexi - 1#向上走
+                if indexi-128 >= 0 and indexj < rgb_img.shape[1]:
+                    secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+                    if (secret_msg.startswith('bjfu')):
+                        secret_msg = secret_msg[4:]
+                        return (secret_msg.replace(" ", ""))
+                    n = n - 1
+                    num = num + 1
+            if num >= len: break
 
+            n = count
+            while (n > 0):
+                indexj = indexj - 1#向左走
+                if indexj-128 >= 0 and indexi-128 >= 0:
+                    secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+                    if (secret_msg.startswith('bjfu')):
+                        secret_msg = secret_msg[4:]
+                        return (secret_msg.replace(" ", ""))
+                    n = n - 1
+                    num = num + 1
+            if num >= len: break
 
-        # else:
-        #     print("切换到复杂模式寻找")#裁剪后中心点变了，所以从裁剪后的中心向外螺旋查找
-        #     image = extract_image(path, video, time-3.0)
-        #     rgb_img = readColorImage(image)
-        #     print(time-3.0)
-        #
-        #     len = rgb_img.shape[0] * rgb_img.shape[1]
-        #     indexi = int(rgb_img.shape[0] / 2)
-        #     indexj = int(rgb_img.shape[1] / 2)
-        #     secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
-        #     if (secret_msg.startswith('b')):
-        #         secret_msg = secret_msg[4:]
-        #         return (secret_msg.strip())
-        #
-        #     count = 1
-        #     num = 1
-        #     while (num < len):
-        #         n = count
-        #         while (n > 0):
-        #             indexi = indexi - 1#向上走
-        #             if indexi-128 >= 0 and indexj < rgb_img.shape[1]:
-        #                 secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
-        #                 if (secret_msg.startswith('bjfu')):
-        #                     secret_msg = secret_msg[4:]
-        #                     return (secret_msg.replace(" ", ""))
-        #                 n = n - 1
-        #                 num = num + 1
-        #         if num >= len: break
-        #
-        #         n = count
-        #         while (n > 0):
-        #             indexj = indexj - 1#向左走
-        #             if indexj-128 >= 0 and indexi-128 >= 0:
-        #                 secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
-        #                 if (secret_msg.startswith('bjfu')):
-        #                     secret_msg = secret_msg[4:]
-        #                     return (secret_msg.replace(" ", ""))
-        #                 n = n - 1
-        #                 num = num + 1
-        #         if num >= len: break
-        #
-        #         count = count + 1
-        #
-        #         n = count
-        #         while (n > 0):
-        #             indexi = indexi + 1#向下走
-        #             if indexi < rgb_img.shape[0] and indexj -128>= 0:
-        #                 secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
-        #                 if (secret_msg.startswith('bjfu')):
-        #                     secret_msg = secret_msg[4:]
-        #                     return (secret_msg.replace(" ", ""))
-        #                 n = n - 1
-        #                 num = num + 1
-        #         if num >= len: break
-        #
-        #         n = count
-        #         while (n > 0):
-        #             indexj = indexj + 1#向右走
-        #             if indexi < rgb_img.shape[0] and indexj < rgb_img.shape[1]:
-        #                 secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
-        #                 if (secret_msg.startswith('bjfu')):
-        #                     secret_msg = secret_msg[4:]
-        #                     return (secret_msg.replace(" ", ""))
-        #                 n = n - 1
-        #                 num = num + 1
-        #         if num >= len: break
-        #
-        #         count = count + 1
+            count = count + 1
+
+            n = count
+            while (n > 0):
+                indexi = indexi + 1#向下走
+                if indexi < rgb_img.shape[0] and indexj -128>= 0:
+                    secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+                    if (secret_msg.startswith('bjfu')):
+                        secret_msg = secret_msg[4:]
+                        return (secret_msg.replace(" ", ""))
+                    n = n - 1
+                    num = num + 1
+            if num >= len: break
+
+            n = count
+            while (n > 0):
+                indexj = indexj + 1#向右走
+                if indexi < rgb_img.shape[0] and indexj < rgb_img.shape[1]:
+                    secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+                    if (secret_msg.startswith('bjfu')):
+                        secret_msg = secret_msg[4:]
+                        return (secret_msg.replace(" ", ""))
+                    n = n - 1
+                    num = num + 1
+            if num >= len: break
+
+            count = count + 1
