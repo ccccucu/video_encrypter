@@ -153,10 +153,9 @@ def client_read_video(path, key, watermark, outpath):
         raise e
     finally:
         time.sleep(1)
-        rm_if_exits(watermark_path) # 删除明文的水印文件
         rm_if_exits(origin_file_path) # 删除原始文件
         rm_if_exits(path)
-    return outpath
+    return watermark_path
 
 
 @jsonrpc.method('GetThumbnailByPath')
