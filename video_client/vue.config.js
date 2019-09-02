@@ -68,11 +68,18 @@ module.exports = {
           createStartMenuShortcut: true
          },
           extraFiles: [{
-            from: "./rpc.exe",
-            to: "./rpc.exe"
+            from: "./server.txt",
+            to: "./server.txt"
+          },{
+            from: "./rpc",
+            to: "./rpc"
           },{
             from: "./opencv_ffmpeg343_64.dll",
             to: "./opencv_ffmpeg343_64.dll"
+          },
+          {
+            from: "./openh264-1.7.0-win64.dll",
+            to: "./openh264-1.7.0-win64.dll"
           }]
       }
     }

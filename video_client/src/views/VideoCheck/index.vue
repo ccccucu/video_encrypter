@@ -1,6 +1,10 @@
 <template>
   <div class="app-container">
-    <el-card>
+    <el-card
+      v-loading="loading"
+    element-loading-text="水印解析中"
+    element-loading-spinner="el-icon-loading"
+    >
       <div slot="header" class="clearfix">
         <span>水印解析</span>
       </div>
@@ -49,7 +53,8 @@ export default {
     return {
       current_file: "",
       waterMarkInfo: [],
-      fileList: []
+      fileList: [],
+      loading: false
     };
   },
   created() {},
@@ -63,6 +68,7 @@ export default {
       this.current_file = file.raw.path;
     },
     handleParserClick() {
+      this.waterMarkInfo = []
       if(this.current_file === ""){
         this.$message({
           message: "未选择文件",
@@ -70,11 +76,13 @@ export default {
         });
         return false;
       }
+      this.loading = true
       Rpc.deWaterMarkByPath(this.current_file).then(resp => {
+          this.loading = false
         if (resp.data.error) {
           // 出错
           this.$message({
-            message: "水印解析失败!!",
+            message: resp.data.error.message,
             type: "error"
           });
         } else {
@@ -97,7 +105,7 @@ export default {
               value: this.search_resp.data.water_mark.video.title
             });
             } else {
-              this.$message('找不到水印')
+              this.$message('找不到水印对应记录， 请根据水印内容手动查找')
             }
           });
           this.waterMarkInfo.push({

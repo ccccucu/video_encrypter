@@ -12,11 +12,6 @@ import logging
 
 from . import aes
 import traceback
-baae_path = ''
-if getattr(sys, 'frozen', False):
-    baae_path = os.path.abspath(sys._MEIPASS)
-
-ffmepg_path = os.path.abspath(os.path.join(baae_path,  'ffmpeg.exe'))
 
 app = Flask(__name__)
 jsonrpc = JSONRPC(app, '/rpc')
@@ -67,7 +62,7 @@ def en_water_mark_by_path(path, content, outpath):
 
     strcmd2 =ffmepg_path+ " -i " + file_temp + " -i " + wavNameNew1 + " -c:v copy -c:a aac -strict experimental " + outpath + " -y"
     subprocess.call(strcmd2, shell=True)
-    
+
     #销毁中间过程保存的图片、视频和音频
     os.remove(file_temp)
     os.remove(wavNameNew1)
@@ -93,10 +88,10 @@ def de_water_mark_by_path(path):
         print("无水印")
     elif c.error:
         print(c.error[1])
-    msg = c.result   
+    msg = c.result
     print(msg)
     for name in os.listdir(os.getcwd()):
-        if  name.startswith('de_frame'):  
+        if  name.startswith('de_frame'):
             os.remove(os.path.join(os.getcwd(), name))
     video.close()
     return msg
@@ -157,11 +152,10 @@ def client_read_video(path, key, watermark, outpath):
         traceback.print_exc()
         raise e
     finally:
-        os.system('taskkill /F /IM ffmpeg.exe')
         time.sleep(1)
-        # rm_if_exits(watermark_path) # 删除明文的水印文件
-        # rm_if_exits(origin_file_path) # 删除原始文件
-        # rm_if_exits(path)
+        rm_if_exits(watermark_path) # 删除明文的水印文件
+        rm_if_exits(origin_file_path) # 删除原始文件
+        rm_if_exits(path)
     return outpath
 
 
@@ -181,13 +175,15 @@ def read_file():
     key = request.args.get('key', '')
     if not path or not os.path.isabs(path):
         return jsonify(code=404, msg='没有对应的文件'), 200
-    (base_path, encrpty_file) = os.path.split(path)
+    (enfile_path, encrpty_file) = os.path.split(path)
     watermark_file = 'raw_water' + encrpty_file
-    watermark_path = os.path.join(base_path, watermark_file)
-    de_file_by_path(path, key, watermark_path)
-    buf = None
-    with open(watermark_path, 'rb') as f:
-        buf = io.BytesIO(f.read())
-        buf.seek(0)
-    rm_if_exits(watermark_path)
-    return send_file(buf, mimetype='video/mp4', conditional=True)
+    watermark_path = os.path.join(enfile_path, watermark_file)
+    if os.path.exists(watermark_path):
+        return send_file(watermark_path, mimetype='video/mp4', conditional=True)
+    else:
+        de_file_by_path(path, key, watermark_path)
+        buf = None
+        with open(watermark_path, 'rb') as f:
+            buf = io.BytesIO(f.read())
+            buf.seek(0)
+        return send_file(buf, mimetype='video/mp4', conditional=True)

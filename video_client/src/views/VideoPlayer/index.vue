@@ -8,8 +8,10 @@
           style="text-align: center; width: 100%">
           <video-player  class="vjs-custom-skin"
                          ref="videoPlayer"
+                         @fullscreenchange=hanleFullScreenChange
+                         :events=videoEvent
                          :options="playerOptions"
-                         :playsinline="true">
+                         :playsinline="false">
           </video-player>
         </div>
         <div v-show="loading" style="text-align: center"  >
@@ -48,6 +50,7 @@
             <el-button
               size="mini"
               type="primary"
+              :disable=disable_button
               @click="handleListPlayClick(scope.row)"
             >播放
             </el-button>
@@ -60,19 +63,21 @@
 </template>
 
 <script>
-  import './style.css'
   import Rpc from '@/rpc/index'
   import {videoDownload, queryVideos, postWaterMark, get_uuid, pingServer} from '@/api/video'
   import FS from 'fs'
   import Path from 'path'
   import UserMixin from '@/mixins/UserMixin'
   import store from '@/store'
+  const { ipcRenderer } = require("electron");
+
   export default {
     name: "index",
     mixins:[UserMixin],
     data() {
       return {
         loading: false,
+        disable_button: false,
         tableData: [],
         video_total: 0,
         // 进度条:
@@ -87,12 +92,12 @@
         videoPlayer: {
           src: ""
         },
+        videoEvent: ['fullscreenchange'],
         playerOptions: {
-
+          width: 290,
           autoplay: true,
           muted: false,
           language: 'en',
-          playbackRates: [0.7, 1.0, 1.5, 2.0],
           sources: [{
             type: "video/mp4",
             // mp4
@@ -137,6 +142,9 @@
       }
     },
     methods: {
+      hanleFullScreenChange(event) {
+           ipcRenderer.send("setFullScreen",{flag:event.isFullscreen_});
+      },
       watermark(str) {
         let can = document.createElement('canvas');
         let font_size = 40*(4/str.length);
@@ -214,6 +222,7 @@
                     } else {
                       // 失败
                          this.progressStatus.status = 'exception'
+                         this.progressStatus.err = client_read_vide_resp.data.error.message
                           this.$message({
                             type: 'error',
                             message: client_read_vide_resp.data.error.message
@@ -245,11 +254,16 @@
 </script>
 
 <style>
-.vjs-custom-skin > .video-js .vjs-tech {
+.vjs-custom-skin > .video-js  .vjs-tech {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.vjs-custom-skin > .vjs-fullscreen >.vjs-tech {
   width: auto !important;
   height: auto !important;
   position: relative;
-         
 }
 .vjs-custom-skin > .video-js {
   display: flex;

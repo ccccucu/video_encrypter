@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "electron-packager-plugin-non-proprietary-codecs-ffmpeg": "^1.0.2"
+  }
+}

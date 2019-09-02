@@ -1,1 +1,8 @@
-export const SERVER_URL = 'http://47.104.148.221:8082/'
+var fs = require('fs')
+export var SERVER_URL = ''
+
+fs.readFile('server.txt', (err, data) => {
+    let b = data.toString()
+    SERVER_URL = b
+    debugger
+})

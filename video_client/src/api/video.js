@@ -30,12 +30,12 @@ export function get_uuid() {
   return uuid;
 }
 
-export function postWaterMark(video_id, watemark) {
+export function postWaterMark(video_id, watermark) {
   var time = new Date();
   return axios.post(`${SERVER_URL}/watermark_logs`, {
     video_id: video_id,
     // "ip": user_info.ip,
-    watermark: get_uuid()
+    'watermark': watermark
   });
 }
 
