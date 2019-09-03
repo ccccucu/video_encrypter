@@ -94,6 +94,8 @@ def de_water_mark_by_path(path):
     for i in msg:
         if ord(i) > 31 and ord(i)<127:
             word += i
+        else:
+            word+=''
             
     for name in os.listdir(os.getcwd()):
         if  name.startswith('de_frame'):
