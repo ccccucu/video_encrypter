@@ -90,11 +90,16 @@ def de_water_mark_by_path(path):
         print(c.error[1])
     msg = c.result
     print(msg)
+    word = ''
+    for i in msg:
+        if ord(i) > 31 and ord(i)<127:
+            word += i
+            
     for name in os.listdir(os.getcwd()):
         if  name.startswith('de_frame'):
             os.remove(os.path.join(os.getcwd(), name))
     video.close()
-    return msg
+    return word
 
 @jsonrpc.method('EnFileByPath')
 def en_file_by_path(path, key, outpath):
