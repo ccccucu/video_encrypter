@@ -69,7 +69,7 @@ def en_water_mark_by_path(path, content, outpath):
     os.remove(workplace+'/temp.jpg')
     os.remove(os.path.dirname(path)+"/keyframe_list.txt")
     for name in os.listdir(workplace):
-        if  name.startswith('frame') or name.startswith('keframe'):  
+        if  name.startswith('frame') or name.startswith('keyframe'):  
             os.remove(os.path.join(workplace, name))
     return True
 
