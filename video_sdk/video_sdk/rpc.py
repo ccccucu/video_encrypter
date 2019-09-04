@@ -69,7 +69,7 @@ def en_water_mark_by_path(path, content, outpath):
     os.remove(workplace+'/temp.jpg')
     os.remove(os.path.dirname(path)+"/keyframe_list.txt")
     for name in os.listdir(workplace):
-        if  name.startswith('frame') or name.startswith('keyframe'):  
+        if  name.startswith('frame') or name.startswith('keyframe'):
             os.remove(os.path.join(workplace, name))
     return True
 
@@ -81,26 +81,29 @@ def de_water_mark_by_path(path):
     :param path: 输入路径
     :return: 水印内容
     """
-    video = VideoFileClip(path)
-    c = Dispacher(extract_message_from_video, path,video)
-    c.join(30000)
-    if c.isAlive():
-        print("无水印")
-    elif c.error:
-        print(c.error[1])
-    msg = c.result
-    print(msg)
-    word = ''
-    for i in msg:
-        if ord(i) > 31 and ord(i)<127:
-            word += i
-        else:
-            word+=''
-            
-    for name in os.listdir(os.getcwd()):
-        if  name.startswith('de_frame'):
-            os.remove(os.path.join(os.getcwd(), name))
-    video.close()
+    try:
+        video = VideoFileClip(path)
+        c = Dispacher(extract_message_from_video, path,video)
+        c.join(30000)
+        if c.isAlive():
+            log.info("无水印")
+        elif c.error:
+            log.info(c.error,stack_info=True, exc_info=True)
+        msg = c.result
+        word = ''
+        for i in msg:
+            if ord(i) > 32 and ord(i)<127:
+                word += i
+            else:
+                word += '?'
+
+        for name in os.listdir(os.getcwd()):
+            if  name.startswith('de_frame'):
+                os.remove(os.path.join(os.getcwd(), name))
+        video.close()
+    except Exception as e:
+        log.error(e, stack_info=True, exc_info=True)
+        raise e
     return word
 
 @jsonrpc.method('EnFileByPath')
