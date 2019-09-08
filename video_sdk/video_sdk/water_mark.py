@@ -10,7 +10,7 @@ import win32api,win32con
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from . import aes
 import traceback
-baae_path = ''
+baae_path = os.getcwd()
 if getattr(sys, 'frozen', False):
     baae_path = os.path.abspath(sys._MEIPASS)
 
@@ -418,7 +418,6 @@ def extract_message_from_video(path, video):
             indexi = int(rgb_img.shape[0] / 2)
             indexj = int(rgb_img.shape[1] / 2)  # 中心像素
             secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
-            print(secret_msg)
             sum = 0
             word = 'bjfu'
             if len(secret_msg) > 4:
@@ -547,4 +546,4 @@ def extract_message_from_video(path, video):
                 if num >= length: break
 
                 count = count + 1
-    
+

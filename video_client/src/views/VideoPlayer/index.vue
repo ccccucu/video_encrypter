@@ -261,8 +261,6 @@
 }
 
 .vjs-custom-skin > .vjs-fullscreen >.vjs-tech {
-  width: auto !important;
-  height: auto !important;
   position: relative;
 }
 .vjs-custom-skin > .video-js {
