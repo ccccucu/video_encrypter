@@ -88,14 +88,18 @@ def de_water_mark_by_path(path):
         print("无水印")
     elif c.error:
         print(c.error[1])
-    msg = c.result
-    print(msg)
-    word = ''
-    for i in msg:
-        if ord(i) > 31 and ord(i)<127:
-            word += i
-        else:
-            word+=''
+    msg_arr = c.result
+    # print(msg)
+    # print(len(msg))
+    word = []
+    for i in range(len(msg_arr)):
+        temp=''
+        for j in range(len(msg_arr[i])):
+            if ord(msg_arr[i][j]) > 31 and ord(msg_arr[i][j])<127:
+                temp+=msg_arr[i][j]
+            else:
+                temp+='?'
+        word.append(temp)
             
     for name in os.listdir(os.getcwd()):
         if  name.startswith('de_frame'):
