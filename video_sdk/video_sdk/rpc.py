@@ -81,29 +81,30 @@ def de_water_mark_by_path(path):
     :param path: 输入路径
     :return: 水印内容
     """
-    try:
-        video = VideoFileClip(path)
-        c = Dispacher(extract_message_from_video, path,video)
-        c.join(30000)
-        if c.isAlive():
-            log.info("无水印")
-        elif c.error:
-            log.info(c.error,stack_info=True, exc_info=True)
-        msg = c.result
-        word = ''
-        for i in msg:
-            if ord(i) > 32 and ord(i)<127:
-                word += i
+    video = VideoFileClip(path)
+    c = Dispacher(extract_message_from_video, path,video)
+    c.join(30000)
+    if c.isAlive():
+        print("无水印")
+    elif c.error:
+        print(c.error[1])
+    msg_arr = c.result
+    # print(msg)
+    # print(len(msg))
+    word = []
+    for i in range(len(msg_arr)):
+        temp=''
+        for j in range(len(msg_arr[i])):
+            if ord(msg_arr[i][j]) > 31 and ord(msg_arr[i][j])<127:
+                temp+=msg_arr[i][j]
             else:
-                word += '?'
-
-        for name in os.listdir(os.getcwd()):
-            if  name.startswith('de_frame'):
-                os.remove(os.path.join(os.getcwd(), name))
-        video.close()
-    except Exception as e:
-        log.error(e, stack_info=True, exc_info=True)
-        raise e
+                temp+='?'
+        word.append(temp)
+            
+    for name in os.listdir(os.getcwd()):
+        if  name.startswith('de_frame'):
+            os.remove(os.path.join(os.getcwd(), name))
+    video.close()
     return word
 
 @jsonrpc.method('EnFileByPath')
