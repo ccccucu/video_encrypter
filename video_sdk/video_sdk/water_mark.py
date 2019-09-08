@@ -401,7 +401,7 @@ def de_watermark(rgb_img,i,j):
     return secret_msg
 
 def extract_message_from_video(path, video):
-
+    message_arr=[]
     for (time, frame) in video.iter_frames(with_times=True):  # 从头遍历所有视频帧，time为该帧在视频中对应的时间，frame为帧
 
 
@@ -429,7 +429,9 @@ def extract_message_from_video(path, video):
                 # print(sum)
                 if sum >= 2:
                     secret_msg = secret_msg[4:]
-                    return (secret_msg.strip())
+                    message_arr.append(secret_msg.strip())
+            if len(message_arr)==3:
+                return message_arr
 
 
     for (time, frame) in video.iter_frames(with_times=True):
