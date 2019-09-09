@@ -75,7 +75,7 @@ def en_water_mark_by_path(path, content, outpath):
 
 
 @jsonrpc.method('DeWaterMakerByPath')
-def de_water_mark_by_path(path,frame_number):
+def de_water_mark_by_path(path,frame):
     """
     解水印
     :param path: 输入路径
@@ -83,13 +83,13 @@ def de_water_mark_by_path(path,frame_number):
     """
     cap = cv2.VideoCapture(path)
     frame_totalnum=cap.get(cv2.CAP_PROP_FRAME_COUNT)
-    c = Dispacher(extract_message_from_video,  path,frame_number,frame_totalnum)
+    c = Dispacher(extract_message_from_video,  path,frame,frame_totalnum)
     c.join(30000)
     if c.isAlive():
         print("无水印")
     elif c.error:
         print(c.error[1])
-    msg_arr = c.result
+    msg= c.result
     # print(msg)
     # print(len(msg))
     word = []
@@ -105,7 +105,7 @@ def de_water_mark_by_path(path,frame_number):
     for name in os.listdir(os.getcwd()):
         if  name.startswith('de_frame'):
             os.remove(os.path.join(os.getcwd(), name))
-    video.close()
+   
     return word
 
 @jsonrpc.method('EnFileByPath')
