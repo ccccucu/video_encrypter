@@ -46,5 +46,7 @@ export function pingServer() {
 }
 
 export function searchWaterMark(q) {
-  return axios.get(`${SERVER_URL}/watermark_logs/search?q=${q}`, {});
+  return axios.post(`${SERVER_URL}/watermark_logs/search`,{
+    'q':q
+  });
 }

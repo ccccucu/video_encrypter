@@ -36,9 +36,45 @@
       <div slot="header" class="clearfix">
         <span>解析结果</span>
       </div>
-      <el-table :data="waterMarkInfo">
-        <el-table-column prop="key" label="属性" width="180"></el-table-column>
-        <el-table-column prop="value" label="值"></el-table-column>
+      <el-table
+        :data="water_marks">
+        <el-table-column
+          prop="id"
+          label="编号"
+          sortable
+          width="80">
+        </el-table-column>
+        <el-table-column
+          prop="watermark"
+          label="水印"
+          sortable
+          width="180">
+        </el-table-column>
+        <el-table-column
+          prop="video.title"
+          label="视频标题"
+          sortable>
+        </el-table-column>
+        <el-table-column
+          prop="organization.name"
+          label="单位"
+          sortable>
+        </el-table-column>
+        <el-table-column
+          prop="user.name"
+          label="用户"
+          sortable>
+        </el-table-column>
+        <el-table-column
+          prop="ip"
+          label="IP"
+          sortable>
+        </el-table-column>
+        <el-table-column
+          prop="time"
+          label="时间"
+          sortable>
+        </el-table-column>
       </el-table>
     </el-card>
   </div>
@@ -52,7 +88,9 @@ export default {
   data() {
     return {
       current_file: "",
-      waterMarkInfo: [],
+      water_marks: [],
+      raw : '',
+      total :0,
       fileList: [],
       loading: false
     };
@@ -86,31 +124,14 @@ export default {
             type: "error"
           });
         } else {
+          this.raw = resp.data.result
           searchWaterMark(resp.data.result).then(search_resp => {
             if (search_resp.data.code === 200) {
-            this.waterMarkInfo.push({
-              key: "单位名称",
-              value: this.search_resp.data.water_mark.organization_id
-            });
-            this.waterMarkInfo.push({
-              key: "用户",
-              value: this.search_resp.data.water_mark.user.name
-            });
-            this.waterMarkInfo.push({
-              key: "ip",
-              value: this.search_resp.data.water_mark.ip
-            });
-            this.waterMarkInfo.push({
-              key: "视频标题",
-              value: this.search_resp.data.water_mark.video.title
-            });
-            } else {
+              this.water_marks = search_resp.data.water_marks
+              this.total = search_resp.data.total
+            } else {  
               this.$message('找不到水印对应记录， 请根据水印内容手动查找')
             }
-          });
-          this.waterMarkInfo.push({
-            key: "原始内容",
-            value: resp.data.result
           });
           console.log(resp);
         }
