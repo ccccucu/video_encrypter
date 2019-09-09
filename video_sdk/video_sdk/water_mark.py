@@ -361,7 +361,7 @@ def de_watermark(rgb_img,i,j):
     Key1 = np.array([1, 2, 3, 4, 5, 6, 7, 8])
     Key2 = np.array([8, 7, 6, 5, 4, 3, 2, 1])
     rgb_cover = rgb_img[i:i + 256, j:j + 256]
-    print(i, j)
+    #print(i, j)
 
     ycc_cover = rgb2ycc(rgb_cover)
     y_cover = get_y(ycc_cover)
@@ -406,11 +406,12 @@ def de_watermark(rgb_img,i,j):
     return secret_msg
 
 def extract_message_from_video(path,frame_number,frame_totalnum):
-    secret_arr=[]
-    for i in range(5):
-        if (frame_number+i)>frame_totalnum-1:
-            raise Exception("已经遍历完所有视频帧！")
-        image = extract_image(path,frame_number +i)
+    while(frame_number<frame_totalnum):
+
+        image = extract_image(path,frame_number )
+        print(frame_number)
+        frame_number += 1
+
         rgb_img = readColorImage(image)
         height = rgb_img.shape[0]
         width = rgb_img.shape[1]
@@ -423,22 +424,30 @@ def extract_message_from_video(path,frame_number,frame_totalnum):
         indexi = int(rgb_img.shape[0] / 2)
         indexj = int(rgb_img.shape[1] / 2)  # 中心像素
         secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
-        secret_msg = secret_msg[4:]
-        secret_match=secret_msg.strip()
 
-        word=''
-        for i in range(len(secret_match)):
-            if ord(secret_match[i])>31 and ord(secret_match[i])<127:
-                word+=secret_match[i]
-            else:
-                word+='?'
-        #print(word)
-        secret_arr.append(word)
-        if len(secret_arr)==5:
-            dict={'contents':secret_arr,
-              'next_frame':frame_number+5}
-            return dict
+        sum = 0
+        match = 'bjfu'
+        if len(secret_msg) > 4:
+            for i in range(4):
+                for j in range(4):
+                    if secret_msg[i] == match[j]:
+                        sum = sum + 1
+            # print(sum)
+            if sum >= 2:
+                secret_msg = secret_msg[4:]
+                secret_match = secret_msg.strip()
+                word=''
+                for i in range(len(secret_match)):
+                    if ord(secret_match[i])>31 and ord(secret_match[i])<127:
+                        word+=secret_match[i]
+                    else:
+                        word+='?'
+                #print(word)
 
+                dict={'contents':word,
+                      'next_frame':frame_number}
+
+                return dict    
 
 #     for (time, frame) in video.iter_frames(with_times=True):
 
