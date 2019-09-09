@@ -89,24 +89,13 @@ def de_water_mark_by_path(path,frame):
         print("无水印")
     elif c.error:
         print(c.error[1])
-    msg= c.result
-    # print(msg)
-    # print(len(msg))
-    word = []
-    for i in range(len(msg['contents'])):
-        temp = ''
-        for j in range(len(msg['contents'][i])):
-            if ord(msg['contents'][i][j]) > 31 and ord(msg['contents'][i][j]) < 127:
-                temp += msg['contents'][i][j]
-            else:
-                temp += '?'
-        word.append(temp)
+    dic= c.result
             
     for name in os.listdir(os.getcwd()):
         if  name.startswith('de_frame'):
             os.remove(os.path.join(os.getcwd(), name))
    
-    return word
+    return dic
 
 @jsonrpc.method('EnFileByPath')
 def en_file_by_path(path, key, outpath):

@@ -409,8 +409,7 @@ def extract_message_from_video(path,frame_number,frame_totalnum):
     secret_arr=[]
     for i in range(5):
         if (frame_number+i)>frame_totalnum-1:
-            raise Exception("已经遍历完所有视频帧！")   
-
+            raise Exception("已经遍历完所有视频帧！")
         image = extract_image(path,frame_number +i)
         rgb_img = readColorImage(image)
         height = rgb_img.shape[0]
@@ -419,14 +418,22 @@ def extract_message_from_video(path,frame_number,frame_totalnum):
             rgb_img = cv2.resize(rgb_img, (int(750 * (width / height)), 750))
         else:
             rgb_img = cv2.resize(rgb_img, (1920, int(1920 / (width / height))))
-        
+
+
         indexi = int(rgb_img.shape[0] / 2)
         indexj = int(rgb_img.shape[1] / 2)  # 中心像素
         secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
         secret_msg = secret_msg[4:]
         secret_match=secret_msg.strip()
-        #print(secret_msg)
-        secret_arr.append(secret_match)
+
+        word=''
+        for i in range(len(secret_match)):
+            if ord(secret_match[i])>31 and ord(secret_match[i])<127:
+                word+=secret_match[i]
+            else:
+                word+='?'
+        #print(word)
+        secret_arr.append(word)
         if len(secret_arr)==5:
             dict={'contents':secret_arr,
               'next_frame':frame_number+5}
