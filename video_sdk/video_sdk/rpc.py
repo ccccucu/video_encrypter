@@ -75,14 +75,15 @@ def en_water_mark_by_path(path, content, outpath):
 
 
 @jsonrpc.method('DeWaterMakerByPath')
-def de_water_mark_by_path(path):
+def de_water_mark_by_path(path,frame_number):
     """
     解水印
     :param path: 输入路径
     :return: 水印内容
     """
-    video = VideoFileClip(path)
-    c = Dispacher(extract_message_from_video, path,video)
+    cap = cv2.VideoCapture(path)
+    frame_totalnum=cap.get(cv2.CAP_PROP_FRAME_COUNT)
+    c = Dispacher(extract_message_from_video,  path,frame_number,frame_totalnum)
     c.join(30000)
     if c.isAlive():
         print("无水印")
@@ -92,13 +93,13 @@ def de_water_mark_by_path(path):
     # print(msg)
     # print(len(msg))
     word = []
-    for i in range(len(msg_arr)):
-        temp=''
-        for j in range(len(msg_arr[i])):
-            if ord(msg_arr[i][j]) > 31 and ord(msg_arr[i][j])<127:
-                temp+=msg_arr[i][j]
+    for i in range(len(msg['contents'])):
+        temp = ''
+        for j in range(len(msg['contents'][i])):
+            if ord(msg['contents'][i][j]) > 31 and ord(msg['contents'][i][j]) < 127:
+                temp += msg['contents'][i][j]
             else:
-                temp+='?'
+                temp += '?'
         word.append(temp)
             
     for name in os.listdir(os.getcwd()):

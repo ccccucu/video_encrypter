@@ -18,7 +18,7 @@ ffmepg_path = os.path.abspath(os.path.join(baae_path,  'ffmpeg.exe'))
 
 #用线程的方式来限制函数执行时间
 class Dispacher(threading.Thread):
-    def __init__(self, fun, args1, args2):
+    def __init__(self, fun, args1, args2,args3):
         threading.Thread.__init__(self)
         self.setDaemon(True)
         self.result = None
@@ -26,12 +26,13 @@ class Dispacher(threading.Thread):
         self.fun = fun
         self.args1 = args1
         self.args2 = args2
+        self.args3= args3
 
         self.start()
 
     def run(self):
         try:
-            self.result = self.fun(self.args1, self.args2)
+            self.result = self.fun(self.args1, self.args2, self.args3)
         except:
             self.error = sys.exc_info()
 
@@ -116,11 +117,15 @@ def extract_image_from_clip(path,  num):#加水印时调用
     cv2.imwrite(file_name,frame)
     return file_name
 
-def extract_image(path, clip, t):#解水印时调用
-    # 根据帧所在的时间命名帧
-    file_name = os.getcwd() + "/de_frame" + str(t) + ".png"
-    # 保存该帧（中间过程需要，后面会统一销毁），保存路径为当前工作目录
-    clip.save_frame(file_name, t, withmask=True)
+def extract_image(path, num):#解水印时调用
+
+    file_name = os.getcwd()+ "/frame" + str(num) + ".png"
+    # 保存该帧（中间过程需要，后面会统一销毁），保存路径为输入视频的目录
+    #clip.save_frame(file_name, t, withmask=True)
+    cap = cv2.VideoCapture(path)  # 读入文件
+    cap.set(cv2.CAP_PROP_POS_FRAMES, num)
+    success, frame = cap.read()
+    cv2.imwrite(file_name,frame)
     return file_name
 
 def atoi(s):
@@ -400,150 +405,146 @@ def de_watermark(rgb_img,i,j):
         secret_msg += s
     return secret_msg
 
-def extract_message_from_video(path, video):
-    message_arr=[]
-    for (time, frame) in video.iter_frames(with_times=True):  # 从头遍历所有视频帧，time为该帧在视频中对应的时间，frame为帧
+def extract_message_from_video(path,frame_number,frame_totalnum):
+    secret_arr=[]
+    for i in range(5):
+        if (frame_number+i)>frame_totalnum-1:
+            raise Exception("已经遍历完所有视频帧！")   
+
+        image = extract_image(path,frame_number +i)
+        rgb_img = readColorImage(image)
+        height = rgb_img.shape[0]
+        width = rgb_img.shape[1]
+        if width / height > 1920 / 750:
+            rgb_img = cv2.resize(rgb_img, (int(750 * (width / height)), 750))
+        else:
+            rgb_img = cv2.resize(rgb_img, (1920, int(1920 / (width / height))))
+        print(time)
+
+        indexi = int(rgb_img.shape[0] / 2)
+        indexj = int(rgb_img.shape[1] / 2)  # 中心像素
+        secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+        secret_msg = secret_msg[4:]
+        secret_match=secret_msg.strip()
+        #print(secret_msg)
+        secret_arr.append(secret_match)
+        if len(secret_arr)==5:
+            dict={'contents':secret_arr,
+              'next_frame':frame_number+5}
+            return dict
 
 
-            image = extract_image(path, video, time)
-            rgb_img = readColorImage(image)
-            height = rgb_img.shape[0]
-            width = rgb_img.shape[1]
-            if width / height > 1920 / 750:
-                rgb_img = cv2.resize(rgb_img, (int(750 * (width / height)), 750))
-            else:
-                rgb_img = cv2.resize(rgb_img, (1920, int(1920 / (width / height))))
-            print(time)
+#     for (time, frame) in video.iter_frames(with_times=True):
 
-            indexi = int(rgb_img.shape[0] / 2)
-            indexj = int(rgb_img.shape[1] / 2)  # 中心像素
-            secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
-            sum = 0
-            word = 'bjfu'
-            if len(secret_msg) > 4:
-                for i in range(4):
-                    for j in range(4):
-                        if secret_msg[i] == word[j]:
-                            sum = sum + 1
-                # print(sum)
-                if sum >= 2:
-                    secret_msg = secret_msg[4:]
-                    message_arr.append(secret_msg.strip())
-            if len(message_arr)==3:
-                return message_arr
+#             print("切换到复杂模式寻找")  # 裁剪后中心点变了，所以从裁剪后的中心向外螺旋查找
+#             image = extract_image(path, video, time-15)
+#             rgb_img = readColorImage(image)
+#             print(time)
 
+#             length= rgb_img.shape[0] * rgb_img.shape[1]
+#             indexi = int(rgb_img.shape[0] / 2)
+#             indexj = int(rgb_img.shape[1] / 2)
+#             secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+#             sum = 0
+#             word = 'bjfu'
+#             if len(secret_msg) > 4:
+#                 for i in range(4):
+#                     for j in range(4):
+#                         if secret_msg[i] == word[j]:
+#                             sum = sum + 1
+#                 # print(sum)
+#                 if sum >= 2:
+#                     secret_msg = secret_msg[4:]
+#                     return (secret_msg.strip())
 
-    for (time, frame) in video.iter_frames(with_times=True):
+#             count = 1
+#             num = 1
+#             while (num < length):
+#                 n = count
+#                 while (n > 0):
+#                     indexi = indexi - 1  # 向上走
+#                     if indexi - 128 >= 0 and indexj < rgb_img.shape[1]:
+#                         secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+#                         sum = 0
+#                         word = 'bjfu'
+#                         if len(secret_msg) > 4:
+#                             for i in range(4):
+#                                 for j in range(4):
+#                                     if secret_msg[i] == word[j]:
+#                                         sum = sum + 1
+#                             # print(sum)
+#                             if sum >= 2:
+#                                 secret_msg = secret_msg[4:]
+#                                 return (secret_msg.strip())
 
-            print("切换到复杂模式寻找")  # 裁剪后中心点变了，所以从裁剪后的中心向外螺旋查找
-            image = extract_image(path, video, time-15)
-            rgb_img = readColorImage(image)
-            print(time)
+#                         n = n - 1
+#                         num = num + 1
+#                 if num >= length: break
 
-            length= rgb_img.shape[0] * rgb_img.shape[1]
-            indexi = int(rgb_img.shape[0] / 2)
-            indexj = int(rgb_img.shape[1] / 2)
-            secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
-            sum = 0
-            word = 'bjfu'
-            if len(secret_msg) > 4:
-                for i in range(4):
-                    for j in range(4):
-                        if secret_msg[i] == word[j]:
-                            sum = sum + 1
-                # print(sum)
-                if sum >= 2:
-                    secret_msg = secret_msg[4:]
-                    return (secret_msg.strip())
+#                 n = count
+#                 while (n > 0):
+#                     indexj = indexj - 1  # 向左走
+#                     if indexj - 128 >= 0 and indexi - 128 >= 0:
+#                         secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+#                         sum = 0
+#                         word = 'bjfu'
+#                         if len(secret_msg) > 4:
+#                             for i in range(4):
+#                                 for j in range(4):
+#                                     if secret_msg[i] == word[j]:
+#                                         sum = sum + 1
+#                             # print(sum)
+#                             if sum >= 2:
+#                                 secret_msg = secret_msg[4:]
+#                                 return (secret_msg.strip())
 
-            count = 1
-            num = 1
-            while (num < length):
-                n = count
-                while (n > 0):
-                    indexi = indexi - 1  # 向上走
-                    if indexi - 128 >= 0 and indexj < rgb_img.shape[1]:
-                        secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
-                        sum = 0
-                        word = 'bjfu'
-                        if len(secret_msg) > 4:
-                            for i in range(4):
-                                for j in range(4):
-                                    if secret_msg[i] == word[j]:
-                                        sum = sum + 1
-                            # print(sum)
-                            if sum >= 2:
-                                secret_msg = secret_msg[4:]
-                                return (secret_msg.strip())
+#                         n = n - 1
+#                         num = num + 1
+#                 if num >= length: break
 
-                        n = n - 1
-                        num = num + 1
-                if num >= length: break
+#                 count = count + 1
 
-                n = count
-                while (n > 0):
-                    indexj = indexj - 1  # 向左走
-                    if indexj - 128 >= 0 and indexi - 128 >= 0:
-                        secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
-                        sum = 0
-                        word = 'bjfu'
-                        if len(secret_msg) > 4:
-                            for i in range(4):
-                                for j in range(4):
-                                    if secret_msg[i] == word[j]:
-                                        sum = sum + 1
-                            # print(sum)
-                            if sum >= 2:
-                                secret_msg = secret_msg[4:]
-                                return (secret_msg.strip())
+#                 n = count
+#                 while (n > 0):
+#                     indexi = indexi + 1  # 向下走
+#                     if indexi < rgb_img.shape[0] and indexj - 128 >= 0:
+#                         secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+#                         sum = 0
+#                         word = 'bjfu'
+#                         if len(secret_msg) > 4:
+#                             for i in range(4):
+#                                 for j in range(4):
+#                                     if secret_msg[i] == word[j]:
+#                                         sum = sum + 1
+#                             # print(sum)
+#                             if sum >= 2:
+#                                 secret_msg = secret_msg[4:]
+#                                 return (secret_msg.strip())
 
-                        n = n - 1
-                        num = num + 1
-                if num >= length: break
+#                         n = n - 1
+#                         num = num + 1
+#                 if num >= length: break
 
-                count = count + 1
+#                 n = count
+#                 while (n > 0):
+#                     indexj = indexj + 1  # 向右走
+#                     if indexi < rgb_img.shape[0] and indexj < rgb_img.shape[1]:
+#                         secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
+#                         sum = 0
+#                         word = 'bjfu'
+#                         if len(secret_msg) > 4:
+#                             for i in range(4):
+#                                 for j in range(4):
+#                                     if secret_msg[i] == word[j]:
+#                                         sum = sum + 1
+#                             # print(sum)
+#                             if sum >= 2:
+#                                 secret_msg = secret_msg[4:]
+#                                 return (secret_msg.strip())
 
-                n = count
-                while (n > 0):
-                    indexi = indexi + 1  # 向下走
-                    if indexi < rgb_img.shape[0] and indexj - 128 >= 0:
-                        secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
-                        sum = 0
-                        word = 'bjfu'
-                        if len(secret_msg) > 4:
-                            for i in range(4):
-                                for j in range(4):
-                                    if secret_msg[i] == word[j]:
-                                        sum = sum + 1
-                            # print(sum)
-                            if sum >= 2:
-                                secret_msg = secret_msg[4:]
-                                return (secret_msg.strip())
+#                         n = n - 1
+#                         num = num + 1
+#                 if num >= length: break
 
-                        n = n - 1
-                        num = num + 1
-                if num >= length: break
-
-                n = count
-                while (n > 0):
-                    indexj = indexj + 1  # 向右走
-                    if indexi < rgb_img.shape[0] and indexj < rgb_img.shape[1]:
-                        secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
-                        sum = 0
-                        word = 'bjfu'
-                        if len(secret_msg) > 4:
-                            for i in range(4):
-                                for j in range(4):
-                                    if secret_msg[i] == word[j]:
-                                        sum = sum + 1
-                            # print(sum)
-                            if sum >= 2:
-                                secret_msg = secret_msg[4:]
-                                return (secret_msg.strip())
-
-                        n = n - 1
-                        num = num + 1
-                if num >= length: break
-
-                count = count + 1
+#                 count = count + 1
 
