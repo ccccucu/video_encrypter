@@ -419,8 +419,7 @@ def extract_message_from_video(path,frame_number,frame_totalnum):
             rgb_img = cv2.resize(rgb_img, (int(750 * (width / height)), 750))
         else:
             rgb_img = cv2.resize(rgb_img, (1920, int(1920 / (width / height))))
-        print(time)
-
+        
         indexi = int(rgb_img.shape[0] / 2)
         indexj = int(rgb_img.shape[1] / 2)  # 中心像素
         secret_msg = de_watermark(rgb_img, indexi - 128, indexj - 128)
