@@ -443,8 +443,9 @@ def extract_message_from_video(path,frame_number,frame_totalnum):
                     else:
                         word+='?'
                 #print(word)
-
-                dict={'contents':word,
+                word_arr=[]
+                word_arr.append(word)
+                dict={'contents':word_arr,
                       'next_frame':frame_number}
 
                 return dict    
