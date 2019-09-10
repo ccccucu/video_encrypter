@@ -128,6 +128,12 @@ def extract_image(path, num):#解水印时调用
     cv2.imwrite(file_name,frame)
     return file_name
 
+def process(path,message,k,frames_dict):
+    image_file = extract_image_from_clip(path, k)  # 用帧所在的时间给其命名
+    frames_dict[k] = image_file  # 把帧名称保存在数组里，数组索引为帧在原视频的帧数
+    encode_image(path, image_file, message)  # 加水印
+
+
 def atoi(s):
     s = s[::-1]
     num = 0
@@ -145,9 +151,7 @@ def add_watermark(path, message):
     :param message: 编码后的水印
     :return:返回保存帧名称的数组
     '''
-    frames_dict = {}
-
-
+  
     # f = open('C:/Users/Liyefan/Desktop/test_video/frame_index.txt', 'rb')
     #
     # line = f.readline()  # 调用文件的 readline()方法
@@ -161,31 +165,39 @@ def add_watermark(path, message):
     #     line = f.readline()
     #
     # f.close()
-    keyframe_path = os.path.dirname(path)+"/keyframe_list.txt"
-    if os.path.exists(keyframe_path) == 1:
-        os.remove(keyframe_path)
-    strcmd = ffmepg_path+" -i " + path + " -vf select='eq(pict_type\,I)' -vsync 2 -s 1920*1080 -f " \
-                                   "image2 keyframe-%02d.jpeg -loglevel debug 2>&1| for /f \"tokens=4  delims=. \" %d " \
-                                   "in ('findstr \"pict_type:I\" ') do echo %d>> " + keyframe_path
+#     keyframe_path = os.path.dirname(path)+"/keyframe_list.txt"
+#     if os.path.exists(keyframe_path) == 1:
+#         os.remove(keyframe_path)
+#     strcmd = ffmepg_path+" -i " + path + " -vf select='eq(pict_type\,I)' -vsync 2 -s 1920*1080 -f " \
+#                                    "image2 keyframe-%02d.jpeg -loglevel debug 2>&1| for /f \"tokens=4  delims=. \" %d " \
+#                                    "in ('findstr \"pict_type:I\" ') do echo %d>> " + keyframe_path
 
-    subprocess.call(strcmd, shell=True)
-    f = open(keyframe_path, 'rb')
-    line = f.readline()  # 调用文件的 readline()方法
-    while line:
-        if line.decode('utf8').startswith('n') == 0:
-            line = f.readline()
-            continue
-        begin = line.decode('utf8').find(':')
-        n = line.decode('utf8')[begin:]
-        num = int(atoi(n) / 1000)
-        image_file = extract_image_from_clip(path, num)  # 用帧所在的时间给其命名
-        frames_dict[num] = image_file  # 把帧名称保存在数组里，数组索引为帧在原视频的帧数
-        encode_image(path, image_file, message)  # 加水印
-        line = f.readline()
+#     subprocess.call(strcmd, shell=True)
+#     f = open(keyframe_path, 'rb')
+#     line = f.readline()  # 调用文件的 readline()方法
+#     while line:
+#         if line.decode('utf8').startswith('n') == 0:
+#             line = f.readline()
+#             continue
+#         begin = line.decode('utf8').find(':')
+#         n = line.decode('utf8')[begin:]
+#         num = int(atoi(n) / 1000)
+#         image_file = extract_image_from_clip(path, num)  # 用帧所在的时间给其命名
+#         frames_dict[num] = image_file  # 把帧名称保存在数组里，数组索引为帧在原视频的帧数
+#         encode_image(path, image_file, message)  # 加水印
+#         line = f.readline()
 
-    f.close()
+#     f.close()
 
+#     return frames_dict
 
+    frames_dict = {}
+    cap = cv2.VideoCapture(path)
+    frame_totalnum = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+
+    for i in range(int(frame_totalnum)):
+        if i%90==0:
+            process(path, message, i, frames_dict)
 
     return frames_dict
 
