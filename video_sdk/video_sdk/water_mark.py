@@ -445,10 +445,10 @@ def extract_message_from_video(path,frame_number,frame_totalnum):
                 #print(word)
                 word_arr=[]
                 word_arr.append(word)
-                dict={'contents':word_arr,
+                con={'contents':word_arr,
                       'next_frame':frame_number}
 
-                return dict    
+                return con    
 
 #     for (time, frame) in video.iter_frames(with_times=True):
 
