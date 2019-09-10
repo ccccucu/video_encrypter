@@ -83,6 +83,8 @@ def de_water_mark_by_path(path,frame):
     """
     cap = cv2.VideoCapture(path)
     frame_totalnum=cap.get(cv2.CAP_PROP_FRAME_COUNT)
+    if frame >=frame_totalnum:
+        raise Exception("已经遍历所有视频帧！")
     c = Dispacher(extract_message_from_video,  path,frame,frame_totalnum)
     c.join(30000)
     if c.isAlive():
