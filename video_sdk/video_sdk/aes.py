@@ -4,23 +4,25 @@ import ctypes
 import time
 
 mock = False
-LIB_MYAES = None
 SYS_PLATFORM = platform.system()
 SYS_ARCHITECTURE = platform.architecture()[0]
-LIBMYAES_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)),'./target')
-print(LIB_MYAES)
+LIBMYAES_PATH = os.path.join(r'E:\Project\video\video_encrypter\video_sdk\libmyaes.dll')
+print(LIBMYAES_PATH)
 
-if SYS_PLATFORM == 'Linux'  and SYS_ARCHITECTURE == '64bit':
-    LIBMYAES_PATH = os.path.join(LIBMYAES_PATH, 'linux', 'libmyaes.so')
-elif SYS_PLATFORM == 'Windows'  and SYS_ARCHITECTURE == '64bit':
-    LIBMYAES_PATH = os.path.join(LIBMYAES_PATH, 'windows', 'libmyaes.dll')
-elif SYS_PLATFORM == 'Darwin'  and SYS_ARCHITECTURE == '64bit':
-    LIBMYAES_PATH = os.path.join(LIBMYAES_PATH, 'macos', 'libmyaes.so')
-else:
-    raise ImportError("不支持的平台")
-
-if not  mock:
-    LIB_MYAES = ctypes.cdll.LoadLibrary(LIBMYAES_PATH)
+# if SYS_PLATFORM == 'Linux'  and SYS_ARCHITECTURE == '64bit':
+#     LIBMYAES_PATH = os.path.join(LIBMYAES_PATH, 'linux', 'libmyaes.so')
+# elif SYS_PLATFORM == 'Windows'  and SYS_ARCHITECTURE == '64bit':
+#     LIBMYAES_PATH = os.path.join(LIBMYAES_PATH, 'windows', 'libmyaes.dll')
+# elif SYS_PLATFORM == 'Darwin'  and SYS_ARCHITECTURE == '64bit':
+#     LIBMYAES_PATH = os.path.join(LIBMYAES_PATH, 'macos', 'libmyaes.so')
+# else:
+#     raise ImportError("不支持的平台")
+LIB_MYAES = None
+try:
+    LIB_MYAES = ctypes.cdll.LoadLibrary('libmyaes')
+except Exception as e:
+    print(e)
+    import time;time.sleep(11)
 
 def aes_encrypt(raw, key):
     raw_b =bytes(raw,encoding='utf-8') 
