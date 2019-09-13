@@ -103,15 +103,16 @@ easyapi.register_api(app=watermark_log_bp, view=WatermarkLogHandler, endpoint='w
                      url='/watermark_logs')
 
 
-@watermark_log_bp.route("/watermark_logs/search")
+@watermark_log_bp.route("/watermark_logs/search", methods=['POST'])
 def watermark_logs_search():
     try:
-        q = request.args.get('q', '')
-        water = controller.WatermarkLogController.search_watermark(None, q)
+        q = request.json.get('q', [])
+        waters, num = controller.WatermarkLogController.search_watermark(None, q)
         return jsonify(**{
             'msg': "",
             'code': 200,
-            'water_mark': water,
+            'water_marks': waters,
+            "total": num
         })
     except easyapi.BusinessError as e:
         return jsonify(**{

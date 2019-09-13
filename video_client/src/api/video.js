@@ -35,7 +35,7 @@ export function postWaterMark(video_id, watemark) {
   return axios.post(`${SERVER_URL}/watermark_logs`, {
     video_id: video_id,
     // "ip": user_info.ip,
-    watermark: get_uuid()
+    watermark: watemark
   });
 }
 

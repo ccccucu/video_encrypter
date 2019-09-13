@@ -2,6 +2,7 @@ import os
 import easyapi
 import random
 import uuid
+import functools
 import time
 import datetime
 from werkzeug.datastructures import FileStorage
@@ -230,20 +231,47 @@ class WatermarkLogController(easyapi.BaseController):
         return super().insert(ctx=ctx, data=data)
 
     @classmethod
-    def search_watermark(cls, ctx:EasyApiContext=None, query=''):
+    def search_watermark(cls, ctx:EasyApiContext=None, querys=None):
+        if not querys:
+            querys = []
         if not ctx:
             ctx = EasyApiContext()
-        water = dao.WatermarkLogDao.execute(ctx, sql=text("""
-            SELECT * FROM watermark_logs WHERE  watermark LIKE :query  LIMIT 1
-        """), query='%'+query+'%').fetchone()
-        if not water:
-            raise easyapi.BusinessError(
-                http_code=200,
-                code=404,
-                err_info="没有找到对应水印"
-            )
-        water = dao.WatermarkLogDao.formatter(ctx,water)
-        return water
+        for T in range(8, 3, -1):
+            for query in querys:
+                for i in range(T, len(query)):
+                    waters = dao.WatermarkLogDao.execute(ctx, sql=text("""
+                        SELECT * FROM watermark_logs WHERE  watermark LIKE :query
+                    """), query='%'+query[i-T:i]+'%').fetchall()
+                    if waters:
+                        water_res = list(map(lambda  d: dao.WatermarkLogDao.formatter(ctx=ctx, data=d), waters))
+                        for res_data in water_res:
+
+                            # 添加video对象:
+                            video_id = res_data['video_id']
+                            video = dao.VideoDao.get(ctx=ctx, query={"id": video_id})
+                            if video is None:
+                                video = {}
+                            res_data['video'] = video
+
+                            # 添加organization对象
+                            organization_id = res_data['organization_id']
+                            organization = dao.OrganizationDao.get(ctx=ctx, query={"id": organization_id})
+                            if organization is None:
+                                organization = {}
+                            res_data['organization'] = organization
+
+                            # 添加user对象
+                            user_id = res_data['user_id']
+                            user = dao.UserDao.get(ctx=ctx, query={"id": user_id})
+                            if user is None:
+                                user = {}
+                            res_data['user'] = user
+                        return [water_res[-1]], len(water_res)
+        raise easyapi.BusinessError(
+            http_code=200,
+            code=404,
+            err_info="没有找到对应水印"
+        )
 
 
 
