@@ -1,40 +1,49 @@
-/*
-Navicat MySQL Data Transfer
+-- MySQL dump 10.13  Distrib 8.0.12, for osx10.13 (x86_64)
+--
+-- Host: 127.0.0.1    Database: video_encrypter
+-- ------------------------------------------------------
+-- Server version	8.0.12
 
-Source Server         : localhost
-Source Server Version : 50714
-Source Host           : localhost:3306
-Source Database       : video_encrypter
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+ SET NAMES utf8mb4 ;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-Target Server Type    : MYSQL
-Target Server Version : 50714
-File Encoding         : 65001
+--
+-- Table structure for table `distribut_videos`
+--
 
-Date: 2019-08-11 21:15:58
-*/
-
-SET FOREIGN_KEY_CHECKS=0;
-
--- ----------------------------
--- Table structure for distribut_videos
--- ----------------------------
 DROP TABLE IF EXISTS `distribut_videos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
 CREATE TABLE `distribut_videos` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '【分发单位】id',
   `video_id` int(11) NOT NULL DEFAULT '0' COMMENT '视频表的id',
+  `video_uuid` varchar(255) NOT NULL DEFAULT '' COMMENT '视频；对应视频编号',
   `organization_id` int(11) NOT NULL COMMENT '单位id；对应单位id，若为“0”则表示所有单位均可下载',
+  `organization_account` varchar(255) NOT NULL DEFAULT '' COMMENT '单位；对应单位编码，若为“ALL”则表示所有单位均可下载',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL COMMENT '是否删除',
   `updated_by` varchar(255) NOT NULL DEFAULT '',
   `created_by` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- ----------------------------
--- Table structure for download_logs
--- ----------------------------
+--
+-- Table structure for table `download_logs`
+--
+
 DROP TABLE IF EXISTS `download_logs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
 CREATE TABLE `download_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '【下载记录】id',
   `video_id` int(11) NOT NULL DEFAULT '0' COMMENT '视频id；视频编号从video对象中取得',
@@ -46,12 +55,16 @@ CREATE TABLE `download_logs` (
   `updated_by` varchar(255) NOT NULL DEFAULT '',
   `created_by` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- ----------------------------
--- Table structure for login_logs
--- ----------------------------
+--
+-- Table structure for table `login_logs`
+--
+
 DROP TABLE IF EXISTS `login_logs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
 CREATE TABLE `login_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '【登录日志】id',
   `user_id` int(11) NOT NULL COMMENT '用户id；管理员或用户的id',
@@ -66,12 +79,16 @@ CREATE TABLE `login_logs` (
   `updated_by` varchar(255) NOT NULL DEFAULT '',
   `created_by` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- ----------------------------
--- Table structure for organizations
--- ----------------------------
+--
+-- Table structure for table `organizations`
+--
+
 DROP TABLE IF EXISTS `organizations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
 CREATE TABLE `organizations` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '【单位】id',
   `account` varchar(255) NOT NULL COMMENT '单位变码；唯一，00表示总部，00XX表示下属单位，依次类推',
@@ -86,12 +103,30 @@ CREATE TABLE `organizations` (
   `updated_by` varchar(255) NOT NULL DEFAULT '',
   `created_by` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- ----------------------------
--- Table structure for users
--- ----------------------------
+--
+-- Table structure for table `test`
+--
+
+DROP TABLE IF EXISTS `test`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `test` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `users`
+--
+
 DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
 CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '【用户】id',
   `uuid` varchar(255) NOT NULL DEFAULT '' COMMENT '用户编号；唯一，UUID',
@@ -107,17 +142,21 @@ CREATE TABLE `users` (
   `updated_by` varchar(255) NOT NULL DEFAULT '',
   `created_by` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- ----------------------------
--- Table structure for videos
--- ----------------------------
+--
+-- Table structure for table `videos`
+--
+
 DROP TABLE IF EXISTS `videos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
 CREATE TABLE `videos` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '【视频】id',
   `uuid` varchar(255) NOT NULL DEFAULT '' COMMENT '编号；唯一，UUID，同时也是文件名，原始问价、加密我呢见、缩略图、加密密钥分别存放在不同文件夹内',
   `title` varchar(255) NOT NULL DEFAULT '' COMMENT '标题；',
-  `upload_organization_id` int(11) NOT NULL DEFAULT '0' COMMENT '上传单位id；对应单位id',
+  `upload_organization_id` int(11) NOT NULL COMMENT '上传单位id；对应单位id',
   `upload_admin_id` int(11) NOT NULL DEFAULT '0' COMMENT '上传管理员di；对应管理员id',
   `allow_play_time` timestamp NOT NULL COMMENT '播放时限；该日期的24点前允许播放',
   `original_file_size` bigint(20) NOT NULL DEFAULT '0' COMMENT '原始文件大小；字节为单位',
@@ -133,12 +172,16 @@ CREATE TABLE `videos` (
   `updated_by` varchar(255) NOT NULL DEFAULT '' COMMENT '删除管理员；对应管理员用户名',
   `created_by` varchar(255) NOT NULL DEFAULT '' COMMENT '上传管理员；对应管理员用户名',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- ----------------------------
--- Table structure for watermark_logs
--- ----------------------------
+--
+-- Table structure for table `watermark_logs`
+--
+
 DROP TABLE IF EXISTS `watermark_logs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
 CREATE TABLE `watermark_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '【水印记录】id',
   `watermark` varchar(255) NOT NULL DEFAULT '' COMMENT '水印',
@@ -153,4 +196,16 @@ CREATE TABLE `watermark_logs` (
   `updated_by` varchar(255) NOT NULL DEFAULT '',
   `created_by` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2019-09-14 10:02:24
