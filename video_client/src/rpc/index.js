@@ -33,19 +33,21 @@ Rpc.enWaterMarkByPath = function(path,content, outpath) {
     })
 }
 
-Rpc.deWaterMarkByPath = function(path) {
+Rpc.deWaterMarkByPath = function(path, frame) {
   return callRpc('DeWaterMakerByPath', {
     'path': path,
+    'frame': frame
   })
 }
 
-Rpc.clientReadVideo = function(path, key, watermark, outpath) {
+Rpc.clientReadVideo = function(path, key, watermark, outpath, user_id) {
   return callRpc('ClientReadVideo', {
     'path': path,
     'key': key,
     'watermark': watermark,
-    'outpath': outpath
-  })
+    'outpath': outpath,
+    'user_id': user_id
+    })
 }
 
 Rpc.readVideoFile = function(path){
@@ -54,7 +56,7 @@ Rpc.readVideoFile = function(path){
 }
 
 Rpc.readLocalUrl = function(path, key){
-  return `${BASE_URL}/read_video?path=${path}&key=${key}`
+  return `file:///${path}`
 }
 
 Rpc.Ping = function () {

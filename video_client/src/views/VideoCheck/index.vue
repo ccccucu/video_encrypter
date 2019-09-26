@@ -92,7 +92,8 @@ export default {
       raw : '',
       total :0,
       fileList: [],
-      loading: false
+      loading: false,
+      frame : 0
     };
   },
   created() {},
@@ -114,23 +115,30 @@ export default {
         });
         return false;
       }
+      this.frame =0 
+      this.parserSearchWaterMark()
+     
+    },
+    parserSearchWaterMark(){
       this.loading = true
-      Rpc.deWaterMarkByPath(this.current_file).then(resp => {
-          this.loading = false
+      return  Rpc.deWaterMarkByPath(this.current_file, this.frame).then(resp => {
         if (resp.data.error) {
           // 出错
+          this.loading = false
           this.$message({
             message: resp.data.error.message,
             type: "error"
           });
         } else {
-          this.raw = resp.data.result
-          searchWaterMark(resp.data.result).then(search_resp => {
+          this.raw = resp.data.result['contents']
+          this.frame = resp.data.result['next_frame']
+          searchWaterMark(this.raw).then(search_resp => {
             if (search_resp.data.code === 200) {
+              this.loading = false
               this.water_marks = search_resp.data.water_marks
               this.total = search_resp.data.total
             } else {  
-              this.$message('找不到水印对应记录， 请根据水印内容手动查找')
+              this.parserSearchWaterMark()
             }
           });
           console.log(resp);

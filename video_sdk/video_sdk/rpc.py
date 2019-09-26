@@ -13,6 +13,12 @@ import logging
 from . import aes
 import traceback
 
+baae_path = ''
+if getattr(sys, 'frozen', False):
+    baae_path = os.path.abspath(sys._MEIPASS)
+
+ffmepg_path = os.path.abspath(os.path.join(baae_path,  'ffmpeg.exe'))
+
 app = Flask(__name__)
 jsonrpc = JSONRPC(app, '/rpc')
 CORS(app)
@@ -92,11 +98,11 @@ def de_water_mark_by_path(path,frame):
     elif c.error:
         print(c.error[1])
     dic= c.result
-            
+
     for name in os.listdir(os.getcwd()):
         if  name.startswith('de_frame'):
             os.remove(os.path.join(os.getcwd(), name))
-   
+
     return dic
 
 @jsonrpc.method('EnFileByPath')
@@ -133,7 +139,7 @@ def ping_server():
     return 'ok'
 
 @jsonrpc.method('ClientReadVideo')
-def client_read_video(path, key, watermark, outpath):
+def client_read_video(path, key, watermark, outpath, user_id):
     """
     提取截图
     :param path:视频路径
@@ -145,7 +151,7 @@ def client_read_video(path, key, watermark, outpath):
     origin_file = 'raw_' + encrpty_file
     origin_file_path = os.path.join(base_path, origin_file)
 
-    watermark_file = 'raw_water' + encrpty_file
+    watermark_file = 'raw_water_' + str(user_id) + '_' + encrpty_file
     watermark_path = os.path.join(base_path, watermark_file)
     try:
         de = de_file_by_path(path=path, key=key, outpath=origin_file_path)
@@ -157,7 +163,6 @@ def client_read_video(path, key, watermark, outpath):
     finally:
         time.sleep(1)
         rm_if_exits(origin_file_path) # 删除原始文件
-        rm_if_exits(path)
     return watermark_path
 
 
@@ -178,7 +183,7 @@ def read_file():
     if not path or not os.path.isabs(path):
         return jsonify(code=404, msg='没有对应的文件'), 200
     (enfile_path, encrpty_file) = os.path.split(path)
-    watermark_file = 'raw_water' + encrpty_file
+    watermark_file = encrpty_file
     watermark_path = os.path.join(enfile_path, watermark_file)
     if os.path.exists(watermark_path):
         return send_file(watermark_path, mimetype='video/mp4', conditional=True)
