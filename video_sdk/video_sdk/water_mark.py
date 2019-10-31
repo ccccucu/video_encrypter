@@ -242,7 +242,7 @@ def reconstruct_video(path, frames_dict):
     # fourcc = int(videoCapture.get(cv2.CAP_PROP_FOURCC))
     fourcc = cv2.VideoWriter_fourcc(*'X264')  # 选择编码方式
 
-    size = (1920, 750)
+    size = (1920, 1080)
 
     vw = cv2.VideoWriter(os.path.dirname(path) + '/temp.mp4', fourcc, fps, size)
 
@@ -345,8 +345,8 @@ def extract_message_from_video(path, frame_number, frame_totalnum):
         rgb_img = readColorImage(image)
         height = rgb_img.shape[0]
         width = rgb_img.shape[1]
-        if width / height > 1920 / 750:
-            rgb_img = cv2.resize(rgb_img, (int(750 * (width / height)), 750))
+        if width / height >=1920 / 1080:
+            rgb_img = cv2.resize(rgb_img, (int(1080 * (width / height)), 1080))
         else:
             rgb_img = cv2.resize(rgb_img, (1920, int(1920 / (width / height))))
 
