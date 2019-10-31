@@ -269,6 +269,7 @@ def reconstruct_video(path, frames_dict):
         j += 1
         success, frame = videoCapture.read()
     vw.release()
+    videoCapture.release()
 
 
 def apply_watermarking(path, message, outpath):
