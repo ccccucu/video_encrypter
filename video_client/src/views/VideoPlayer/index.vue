@@ -54,6 +54,12 @@
               @click="handleListPlayClick(scope.row)"
             >播放
             </el-button>
+            <el-button
+              size="mini"
+              type="primary"
+              @click="handleDownLoad(scope.row)"
+            >下载
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -69,7 +75,10 @@
   import Path from 'path'
   import UserMixin from '@/mixins/UserMixin'
   import store from '@/store'
-  const { ipcRenderer } = require("electron");
+import { debug } from 'util'
+  const { ipcRenderer  } = require("electron");
+  const { dialog   } = require("electron").remote;
+
 
   export default {
     name: "index",
@@ -142,6 +151,89 @@
       }
     },
     methods: {
+
+
+      handleDownLoad (row) {
+        this.player.reset()
+        this.progressStatus.status = ''
+        this.progressStatus.value = 0
+        const video_name = row.uuid+'.mp4'
+        const path = Path.resolve('./', video_name)
+        const water_path = Path.resolve('./', 'water_'+this.userInfo.id.toString()+'_'+video_name)
+        const raw_water_path = Path.resolve('./', 'raw_water_'+this.userInfo.id.toString()+'_'+video_name)
+        let writer = FS.createWriteStream(path)
+        var respp_id
+        this.progressStatus.value = 10
+
+         let save_path = dialog.showSaveDialog({  
+           filters: [
+    { name: 'Movies', extensions: [ 'mp4'] },
+  ]})
+
+         if (save_path) {
+    if(FS.existsSync(raw_water_path)){
+            this.progressStatus.value = 100
+            FS.copyFileSync(raw_water_path, save_path);
+          this.$message({
+              type: 'success',
+              message: '文件导出成功'
+        });
+            this.loading = false
+        }else {
+          // 下载视频
+          this.loading = true
+          videoDownload(row.id).then((download_resp) => {
+            this.progressStatus.value = 30
+
+            writer.on('finish', () =>{
+              // 存入本地完成后 加水印                  
+              let water_mark =  get_uuid()
+              this.progressStatus.value = 50
+              //50
+                postWaterMark(row.id, water_mark).then((water_mark_resp) => {
+                  this.progressStatus.value = 70
+                  Rpc.clientReadVideo(path, row.secret_key, water_mark,water_path, this.userInfo.id.toString()).then((client_read_vide_resp)=>{
+                    this.progressStatus.value = 80
+                    debugger
+                    if (client_read_vide_resp.data.result) {
+                        FS.copyFileSync(raw_water_path, save_path);
+                                  this.loading = false
+                        this.$message({
+                            type: 'success',
+                            message: '文件导出成功'
+                      });
+                    } else {
+                      // 失败
+                         this.progressStatus.status = 'exception'
+                         this.progressStatus.err = client_read_vide_resp.data.error.message
+                          this.$message({
+                            type: 'error',
+                            message: client_read_vide_resp.data.error.message
+                          });
+                    }
+                  }).catch((err)=>{
+                    var errtext = '加载失败，请检查网络环境';
+                    // this.$message.error('服务器错误，请检查连接状态');
+                    // alert(err);
+                    this.$message({
+                            type: 'info',
+                            message: '视频加载失败，请重试'
+                      });
+                      this.progressStatus.value = 0
+                      this.progressStatus.status = 'exception'
+                  }).finally(()=>{
+
+                  })
+                })
+            });
+            download_resp.data.pipe(writer)
+          }).catch((err) => {
+            debugger
+          });
+        }  
+         } 
+         
+      },
       hanleFullScreenChange(event) {
            ipcRenderer.send("setFullScreen",{flag:event.isFullscreen_});
       },
@@ -190,13 +282,14 @@
         const video_name = row.uuid+'.mp4'
         const path = Path.resolve('./', video_name)
         const water_path = Path.resolve('./', 'water_'+this.userInfo.id.toString()+'_'+video_name)
+        const raw_water_path = Path.resolve('./', 'raw_water_'+this.userInfo.id.toString()+'_'+video_name)
         let writer = FS.createWriteStream(path)
         var respp_id
         this.progressStatus.value = 10
 
-        if(FS.existsSync(water_path)){
+        if(FS.existsSync(raw_water_path)){
             this.progressStatus.value = 100
-            this.playerOptions.sources[0].src = Rpc.readLocalUrl(water_path, row.secret_key)
+            this.playerOptions.sources[0].src = Rpc.readLocalUrl(raw_water_path, row.secret_key)
             this.player.load()
             this.loading = false
         }else {
@@ -212,11 +305,11 @@
               //50
                 postWaterMark(row.id, water_mark).then((water_mark_resp) => {
                   this.progressStatus.value = 70
-                  Rpc.clientReadVideo(path, row.secret_key, water_mark,water_path).then((client_read_vide_resp)=>{
+                  Rpc.clientReadVideo(path, row.secret_key, water_mark,water_path, this.userInfo.id.toString()).then((client_read_vide_resp)=>{
 
                     this.progressStatus.value = 80
                     if (client_read_vide_resp.data.result) {
-                        this.playerOptions.sources[0].src = Rpc.readLocalUrl(water_path, row.secret_key)
+                        this.playerOptions.sources[0].src = Rpc.readLocalUrl(raw_water_path, row.secret_key)
                         this.player.load()
                         this.loading = false
                     } else {
