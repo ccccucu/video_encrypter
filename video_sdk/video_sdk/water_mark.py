@@ -147,7 +147,7 @@ def add_watermark(path, message):
     for i in range(int(frame_totalnum)):
         if i % 90 == 0:
             process(path, message, i, frames_dict)
-
+    cap.release()
     return frames_dict
 
 
