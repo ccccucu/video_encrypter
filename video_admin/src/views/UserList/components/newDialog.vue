@@ -54,7 +54,7 @@ export default {
         role: 'user',
         ip: '',
         name: '',
-        organization_id:0
+        organization_id: undefined
       },
       uploadRules:{
         uuid: [{ required: true, trigger: 'blur',  message: '编号 不能为空' }],

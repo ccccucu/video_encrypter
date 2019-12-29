@@ -51,7 +51,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: '视频加密终端' }
+      meta: { title: '视频加密终端', icon: 'video' }
     },]
   },
 
@@ -67,25 +67,25 @@ export const asyncRoutes = [
     path: '/video',
     component: Layout,
     redirect: 'manager',
-    meta: { title: '视频管理'},
+    meta: { title: '视频管理', icon: 'video-folder'},
     children: [{
       path: 'upload',
       name: 'video_upload',
       component: () => import('@/views/VideoUpload/index'),
-      meta: { title: "视频上传"}
+      meta: { title: "视频上传",      }
     },
 
     {
       path: 'manager',
       name: 'video_manager',
       component: () => import('@/views/VideoList/index'),
-      meta: { title: '视频列表' }
+      meta: { title: '视频列表' ,     }
     },
     {
       path: 'water_mark',
       name: 'water_mark',
       component: () => import('@/views/WaterMarkList/index'),
-      meta: { title: '水印记录'}
+      meta: { title: '水印记录',  }
     }]
   },
 
@@ -93,7 +93,7 @@ export const asyncRoutes = [
     path: '/organization',
     component: Layout,
     redirect: 'list',
-    meta: { title: '单位管理'},
+    meta: { title: '单位管理', icon:'people'},
     children: [
     //   {
     //   path: 'list',
@@ -105,7 +105,7 @@ export const asyncRoutes = [
       path: 'pople',
       name: 'unit_people',
       component: () => import('@/views/UserList/index'),
-      meta: { title: "人员列表"}
+      meta: { title: "人员列表",}
     }]
   },
 
