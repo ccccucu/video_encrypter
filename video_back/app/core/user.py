@@ -55,7 +55,7 @@ class UserController(easyapi.BaseController):
         account = data.get('account',None)
         user = dao.UserDao.get(query={'account':account})
         if user is not None:
-            raise easyapi.BusinessError(code=404, http_code=404, err_info="该用户已注册")
+            raise easyapi.BusinessError(code=500, http_code=200, err_info="该用户已注册, 请更换账号")
 
         data['password'] = generate_password_hash( data['password'] )
         super().insert(ctx=ctx, data=data)
