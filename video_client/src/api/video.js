@@ -41,7 +41,7 @@ export function postWaterMark(video_id, watermark) {
 
 export function pingServer() {
   return axios.get(`${SERVER_URL}/ping`, {
-    timeout: 1000
+    timeout: 2000
   });
 }
 

@@ -156,13 +156,13 @@ def client_read_video(path, key, watermark, outpath, user_id):
     try:
         de = de_file_by_path(path=path, key=key, outpath=origin_file_path)
         en_water_mark_by_path(path=origin_file_path, content=watermark, outpath=watermark_path)
-        en = en_file_by_path(path=watermark_path, key=key, outpath=outpath)
+        # en = en_file_by_path(path=watermark_path, key=key, outpath=outpath)
     except Exception as e:
         traceback.print_exc()
         raise e
     finally:
         time.sleep(1)
-        # rm_if_exits(origin_file_path) # 删除原始文件
+        rm_if_exits(origin_file_path) # 删除原始文件
     return watermark_path
 
 
