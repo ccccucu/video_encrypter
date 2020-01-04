@@ -45,8 +45,8 @@
         <el-table-column prop="created_at" label="上传时间"></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button size="mini" type="primary" @click="handleListPlayClick(scope.row)">播放</el-button>
-            <el-button size="mini" type="primary" @click="handleListExportingClick(scope.row)">下载</el-button>
+            <el-button size="mini" :disabled="disable_operation" type="primary" @click="handleListPlayClick(scope.row)">播放</el-button>
+            <el-button size="mini" :disabled="disable_operation" type="primary" @click="handleListExportingClick(scope.row)">下载</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -171,8 +171,16 @@ export default {
         return "视频加载中， 请稍后...."
       } 
       return "未知状态"
-    }
+    },
     
+    
+    disable_operation: function() {
+      // 屏蔽操作
+      if (this.fsm.state === this.PLAYER_STATUS.DOWNLOADING || this.fsm.state === this.PLAYER_STATUS.PROCESSING ){
+        return true
+      } 
+      return false
+    }
     
   },
 
