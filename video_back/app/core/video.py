@@ -108,10 +108,12 @@ class VideoController(easyapi.BaseController):
             raise easyapi.BusinessError(code=500, http_code=200, err_info="不是允许的文件")
         title, _ = os.path.splitext(file.filename)
         uuid_1 = str(uuid.uuid1())
+        thumb_filename = humnail_path, uuid_1 + '.png'
+
 
         origin_file = os.path.join(origin_path, uuid_1 + '.mp4')
         encrypt_file = os.path.join(encrpty_path, uuid_1 + '.mp4')
-        thumnail_file = os.path.join(thumnail_path, uuid_1 + '.png')
+        thumnail_file = os.path.join(thumb_filename)
 
         file.save(origin_file)
 
@@ -144,10 +146,10 @@ class VideoController(easyapi.BaseController):
                                              "release_admin_id": 0,
                                              "release_time": datetime.now(),
                                              "secret_key": key,
-                                             "thumb_filename": uuid_1 + '.png'
+                                             "thumb_filename": thumb_filename
                                              })
 
-        return video_id
+        return video_id, thumb_filename
 
     @classmethod
     def query_distribute_videos(cls, query, pager, sorter, current_user):

@@ -27,7 +27,7 @@ def video_upload():
         ctx.set('user', user)
 
         file = request.files['file']
-        id = controller.VideoController.upload_video(file=file,
+        id, thumb_filename = controller.VideoController.upload_video(file=file,
                                                      origin_path=Config.ORIGIN_VIDEO_UPLOAD_PATH,
                                                      encrpty_path=Config.ENCRYPT_VIDEO_PATH,
                                                      thumnail_path=Config.VIDEO_THUMBNAIL_PATH,
@@ -42,7 +42,8 @@ def video_upload():
     return jsonify(**{
         'msg': '上传成功',
         'code': 200,
-        'id': id
+        'id': id,
+        "thumb_filename": thumb_filename
     })
 
 
