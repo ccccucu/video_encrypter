@@ -32,7 +32,7 @@ class Config:
     UPLOAD_PATH = os.path.abspath('files')  # 上传文件路径
     ORIGIN_VIDEO_UPLOAD_PATH = os.path.join(UPLOAD_PATH, 'origin')  # 原始
     ENCRYPT_VIDEO_PATH = os.path.join(UPLOAD_PATH, 'encrypt')  # 加密
-    VIDEO_THUMBNAIL_PATH = os.path.join(UPLOAD_PATH, 'encrypt')  # 缩略图
+    VIDEO_THUMBNAIL_PATH = os.path.join(UPLOAD_PATH, 'thumb')  # 缩略图
 
 
 if not os.path.exists(Config.UPLOAD_PATH):

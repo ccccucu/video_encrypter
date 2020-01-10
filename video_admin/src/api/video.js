@@ -24,3 +24,8 @@ export const getVideo = (id) => {
 export const createVideo = (params) => {
   return axios.post('/api/videos', params)
 }
+
+
+export const getVideoThumbPath = (file) => {
+  return `/thumb/${file}`
+}

@@ -17,13 +17,10 @@
         action="/api/videos/upload"
         accept="audio/mp4,video/mp4"
         :limit="1"
-
         :on-success = "handleSuccess"
         :on-change= "handleFileChange"
         :multiple = "false"
       >
-
-
 
         <!--:file-list="uploadFileList"-->
         <i class="el-icon-upload"></i>

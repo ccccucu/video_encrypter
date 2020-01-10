@@ -45,12 +45,33 @@
           sortable
           width="80">
         </el-table-column>
+        
         <el-table-column
           prop="title"
           label="标题"
           sortable
           width="180">
         </el-table-column>
+
+        <el-table-column
+        label="缩略图"
+        width="100">
+        <template slot-scope="scope">
+          <img v-if="scope.row.thumb_filename" :src="getVideoThumbUrl(scope.row)" width="70" height="70">
+          <span v-else>没有封面</span>
+        </template>
+        </el-table-column>
+
+        <el-table-column
+          prop="original_file_size"
+          label="视频大小"
+          sortable
+          width="180">
+          <template slot-scope="scope">
+            {{scope.row.original_file_size.toFixed(2)}} MB
+        </template>
+        </el-table-column>
+
         <el-table-column
           prop="upload_organization.name"
           label="上传单位"
@@ -97,7 +118,7 @@
   import commonTable from '@/mixins/table'
   import  DistributeTable from './components/DistributeTable'
   //视频接口
-  import { queryVideos, deleteVideo, updateVideo, getVideo, createVideo } from '@/api/video'
+  import { queryVideos, deleteVideo, updateVideo, getVideo, createVideo,  getVideoThumbPath} from '@/api/video'
 
   export default {
     mixins: [commonTable],
@@ -125,6 +146,11 @@
 
       }
     },
+    methods: {
+      getVideoThumbUrl: function(row){
+        return getVideoThumbPath(row.thumb_filename)
+      }
+    }
 
   }
 </script>

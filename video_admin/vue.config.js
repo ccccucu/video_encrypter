@@ -39,6 +39,11 @@ module.exports = {
         changeOrigin: true, // 如果接口跨域，需要进行这个参数配置；changeOrigin为true，本地就会虚拟一个服务替我们接受或转发请求，这样就不会有跨域的问题了
         pathRewrite: { '^/api': '' } // url中 “http://127.0.0.1:5000/” 由 “/api”代替
       },
+      '/thumb': {
+          target: 'http://127.0.0.1:5005/files', // 接口的域名  'http://127.0.0.1:5000/'   'http://47.104.148.221:8082/'
+          secure: false, // 如果是https接口，需要配置这个参数
+          changeOrigin: true, // 如果接口跨域，需要进行这个参数配置；changeOrigin为true，本地就会虚拟一个服务替我们接受或转发请求，这样就不会有跨域的问题了
+      },
       [process.env.VUE_APP_BASE_API]: {
         target: `http://localhost:${port}/mock`,
         changeOrigin: true,

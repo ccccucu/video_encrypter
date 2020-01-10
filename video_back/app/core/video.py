@@ -13,8 +13,9 @@ from easyapi.sql import Pager, Sorter
 from easyapi import EasyApiContext
 from datetime import datetime, timedelta
 from flask_jwt import jwt_required, current_identity
-from flask import request
+from flask import request, current_app
 from sqlalchemy.sql import text
+
 class VideoController(easyapi.BaseController):
     __dao__ = dao.VideoDao
 
@@ -110,17 +111,27 @@ class VideoController(easyapi.BaseController):
 
         origin_file = os.path.join(origin_path, uuid_1 + '.mp4')
         encrypt_file = os.path.join(encrpty_path, uuid_1 + '.mp4')
+        thumnail_file = os.path.join(thumnail_path, uuid_1 + '.png')
 
-        original_file_size = file.content_length
         file.save(origin_file)
+
+        original_file_size = os.path.getsize(origin_file)
+        original_file_size = original_file_size/float(1024 * 1024)
+
 
         # 加密
         key = util.ranstr(32)
         res = rpc.en_file_by_path(origin_file, key, encrypt_file)
         # res = 0
+
+        try:
+            rpc.get_thumbnail_by_path(origin_file,thumnail_file)
+        except Exception:
+             print("保存视频缩略图失败 视频路径 {}".format(origin_file))
+             thumnail_file = ""
         if res > 0:
             raise easyapi.BusinessError(code=500, http_code=200, err_info="加密失败")
-
+        
         user = ctx.read('user')  # 当前用户 current_identity
         video_id = dao.VideoDao.insert(ctx=ctx,
                                        data={"title": title,
@@ -132,8 +143,10 @@ class VideoController(easyapi.BaseController):
                                              "release_allow": 0,
                                              "release_admin_id": 0,
                                              "release_time": datetime.now(),
-                                             "secret_key": key
+                                             "secret_key": key,
+                                             "thumb_filename": uuid_1 + '.png'
                                              })
+
         return video_id
 
     @classmethod

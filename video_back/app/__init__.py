@@ -10,7 +10,7 @@ from app.utils.logger import consoleHandler, fileHandler
 import logging
 
 app = Flask(__name__, template_folder=os.path.join(os.getcwd(), 'templates'),
-            static_folder=os.path.join(os.getcwd(), 'static'))
+            static_folder=os.path.join(os.getcwd(), 'files'))
 app.config.from_object(Config)
 
 app.register_blueprint(handler.user_bp)

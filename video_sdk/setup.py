@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='video_sdk',
-    version='0.1',
+    version='0.2',
     description='视频处理',
     packages=find_packages(exclude=[]),
     author='suchang',

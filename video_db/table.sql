@@ -1,13 +1,13 @@
--- MySQL dump 10.13  Distrib 8.0.12, for osx10.13 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.18, for osx10.15 (x86_64)
 --
 -- Host: 127.0.0.1    Database: video_encrypter
 -- ------------------------------------------------------
--- Server version	8.0.12
+-- Server version	8.0.18
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
- SET NAMES utf8mb4 ;
+/*!50503 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -21,7 +21,7 @@
 
 DROP TABLE IF EXISTS `distribut_videos`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `distribut_videos` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '【分发单位】id',
   `video_id` int(11) NOT NULL DEFAULT '0' COMMENT '视频表的id',
@@ -43,7 +43,7 @@ CREATE TABLE `distribut_videos` (
 
 DROP TABLE IF EXISTS `download_logs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `download_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '【下载记录】id',
   `video_id` int(11) NOT NULL DEFAULT '0' COMMENT '视频id；视频编号从video对象中取得',
@@ -64,7 +64,7 @@ CREATE TABLE `download_logs` (
 
 DROP TABLE IF EXISTS `login_logs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `login_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '【登录日志】id',
   `user_id` int(11) NOT NULL COMMENT '用户id；管理员或用户的id',
@@ -88,7 +88,7 @@ CREATE TABLE `login_logs` (
 
 DROP TABLE IF EXISTS `organizations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `organizations` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '【单位】id',
   `account` varchar(255) NOT NULL COMMENT '单位变码；唯一，00表示总部，00XX表示下属单位，依次类推',
@@ -106,19 +106,6 @@ CREATE TABLE `organizations` (
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `test`
---
-
-DROP TABLE IF EXISTS `test`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
-CREATE TABLE `test` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `users`
@@ -126,7 +113,7 @@ CREATE TABLE `test` (
 
 DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '【用户】id',
   `uuid` varchar(255) NOT NULL DEFAULT '' COMMENT '用户编号；唯一，UUID',
@@ -142,7 +129,7 @@ CREATE TABLE `users` (
   `updated_by` varchar(255) NOT NULL DEFAULT '',
   `created_by` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -151,7 +138,7 @@ CREATE TABLE `users` (
 
 DROP TABLE IF EXISTS `videos`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `videos` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '【视频】id',
   `uuid` varchar(255) NOT NULL DEFAULT '' COMMENT '编号；唯一，UUID，同时也是文件名，原始问价、加密我呢见、缩略图、加密密钥分别存放在不同文件夹内',
@@ -159,20 +146,21 @@ CREATE TABLE `videos` (
   `upload_organization_id` int(11) NOT NULL COMMENT '上传单位id；对应单位id',
   `upload_admin_id` int(11) NOT NULL DEFAULT '0' COMMENT '上传管理员di；对应管理员id',
   `allow_play_time` timestamp NOT NULL COMMENT '播放时限；该日期的24点前允许播放',
-  `original_file_size` bigint(20) NOT NULL DEFAULT '0' COMMENT '原始文件大小；字节为单位',
+  `original_file_size` float NOT NULL DEFAULT '0' COMMENT '原始文件大小；字节为单位',
   `encrypt_file_size` bigint(20) NOT NULL DEFAULT '0' COMMENT '加密后文件大小；字节为单位，与原始文件相同文件名',
   `release_allow` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否发布',
-  `release_admin_id` int(11) DEFAULT '0' COMMENT '发布管理员id；对应管理员id',
+  `secret_key` varchar(255) NOT NULL DEFAULT '' COMMENT '密钥',
   `release_time` timestamp NOT NULL COMMENT '发布时间',
   `delete_admin_id` int(11) DEFAULT '0' COMMENT '删除管理员id；对应管理员id',
-  `secret_key` varchar(255) NOT NULL DEFAULT '' COMMENT '密钥',
-  `created_at` timestamp NULL DEFAULT NULL COMMENT '上传时间',
+  `thumb_filename` varchar(255) NOT NULL DEFAULT '' COMMENT '缩略图名字',
   `updated_at` timestamp NULL DEFAULT NULL,
-  `deleted_at` timestamp NULL DEFAULT NULL COMMENT '是否删除',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT '上传时间',
   `updated_by` varchar(255) NOT NULL DEFAULT '' COMMENT '删除管理员；对应管理员用户名',
   `created_by` varchar(255) NOT NULL DEFAULT '' COMMENT '上传管理员；对应管理员用户名',
+  `release_admin_id` int(11) DEFAULT '0' COMMENT '发布管理员id；对应管理员id',
+  `deleted_at` timestamp NULL DEFAULT NULL COMMENT '是否删除',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -181,7 +169,7 @@ CREATE TABLE `videos` (
 
 DROP TABLE IF EXISTS `watermark_logs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `watermark_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '【水印记录】id',
   `watermark` varchar(255) NOT NULL DEFAULT '' COMMENT '水印',
@@ -196,7 +184,7 @@ CREATE TABLE `watermark_logs` (
   `updated_by` varchar(255) NOT NULL DEFAULT '',
   `created_by` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -208,4 +196,4 @@ CREATE TABLE `watermark_logs` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-09-14 10:02:24
+-- Dump completed on 2020-01-10 14:56:24
