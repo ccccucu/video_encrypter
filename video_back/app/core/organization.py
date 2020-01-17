@@ -26,10 +26,13 @@ class OrganizationController(easyapi.BaseController):
         for res_data in res:
             # 添加 father_organization 对象:
             father_organization_id = res_data['father_organization_id']
-            father_organization = dao.OrganizationDao.get(ctx=ctx, query={'id': father_organization_id})
-            if father_organization is None:
-                # raise easyapi.BusinessError(code=404, http_code=404, err_info="organization not found")
+            if father_organization_id < 1:
                 father_organization = {}
+            else:
+                father_organization = dao.OrganizationDao.get(ctx=ctx, query={'id': father_organization_id})
+                if father_organization is None:
+                    # raise easyapi.BusinessError(code=404, http_code=404, err_info="organization not found")
+                    father_organization = {}
             res_data['father_organization'] = father_organization
         return res, total
 
