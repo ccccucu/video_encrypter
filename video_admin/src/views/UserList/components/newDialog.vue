@@ -17,16 +17,10 @@
         <el-input v-model="data.name" ref="name"></el-input>
       </el-form-item>
 
-      <el-form-item label="所属单位" prop="organization_id">
-        <el-select v-model="data.organization_id" clearable placeholder="请选择" ref="organization_id">
-          <el-option
-            v-for="organization in organizations"
-            :key="organization.id"
-            :label="organization.name"
-            :value="organization.id"
-          ></el-option>
-        </el-select>
-      </el-form-item>
+
+        <el-form-item label="根组织">
+          <OriginzationSelect v-model="data.organization_id" placeholder="请输入管理员姓名"></OriginzationSelect>
+        </el-form-item>
 
       <el-form-item>
         <el-button type="primary" @click="handleSubmit">提交</el-button>
@@ -39,9 +33,11 @@
 import { isEmpty } from "@/utils/validate";
 import commonNewDialog from "@/mixins/new_dialog";
 import { queryOrganizations } from "@/api/organization";
+import OriginzationSelect from '@/views/components/OriginzationSelect'
 
 export default {
   mixins: [commonNewDialog],
+  components: {OriginzationSelect},
   data() {
     return {
       data: {

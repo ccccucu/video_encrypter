@@ -18,6 +18,10 @@
           <el-form-item>
             <el-button plain @click="onReset">重置</el-button>
           </el-form-item>
+
+          <el-form-item style="float: right">
+            <el-button type="success"  @click="onNewClick">添加用户</el-button>
+          </el-form-item>
         </el-form>
       </el-col>
 
@@ -77,8 +81,15 @@
             <el-button
             size="mini"
             type="primary">查看</el-button>
+            <el-button
+            size="mini"
+            type="danger"
+            @click="onDeleteClick(scope.$index, scope.row)">删除</el-button>
           </template>
+
+          
         </el-table-column>
+        
       </el-table>
 
       <el-col :span="24" class="toolbar">
@@ -91,6 +102,12 @@
         </el-pagination>
       </el-col>
 
+      <CreatorDialog
+        :visible="newDialogShow"
+        @onOK="onNewOK"
+        @onCancel="onNewCancel">
+      </CreatorDialog>
+
     </div>
 </template>
 
@@ -100,10 +117,11 @@
   import OriginzationSelect from '@/views/components/OriginzationSelect'
   //视频接口
   import { queryOrganizations, deleteOrganization, updateOrganization, getOrganization, createOrganization } from '@/api/organization'
+import CreatorDialog from './newOrganizationDialog.vue'
 
   export default {
     name: 'OrgaizationTable',
-    components: {OriginzationSelect},
+    components: {OriginzationSelect, CreatorDialog},
     mixins: [commonTable],
     props: {
     },

@@ -1,11 +1,9 @@
 <template>
-    <div>
         <el-cascader
         v-model="organization_id"
         :props="cascader_props"
         @change="handleChange">
         </el-cascader>
-    </div>
 </template>
 
 <script>
@@ -16,7 +14,12 @@
   export default {
     name: 'OrgaizationSelect',
     props: {
-        value: undefined
+        value: Number,
+        multi: {
+        type: Boolean,
+        required: false,
+        default: false
+      },
     },
     data() {
       return {
@@ -27,13 +30,13 @@
               value: 'id',
               label: 'name',
               lazy: true,
+              multiple: this.multi,
               lazyLoad: (node, resolve) => {
                   const {level} = node
                   let father_organization_id = 0;
                   if (level !== 0) {
                     father_organization_id = node.data.id
                   }
-                  debugger
                 queryOrganizations({
                     'father_organization_id': father_organization_id
                 }).then((resp) => {

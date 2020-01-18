@@ -2,6 +2,7 @@ import easyapi
 import app.dao as dao
 from easyapi.sql import Pager, Sorter
 from easyapi import EasyApiContext
+import easyapi
 
 class OrganizationController(easyapi.BaseController):
     __dao__ = dao.OrganizationDao
@@ -34,6 +35,21 @@ class OrganizationController(easyapi.BaseController):
                     # raise easyapi.BusinessError(code=404, http_code=404, err_info="organization not found")
                     father_organization = {}
             res_data['father_organization'] = father_organization
+        return res, total
+
+    @classmethod
+    def delete(cls, id: int, ctx: EasyApiContext = None):
+
+        children_num = dao.OrganizationDao.count(ctx=ctx, query={
+            "father_organization_id":  id
+        })
+        if children_num > 0:
+            raise easyapi.BusinessError(
+                http_code=200,
+                code = 500,
+                err_info= "请先删除该单位的子单位"
+            )
+        (res, total) = super().query(ctx=ctx, query=query, pager=pager, sorter=sorter)
         return res, total
 
 
