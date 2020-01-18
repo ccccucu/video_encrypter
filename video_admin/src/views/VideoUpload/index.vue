@@ -16,16 +16,24 @@
         :headers ="upload_headers"
         action="/api/videos/upload"
         accept="audio/mp4,video/mp4"
-        :limit="1"
         :on-success = "handleSuccess"
         :on-change= "handleFileChange"
         :multiple = "false"
       >
 
         <!--:file-list="uploadFileList"-->
-        <i class="el-icon-upload"></i>
-        <div class="el-upload__text">将视频拖到此处，或<em>点击上传</em></div>
+        <img
+          v-if="thumb_filename"
+          width="100%"
+          height="100%"
+          class="el-upload-list__item-thumbnail"
+          :src="videoThumbUrl" 
+        >
+        <div v-else>
+            <i class="el-icon-upload"></i>
+          <div class="el-upload__text">将视频拖到此处，或<em>点击上传</em></div>
         <div class="el-upload__tip" slot="tip">只能上传map4文件</div>
+        </div>
       </el-upload>
 
 
@@ -33,7 +41,6 @@
 
       <el-form-item>
         <el-button type="primary" @click="submitUpload">确认提交</el-button>
-        <el-button type="danger">取消提交</el-button>
       </el-form-item>
 
     </el-form>
@@ -47,7 +54,7 @@
   //mixin
   import commonTable from '@/mixins/table'
   //视频接口
-  import { queryVideos, deleteVideo, updateVideo, getVideo, createVideo } from '@/api/video'
+  import { queryVideos, deleteVideo, updateVideo, getVideo, createVideo,getVideoThumbPath } from '@/api/video'
 
   export default {
     mixins: [commonTable],
@@ -70,7 +77,7 @@
         },
 
         videoId: undefined,
-
+        thumb_filename: ""
 
       }
     },
@@ -78,6 +85,10 @@
       ...mapGetters([
         'token',
       ]),
+
+      videoThumbUrl() {
+        return getVideoThumbPath(this.thumb_filename)
+      }, 
 
       upload_headers(){
         return {
@@ -88,10 +99,11 @@
     created() {
     },
     methods: {
-
       // 上传前改变文件名字
       handleFileChange(file, fileList) {
+        debugger
           if (file.status === 'ready') {
+            this.thumb_filename  = undefined
             this.query.title = file.raw.name
           }
       },
@@ -104,7 +116,7 @@
           this.videoId = response.id  //response.id    后端接口更新后会获得id
           console.log(response.msg)
           console.log("上传成功的视频id：" + response.id)
-
+          this.thumb_filename = response.thumb_filename
           //上传信息
           updateVideo(this.videoId, this.query)
 
