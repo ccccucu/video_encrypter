@@ -18,7 +18,7 @@
       </el-form-item>
 
 
-        <el-form-item label="根组织">
+        <el-form-item label="单位">
           <OriginzationSelect v-model="data.organization_id" placeholder="请输入管理员姓名"></OriginzationSelect>
         </el-form-item>
 

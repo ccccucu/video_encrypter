@@ -48,7 +48,14 @@
     },
     methods: {
         handleChange: function(value) {
-            this.$emit('input', this.organization_id)
+          console.log(value)
+          if (this.multi) {
+            this.$emit('input', value.map((item)=>{
+              
+            }))
+          } else {
+            this.$emit('input', value[value.length-1])
+          }
         }
     }
 

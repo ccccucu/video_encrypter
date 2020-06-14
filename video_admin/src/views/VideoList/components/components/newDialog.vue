@@ -3,16 +3,7 @@
     <el-form :model="data" label-width="80px" ref="templateForm">
 
       <el-form-item label="选择单位">
-        <el-select v-model="data.organization_id"
-                   clearable
-                   placeholder="请选择">
-          <el-option
-            v-for="organization in organizations"
-            :key="organization.id"
-            :label="organization.name"
-            :value="organization.id">
-          </el-option>
-        </el-select>
+          <OriginzationSelect v-model="data.organization_id" multi></OriginzationSelect>
       </el-form-item>
 
       <el-form-item>
@@ -25,8 +16,10 @@
 <script>
   import { queryOrganizations }  from '@/api/organization'
   import { queryDistributVideos, createDistributVideo } from '@/api/distribut_video'
+  import OriginzationSelect from '@/views/components/OriginzationSelect'
 
 export default {
+  components:{OriginzationSelect},
   props: {
     video_id: Number,
     visible: Boolean,
