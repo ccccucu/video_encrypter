@@ -1,18 +1,17 @@
-import axios from '@/utils/request'
+import service from '@/utils/request'
 
 //登录并获取token
 export function login(data) {
-  let d = {'type':'admin', 'username':'admin', 'password':'123456'}
-  return axios({
+  return service({
     url: '/api/login', //后端的jwt已经接管登录api ，管理员 用户统一登录接口 ‘/login’
     method: 'post',
-    data: d
+    data: data
   })
 }
 
 //获得当前用户信息，by token，token在http HEAD种
 export function getInfo(token) {
-  return axios({
+  return service({
     url: '/api/current_user',
     method: 'get',
   })
@@ -20,7 +19,7 @@ export function getInfo(token) {
 
 //登出
 export function logout() {
-  return axios({
+  return service({
     url: '/user/logout',
     method: 'get'
   })

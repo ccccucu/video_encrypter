@@ -66,7 +66,7 @@ export default {
       }
     }
     const validatePassword = (rule, value, callback) => {
-      if (false) {
+      if (value.length < 5) {
         callback(new Error('密码不能小于6位'))
       } else {
         callback()
@@ -107,15 +107,19 @@ export default {
     },
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
-
-          this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
-          }).catch(() => {
-            this.loading = false
-          })
-
+          if (valid) {
+            this.loading = true
+            this.$store.dispatch('user/login', this.loginForm).then(() => {
+              this.$router.push({ path: this.redirect || '/' })
+              this.loading = false
+            }).catch(() => {
+              this.loading = false
+              this.$message({
+              message: "检查用户名或密码",
+              type: 'error',
+            })
+            })
+          }
       })
     }
   }
