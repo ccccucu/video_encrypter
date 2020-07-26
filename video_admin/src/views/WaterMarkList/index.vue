@@ -7,7 +7,7 @@
       <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
         <el-form :inline="true" v-model="query">
           <el-form-item label="水印标题：">
-            <el-input v-model="query._like_watermark" placeholder="水印标题"></el-input>
+            <el-input v-model="query._search_watermark" placeholder="水印标题"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onSearch">查询</el-button>
@@ -105,7 +105,7 @@
 
         //配置mixin query
         query: {  //条件查询 dict  //api查询条件dict
-          _like_watermark: undefined,
+          _search_watermark: undefined,
         },
 
         data: [],  //列表

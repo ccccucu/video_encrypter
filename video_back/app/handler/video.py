@@ -48,6 +48,7 @@ def video_upload():
 
 
 @video_bp.route('/videos/download/<int:id>', methods=['GET', 'POST'])  # 不写,methods=['GET','POST'] 默认是get
+@jwt_required()
 def video_download(id):
     """
     :param id:
@@ -95,8 +96,16 @@ class WatermarkLogHandler(easyapi.FlaskBaseHandler):
 
     @jwt_required()
     def post(self, *args, **kwargs):
-        return super().post()
+        return super().post(*args, **kwargs)
 
+    @jwt_required()
+    def delete(self, id, **kwargs):
+        return super().delete(id, **kwargs)
+
+    @jwt_required()
+    def get(self,id: int, **kwargs):
+        return super().get(id, **kwargs)
+    
 
 watermark_log_bp = Blueprint(name='watermark_logs', import_name='watermark_logs', url_prefix='')
 
