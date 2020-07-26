@@ -17,11 +17,13 @@
         action="/api/videos/upload"
         accept="audio/mp4,video/mp4"
         :on-success = "handleSuccess"
+        :on-error	= "()=>{loading = false}"
         :on-change= "handleFileChange"
         :multiple = "false"
       >
 
         <!--:file-list="uploadFileList"-->
+        <div v-loading="loading">
         <img
           v-if="thumb_filename"
           width="100%"
@@ -34,6 +36,8 @@
           <div class="el-upload__text">将视频拖到此处，或<em>点击上传</em></div>
         <div class="el-upload__tip" slot="tip">只能上传map4文件</div>
         </div>
+        </div>
+
       </el-upload>
 
 
@@ -77,7 +81,8 @@
         },
 
         videoId: undefined,
-        thumb_filename: ""
+        thumb_filename: "",
+        loading: false
 
       }
     },
@@ -101,7 +106,6 @@
     methods: {
       // 上传前改变文件名字
       handleFileChange(file, fileList) {
-        debugger
           if (file.status === 'ready') {
             this.thumb_filename  = undefined
             this.query.title = file.raw.name
@@ -111,6 +115,7 @@
       //当文件上传成功后
       handleSuccess(response, file, fileList){
         var type = ''
+        this.loading = false
         if (response.code == 200){
           type = response.status;
           this.videoId = response.id  //response.id    后端接口更新后会获得id
@@ -119,7 +124,6 @@
           this.thumb_filename = response.thumb_filename
           //上传信息
           updateVideo(this.videoId, this.query)
-
 
           this.$message({
             type: 'success',
@@ -136,6 +140,7 @@
       //点击提交 先上传文件，再上传信息
       submitUpload() {
         //1.上传视频
+        this.loading = true
         this.$refs.upload.submit()
       },
 

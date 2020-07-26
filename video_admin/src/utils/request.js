@@ -61,9 +61,23 @@ service.interceptors.response.use(
   
   },
   error => {
-    if (error.code == 500){
+    if (error.response.status == 500){
       Message({
-        message: error.message,
+        message: "服务器错误",
+        type: 'error',
+        duration: 5 * 1000
+      })
+    }
+    else if (error.response.status == 401) {
+      Message({
+        message: "用户名密码错误",
+        type: 'error',
+        duration: 5 * 1000
+      })
+    }
+    else if (error.response.status == 403) {
+      Message({
+        message: "用户没有权限",
         type: 'error',
         duration: 5 * 1000
       })

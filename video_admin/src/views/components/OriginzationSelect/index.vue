@@ -48,10 +48,12 @@
     },
     methods: {
         handleChange: function(value) {
+          debugger
+
           console.log(value)
           if (this.multi) {
             this.$emit('input', value.map((item)=>{
-              
+                return item
             }))
           } else {
             this.$emit('input', value[value.length-1])

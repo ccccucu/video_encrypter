@@ -8,8 +8,8 @@
             <el-input v-model="query._like_name" placeholder="请输入管理员姓名"></el-input>
           </el-form-item> -->
 
-          <el-form-item label="根组织">
-            <OriginzationSelect v-model="query.father_organization_id" placeholder="请输入管理员姓名"></OriginzationSelect>
+          <el-form-item label="父组织">
+            <OriginzationSelect v-model="query.father_organization_id" placeholder="选择父组织"></OriginzationSelect>
           </el-form-item>
 
           <el-form-item>

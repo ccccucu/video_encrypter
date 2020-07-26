@@ -114,10 +114,6 @@ export default {
               this.loading = false
             }).catch(() => {
               this.loading = false
-              this.$message({
-              message: "检查用户名或密码",
-              type: 'error',
-            })
             })
           }
       })

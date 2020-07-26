@@ -3,7 +3,7 @@
     <el-form :model="data" label-width="80px" ref="templateForm">
 
       <el-form-item label="选择单位">
-          <OriginzationSelect v-model="data.organization_id" multi></OriginzationSelect>
+          <OriginzationSelect v-model="data.organization_id" :multi="false"></OriginzationSelect>
       </el-form-item>
 
       <el-form-item>

@@ -10,6 +10,9 @@
           <el-form-item label="用户姓名：">
             <el-input v-model="query._like_name" placeholder="请输入用户姓名"></el-input>
           </el-form-item>
+          <el-form-item label="父组织">
+            <OriginzationSelect v-model="query.organization_id" placeholder="请输入管理员姓名"></OriginzationSelect>
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onSearch">查询</el-button>
           </el-form-item>
@@ -101,10 +104,11 @@
   import { queryUsers, deleteUser, updateUser, getUser, createUser } from '@/api/user'
 
   import CreatorDialog from './components/newDialog.vue'
+  import OriginzationSelect from '@/views/components/OriginzationSelect'
 
   export default {
     mixins: [commonTable],
-    components: { CreatorDialog },
+    components: { CreatorDialog, OriginzationSelect },
     data() {
       return {
         //配置minxin种curd api方法：
@@ -119,7 +123,8 @@
 
         //配置mixin query
         query: {  //条件查询 dict  //api查询条件dict
-          _like_name: undefined
+          _like_name: undefined,
+          organization_id: undefined
         },
 
         data: [],  //列表
@@ -132,7 +137,8 @@
       //Rewrite minxin onReset()  查询条件重置
       onReset() {
         this.query = {  //条件查询 dict
-          _like_name: undefined
+          _like_name: undefined,
+          organization_id: undefined
         }
         this.order = { _order_by: 'id', _desc: true } //order 在
         this.pages._page = 1
